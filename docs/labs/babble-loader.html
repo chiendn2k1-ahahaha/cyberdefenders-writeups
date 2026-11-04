@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Babble Loader lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Babble Loader writeup (walkthrough tiếng Việt): Lần theo một loader x64 nhiều tầng bằng x64dbg: giải chuỗi XOR, API hashing và syscall trực tiếp, kiểm tra GPU chống sandbox, shellcode đếm tiến trình, rồi một bộ nạp .NET mã nguồn mở chạy payload sau khi vô hiệu AMSI.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/babble-loader.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Babble Loader lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Babble Loader writeup (walkthrough tiếng Việt): Lần theo một loader x64 nhiều tầng bằng x64dbg: giải chuỗi XOR, API hashing và syscall trực tiếp, kiểm tra GPU chống sandbox, shellcode đếm tiến trình, rồi một bộ nạp .NET mã nguồn mở chạy payload sau khi vô hiệu AMSI.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/babble-loader.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Babble Loader - CyberDefenders writeup", "description": "Lần theo một loader x64 nhiều tầng bằng x64dbg: giải chuỗi XOR, API hashing và syscall trực tiếp, kiểm tra GPU chống sandbox, shellcode đếm tiến trình, rồi một bộ nạp .NET mã nguồn mở chạy payload sau khi vô hiệu AMSI.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/babble-loader.html", "dateModified": "2026-11-05", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Babble Loader, writeup, walkthrough, Malware Analysis, IDA, x64dbg, CFF Explorer, CyberChef, VirusTotal, API Monitor, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders Babble Loader lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/babble-loader/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-header-pe">Bước 1: header PE</a></li><li><a href="#buoc-2-chuoi-ma-hoa-xor">Bước 2: chuỗi mã hóa XOR</a></li><li><a href="#buoc-3-api-hashing-va-syscall-truc-tiep">Bước 3: API hashing và syscall trực tiếp</a></li><li><a href="#buoc-4-kiem-tra-gpu-bang-dxgi">Bước 4: kiểm tra GPU bằng DXGI</a></li><li><a href="#buoc-5-vuot-kiem-tra-gpu">Bước 5: vượt kiểm tra GPU</a></li><li><a href="#buoc-6-shellcode-tang-1">Bước 6: shellcode tầng 1</a></li><li><a href="#buoc-7-bo-nap-net-va-vo-hieu-amsi">Bước 7: bộ nạp .NET và vô hiệu AMSI</a></li><li><a href="#buoc-8-payload-net-cuoi-cung">Bước 8: payload .NET cuối cùng</a></li><li><a href="#dong-thoi-gian-thuc-thi">Dòng thời gian thực thi</a></li></ul></nav>
+<article>
+<h1 id="babble-loader">Babble Loader</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/babble-loader/">Babble Loader</a> trên CyberDefenders. Nhóm Malware Analysis, độ khó Insane, 19 câu hỏi, đã retired.</li>
+<li><strong>Dữ liệu:</strong> một file <code>invoices.exe</code> (PE64, 1.694.720 byte) trên máy ảo Windows Server 2016 của lab. Máy ảo không có internet.</li>
+<li><strong>Công cụ:</strong></li>
+<li>x64dbg (breakpoint, lệnh <code>TraceIntoConditional</code> / <code>TraceOverConditional</code> ghi log từng lệnh ra file).</li>
+<li>PowerShell để đọc header PE và lọc file trace.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Mẫu chỉ chạy bên trong x64dbg trên máy ảo của lab. Mọi patch đều ghi vào bộ nhớ tiến trình, không ghi ra file.</li>
+<li>Ảnh là ảnh chụp màn hình máy lab. <span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li><code>invoices.exe</code> là loader nhiều tầng, viết để làm khó cả phân tích tĩnh lẫn sandbox:</li>
+<li>Chuỗi quan trọng (như <code>ntdll.dll</code>) được dựng trên stack rồi giải XOR khi chạy.</li>
+<li>Hàm API được tìm theo giá trị hash. Nhiều hàm Nt* được gọi bằng lệnh <code>syscall</code> trực tiếp, bỏ qua hook của EDR (phần mềm giám sát endpoint) trong <code>ntdll.dll</code>.</li>
+<li>Mẫu tạo đối tượng DXGI, đọc vendor ID của card màn hình và chỉ chạy tiếp nếu khớp một trong 3 giá trị cố định. Máy lab không khớp, nên mẫu tự gây lỗi truy cập bộ nhớ và dừng.</li>
+<li>Sau khi vượt kiểm tra GPU, mẫu giải mã shellcode tầng 1 vào vùng nhớ <code>0x190000</code>. Shellcode này gọi một hàm Nt* qua syscall để lấy danh sách tiến trình, đếm số tiến trình và dừng nếu số tiến trình không vượt ngưỡng.</li>
+<li>Tầng 2 là shellcode của một công cụ mã nguồn mở chuyên nạp .NET trong bộ nhớ. Nó nạp CLR, vá <code>AmsiScanBuffer</code> trong <code>amsi.dll</code>, rồi chạy một assembly .NET dài 0x1EC00 byte ngay trong tiến trình.</li>
+</ul>
+<h2 id="buoc-1-header-pe">Bước 1: header PE</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> đọc subsystem và RVA của entry point.</li>
+<li><strong>Cách làm:</strong> đọc trực tiếp các trường trong NT header bằng PowerShell. Offset tính từ <code>e_lfanew</code> (giá trị tại 0x3C): <code>+4</code> là Machine, <code>+24</code> là Magic của Optional Header, <code>+40</code> là AddressOfEntryPoint, <code>+48</code> là ImageBase (PE32+), <code>+92</code> là Subsystem.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-00-pe-header.png" alt="Đọc NT header bằng PowerShell"><figcaption>Machine 0x8664 (x64), Magic 0x020B (PE32+), ImageBase 0x140000000. Giá trị EntryPoint và Subsystem đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Subsystem là một số. Đáp án là tên hằng số tương ứng trong tài liệu PE format của Microsoft (dạng <code>IMAGE_SUBSYSTEM_...</code>).</li>
+<li>AddressOfEntryPoint là RVA (địa chỉ tương đối so với ImageBase). Khi x64dbg dừng ở entry breakpoint, địa chỉ tuyệt đối bằng ImageBase cộng RVA này.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-01-entry.png" alt="x64dbg dừng ở entry point"><figcaption>x64dbg dừng ở "entry breakpoint", dòng .text cho biết đây là &lt;OptionalHeader.AddressOfEntryPoint&gt; (địa chỉ đã làm mờ). Code ở đây là stub CRT bình thường của MSVC.</figcaption></figure>
+
+<h2 id="buoc-2-chuoi-ma-hoa-xor">Bước 2: chuỗi mã hóa XOR</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm key XOR ban đầu dùng để giải chuỗi <code>ntdll.dll</code>.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đặt breakpoint ở <code>GetModuleHandleA</code> (hàm có trong bảng import). Khi dừng, RCX trỏ tới chuỗi <code>ntdll.dll</code> đã được giải mã.</li>
+<li>Lệnh <code>rtr</code> (chạy tới lệnh return) đưa về hàm gọi ở <code>0x1400017B0</code>.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-02-xor-string.png" alt="Hàm giải chuỗi ntdll.dll"><figcaption>Hàm ở 0x1400017B0 ghi 10 byte mã hóa (E6 0C EC 14 E4 56 EC 14 E4 78) lên stack, rồi ghi một hằng 4 byte vào [rsp+24]. Hằng này là key ban đầu (đã làm mờ). Dump bên dưới cho thấy kết quả "ntdll.dll" sau vòng lặp giải mã.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Key là một DWORD và được biến đổi sau mỗi vòng, nên câu hỏi hỏi "giá trị ban đầu".</li>
+<li>Hướng giải: hằng số trong lệnh <code>mov dword ptr ss:[rsp+24], ...</code> ngay sau 10 lệnh <code>mov byte ptr</code>.</li>
+</ul>
+<h2 id="buoc-3-api-hashing-va-syscall-truc-tiep">Bước 3: API hashing và syscall trực tiếp</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> hiểu cách mẫu tìm hàm Nt* và gọi syscall.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Các hàm resolver nhận một giá trị hash 4 byte, duyệt bảng export của <code>ntdll.dll</code>, băm từng tên hàm và so với giá trị đó.</li>
+<li>Khi tìm thấy, resolver trả về số syscall (số hiệu dịch vụ của kernel) và một địa chỉ lệnh <code>syscall</code> bên trong <code>ntdll.dll</code>. Mẫu tự đặt số syscall vào EAX rồi nhảy tới địa chỉ này.</li>
+<li>Ảnh trace ở Bước 6 cho thấy cơ chế đó: <code>mov eax, dword ptr ds:[r11]</code> lấy số syscall, <code>jmp qword ptr ds:[r11+0x10]</code> nhảy tới lệnh <code>syscall</code> ở <code>0x7FFC90E76862</code>.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Gọi syscall theo cách này bỏ qua các hook mà EDR đặt ở đầu hàm trong <code>ntdll.dll</code>. Breakpoint đặt ở tên hàm Nt* cũng không bao giờ dừng.</li>
+<li>Hướng giải cho các câu về hash của <code>RtlAllocateHeap</code>, hash 0x45E1B380 và 0x89DD5E00: đặt breakpoint ở hàm resolver, xem hash nào cho ra hàm nào. Sau đó đặt breakpoint ở lệnh <code>syscall</code> để đọc EAX (số syscall) và RDX (tham số thứ hai).</li>
+</ul>
+<h2 id="buoc-4-kiem-tra-gpu-bang-dxgi">Bước 4: kiểm tra GPU bằng DXGI</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm GUID của IDXGIFactory, method đầu tiên được gọi và 3 vendor ID mà mẫu chấp nhận.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đặt breakpoint ở <code>CreateDXGIFactory</code>. Tham số đầu (RCX) trỏ tới GUID của interface cần tạo.</li>
+<li>Sau đó trace lệnh từ <code>CreateDXGIFactory</code> cho tới khi mẫu tự gây lỗi, ghi mọi lệnh ra <code>trace.txt</code> (1.340 dòng), rồi lọc các lệnh <code>cmp</code> có hằng số.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-03-guid.png" alt="GUID truyền vào CreateDXGIFactory"><figcaption>Dừng ở dxgi!CreateDXGIFactory, dump tại địa chỉ trong RCX. 16 byte đầu là GUID theo thứ tự little-endian. 6 byte cuối đã làm mờ.</figcaption></figure>
+
+<figure><img src="../img/babble-loader/bl-04-vendor-trace.png" alt="Lọc trace tìm lệnh so sánh vendor ID"><figcaption>3 lệnh cmp ở 0x140171A24, 0x140171A34, 0x140171A44 so vendor ID (lưu ở [rsp+0x1FB00]) với 3 giá trị nạp vào EAX (đã làm mờ). Mỗi lệnh cmp đi kèm một lệnh jz/jnz. Khi không khớp giá trị nào, mẫu nhảy tới 0x140171D4D và sau đó tự đọc địa chỉ không hợp lệ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Kiểm tra lặp 2 lần vì mẫu duyệt qua từng adapter (gọi method lấy adapter với chỉ số 0, 1). Máy lab không có adapter nào khớp.</li>
+<li>Trên máy lab, lỗi xuất hiện ở <code>0x1401767BD</code> (<code>EXCEPTION_ACCESS_VIOLATION</code>). Đây là cách mẫu "chết" có chủ đích để tránh sandbox.</li>
+<li>Hướng giải:<ul>
+<li>GUID: 6 byte cuối trong dump ở trên.</li>
+<li>Method đầu tiên: method mà mẫu gọi qua vtable ngay sau <code>CreateDXGIFactory</code>, dùng để lấy adapter theo chỉ số. Tên có dạng <code>IDXGIFactory::...</code>.</li>
+<li>3 vendor ID: giá trị EAX ở 3 dòng cmp, theo đúng thứ tự địa chỉ.</li>
+</ul>
+</li>
+</ul>
+<h2 id="buoc-5-vuot-kiem-tra-gpu">Bước 5: vượt kiểm tra GPU</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> cho mẫu chạy tiếp để quan sát tầng shellcode.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đoạn code này tự giải mã khi chạy. Patch đặt sớm ở entry point bị ghi đè, mẫu vẫn chết.</li>
+<li>Cách làm được: dừng ở <code>CreateDXGIFactory</code> (lúc code đã giải xong), rồi đổi <code>jz</code> ở <code>0x140171A2B</code> thành <code>jmp 0x140171A51</code> bằng lệnh <code>asm</code>.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-05-patch.png" alt="Patch jz thành jmp"><figcaption>Sau patch, lệnh ở 0x140171A2B thành "jmp invoices.140171A51", đi thẳng vào nhánh của máy thật. Patch chỉ nằm trong bộ nhớ.</figcaption></figure>
+
+<h2 id="buoc-6-shellcode-tang-1">Bước 6: shellcode tầng 1</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm API dùng để thu thập thông tin hệ thống, tham số đầu của nó và ngưỡng số tiến trình.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đặt hardware breakpoint thực thi ở <code>0x190000</code>. Sau patch, mẫu dừng ở đây sau 6.410 lệnh kể từ chỗ so sánh vendor ID.</li>
+<li>Trace vào trong shellcode cho tới khi quay về module chính: 73.754 dòng log, trong đó 10.381 dòng thuộc vùng shellcode.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-06-stage1-trace.png" alt="Trace shellcode tầng 1"><figcaption>Đầu shellcode: lea ecx,[rbx+...] đặt tham số đầu, call 0x190197 chuyển vào stub syscall: mov r10,rcx; mov eax,[r11] (số syscall); jmp [r11+0x10] tới lệnh syscall trong ntdll. Lần gọi đầu trả về 0xC0000004 (buffer quá nhỏ), mẫu cấp phát lại và gọi lần hai. Cuối cùng là lệnh cmp ebp,&lt;ngưỡng&gt; ở 0x190127 (các giá trị đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Mẫu gọi cùng một syscall 2 lần. Lần đầu nhận mã 0xC0000004 (STATUS_INFO_LENGTH_MISMATCH), dùng kích thước trả về để cấp phát buffer bằng <code>RtlAllocateHeap</code> (lệnh <code>call rdi</code>), rồi gọi lại. Đây là mẫu gọi điển hình của các hàm truy vấn thông tin hệ thống.</li>
+<li>Kết quả là danh sách tiến trình. Mẫu đếm số tên tiến trình khác nhau vào EBP.</li>
+<li>Hướng giải:<ul>
+<li>API: hàm Nt* có số syscall nằm trong EAX lúc gọi <code>syscall</code>, trên Windows Server 2016 bản 14393.</li>
+<li>Tham số đầu: giá trị ECX, tra trong enum <code>SYSTEM_INFORMATION_CLASS</code> của MSDN để ra tên lớp thông tin.</li>
+<li>Ngưỡng: hằng trong lệnh <code>cmp ebp, ...</code> ở 0x190127.</li>
+</ul>
+</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-07-proc-threshold.png" alt="So sánh số tiến trình"><figcaption>Dừng ở 0x190127. Máy lab có EBP = 0x2A (42 tiến trình khác nhau), không vượt ngưỡng (đã làm mờ), nên jle 190131 nhảy sang nhánh thoát. Đoạn dưới (từ 0x190137) là vòng lặp giải mã tầng 2: cộng, xoay bit rồi ghi lại từng byte, chạy tới khi rbx = 0x12185.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Để chạy tiếp, tôi đổi EBP thành 0x100 (lệnh <code>ebp=0x100</code>). Thay đổi này chỉ có tác dụng trong lần chạy đó.</li>
+<li>Vòng lặp giải mã đọc dữ liệu tại <code>[rsi+8]</code> cộng offset, nằm ngay sau phần code của shellcode tầng 1. Hướng giải cho câu về offset tầng 2: xem shellcode trỏ R9/RSI tới đâu trước vòng lặp này, tính so với đầu vùng <code>0x190000</code>.</li>
+</ul>
+<h2 id="buoc-7-bo-nap-net-va-vo-hieu-amsi">Bước 7: bộ nạp .NET và vô hiệu AMSI</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định công cụ nạp .NET, lệnh vá AMSI và phiên bản CLR.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đặt breakpoint ở <code>AmsiScanBuffer</code> và <code>LoadLibraryA</code>, cho chạy tiếp.</li>
+<li>Tìm trong bộ nhớ chuỗi <code>ole32;oleaut32</code> (lệnh <code>findallmem</code>).</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-08-loader-dlls.png" alt="Chuỗi DLL của bộ nạp"><figcaption>Vùng nhớ 0x1B01F0 chứa chuỗi "ole32;oleaut32;shell32;mscoree;kernel32", danh sách DLL ngăn cách bằng dấu chấm phẩy. Đây là định dạng cấu hình đặc trưng của một bộ nạp .NET mã nguồn mở.</figcaption></figure>
+
+<figure><img src="../img/babble-loader/bl-09-clr-amsi-log.png" alt="Log x64dbg: amsi.dll và CLR"><figcaption>Log x64dbg: tiến trình nạp amsi.dll, rồi mscoreei.dll và clr.dll trong Microsoft.NET\Framework64\&lt;phiên bản&gt;\ (đã làm mờ), sau đó phát sinh exception CLRDBG_NOTIFICATION của CLR.</figcaption></figure>
+
+<figure><img src="../img/babble-loader/bl-10-amsi-patch.png" alt="AmsiScanBuffer sau khi bị vá"><figcaption>Disassembly của amsi!AmsiScanBuffer tại 0x7FFC6BC72430: 2 lệnh đầu đã bị ghi đè (byte và lệnh đã làm mờ). Phần thân gốc của hàm vẫn còn bên dưới nhưng không bao giờ chạy tới.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Chuỗi DLL ngăn bằng dấu chấm phẩy, cách nạp CLR rồi vá AMSI khớp với mã nguồn công khai của một shellcode generator nổi tiếng dùng để chạy .NET, PE và script trong bộ nhớ. Hướng giải: tìm chuỗi DLL này trên GitHub để ra tên công cụ.</li>
+<li>Lệnh vá đặt mã lỗi vào RAX rồi trả về ngay. Hàm gọi nhận mã lỗi đó và bỏ qua việc quét.</li>
+<li>Hướng giải: lệnh vá là 2 lệnh đầu của <code>AmsiScanBuffer</code> trong ảnh. Phiên bản CLR là tên thư mục chứa <code>clr.dll</code>.</li>
+</ul>
+<h2 id="buoc-8-payload-net-cuoi-cung">Bước 8: payload .NET cuối cùng</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> trích payload .NET, tính SHA-256 và xác định họ mã độc.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Tìm header <code>MZ</code> trong vùng nhớ của bộ nạp: có ở <code>0x1C0528</code>.</li>
+<li>Lưu 0x80000 byte từ đó ra file bằng <code>savedata</code>, đọc section table để biết kích thước thật: <code>.text</code>, <code>.rsrc</code>, <code>.reloc</code>, kết thúc ở 0x1EC00 (125.952 byte).</li>
+<li>Kiểm tra lại bằng trường độ dài mà bộ nạp ghi ngay trước header MZ: cũng là 0x1EC00.</li>
+</ul>
+<figure><img src="../img/babble-loader/bl-11-payload.png" alt="Payload .NET đã trích"><figcaption>Độ dài bộ nạp ghi trước MZ là 0x1EC00, khớp section table. Metadata .NET (chữ ký BSJB) ở offset 0xBC2C, chuỗi phiên bản ngay sau đó (đã làm mờ). SHA-256 của file đã trích cũng đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tôi trích payload 2 cách (theo độ dài bộ nạp ghi và theo section table) và cả 2 cho cùng kích thước. Tuy vậy, SHA-256 tôi tính được không khớp với mẫu đáp án mà đề bài gợi ý (6 byte đầu). Vì vậy giá trị hash phụ thuộc vào đúng vùng nhớ bạn dump. Walkthrough chính thức dump buffer mà bộ nạp đưa cho CLR bằng lệnh <code>savedata</code>.</li>
+<li>Hash tôi tính chưa có trên VirusTotal, và chuỗi trong assembly đã bị làm rối. Vì vậy tôi chưa tự xác nhận được họ mã độc trên máy lab. Hướng giải: tra hash đúng trên VirusTotal, xem nhãn của các engine (dạng <code>MSIL/...</code>) để ra tên infostealer.</li>
+<li>Kích thước shellcode giải mã (câu về payload nhúng): cộng kích thước các đoạn mà lệnh <code>rep movsb</code> chép vào vùng nhớ do <code>NtMapViewOfSection</code> tạo ra. Đặt hardware breakpoint ghi lên vùng nhớ đó để bắt từng lần chép.</li>
+</ul>
+<h2 id="dong-thoi-gian-thuc-thi">Dòng thời gian thực thi</h2>
+<table>
+<thead>
+<tr>
+<th>Thứ tự</th>
+<th>Vị trí</th>
+<th>Sự kiện</th>
+<th>Bằng chứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Entry point (stub CRT)</td>
+<td>Bắt đầu chạy</td>
+<td>x64dbg entry breakpoint</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x1400017B0</td>
+<td>Giải chuỗi <code>ntdll.dll</code> bằng XOR, gọi <code>GetModuleHandleA</code></td>
+<td>Disassembly, dump RCX</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Hàm resolver</td>
+<td>Tìm hàm Nt* theo hash, lấy số syscall</td>
+<td>Trace, lệnh <code>mov eax,[r11]</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>CreateDXGIFactory</code></td>
+<td>Tạo DXGI factory, liệt kê adapter</td>
+<td>Breakpoint, GUID trong RCX</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0x140171A24–0x140171A44</td>
+<td>So vendor ID với 3 giá trị, sai thì tự gây lỗi</td>
+<td><code>trace.txt</code>, 1.340 dòng</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0x190000</td>
+<td>Shellcode tầng 1 chạy, gọi syscall lấy danh sách tiến trình</td>
+<td><code>trace3.txt</code>, 73.754 dòng</td>
+</tr>
+<tr>
+<td>7</td>
+<td>0x190127</td>
+<td>So số tiến trình với ngưỡng, giải mã tầng 2</td>
+<td>Breakpoint phần cứng</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Tầng 2 (bộ nạp .NET)</td>
+<td>Nạp <code>amsi.dll</code>, CLR, vá <code>AmsiScanBuffer</code></td>
+<td>Log x64dbg, disassembly</td>
+</tr>
+<tr>
+<td>9</td>
+<td>0x1C0528</td>
+<td>Payload .NET 0x1EC00 byte được nạp trong bộ nhớ</td>
+<td><code>savedata</code>, section table</td>
+</tr>
+</tbody>
+</table>
+</article>
+</main>
+
+</body>
+</html>

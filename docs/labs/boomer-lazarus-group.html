@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Boomer - Lazarus Group lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Boomer - Lazarus Group writeup (walkthrough tiếng Việt): Điều tra memory dump của một máy trạm Windows bị lừa qua &quot;phỏng vấn xin việc&quot; trên ứng dụng họp trực tuyến, bằng MemProcFS, registry, lịch sử Edge, timeline NTFS, $LogFile và một payload giấu trong Windows Event Log.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/boomer-lazarus-group.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Boomer - Lazarus Group lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Boomer - Lazarus Group writeup (walkthrough tiếng Việt): Điều tra memory dump của một máy trạm Windows bị lừa qua &quot;phỏng vấn xin việc&quot; trên ứng dụng họp trực tuyến, bằng MemProcFS, registry, lịch sử Edge, timeline NTFS, $LogFile và một payload giấu trong Windows Event Log.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/boomer-lazarus-group.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Boomer - Lazarus Group - CyberDefenders writeup", "description": "Điều tra memory dump của một máy trạm Windows bị lừa qua \"phỏng vấn xin việc\" trên ứng dụng họp trực tuyến, bằng MemProcFS, registry, lịch sử Edge, timeline NTFS, $LogFile và một payload giấu trong Windows Event Log.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/boomer-lazarus-group.html", "dateModified": "2026-11-05", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Boomer - Lazarus Group, writeup, walkthrough, Endpoint Forensics, MemProcFS, Registry Explorer, Eric Zimmerman Tools, CyberChef, HxD, HexEditor, mimikatz, DB Browser for SQLite, DB Browser for SQLCipher, Event Log Explorer, Wireshark, IDA, x64dbg, Strings, Ghidra, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders Boomer - Lazarus Group lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/boomer-lazarus-group/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-ung-dung-hop-va-thoi-iem-cai">Bước 1: ứng dụng họp và thời điểm cài</a></li><li><a href="#buoc-2-tai-file-trong-cuoc-hop">Bước 2: tải file trong cuộc họp</a></li><li><a href="#buoc-3-thoi-iem-vao-va-roi-cuoc-hop">Bước 3: thời điểm vào và rời cuộc họp</a></li><li><a href="#buoc-4-chay-file-va-tat-ghi-log">Bước 4: chạy file và tắt ghi log</a></li><li><a href="#buoc-5-payload-giau-trong-event-log">Bước 5: payload giấu trong Event Log</a></li><li><a href="#buoc-6-may-chu-luu-tru-va-cong-cu-lay-du-lieu">Bước 6: máy chủ lưu trữ và công cụ lấy dữ liệu</a></li><li><a href="#buoc-7-file-bi-lay-va-bi-xoa">Bước 7: file bị lấy và bị xóa</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="boomer-lazarus-group">Boomer - Lazarus Group</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/boomer-lazarus-group/">Boomer - Lazarus Group</a> trên CyberDefenders. Nhóm Endpoint Forensics, độ khó Insane, 17 câu hỏi, đã retired.</li>
+<li><strong>Dữ liệu:</strong></li>
+<li><code>memory.raw</code>: memory dump 5 GB của máy trạm Windows 10 (build 19041). Người dùng là <code>a1l4m</code>.</li>
+<li><code>strings_out.txt</code>: kết quả <code>strings</code> trên dump, lab cung cấp sẵn (775 MB, mã hóa UTF-16).</li>
+<li><strong>Công cụ:</strong></li>
+<li>MemProcFS với chế độ forensic, để gắn dump thành ổ <code>M:</code>, đọc registry và file, rồi sinh timeline.</li>
+<li>PowerShell, <code>Get-WinEvent</code> và vài script Python nhỏ: đọc SQLite, UserAssist, <code>$LogFile</code>, giải mã payload.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp cửa sổ PowerShell trên máy lab. Giờ là UTC.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án.</li>
+<li>Không có file mẫu nào được chạy. File tải về chỉ được đọc byte để phân tích tĩnh.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li><strong>Người dùng bị lừa:</strong></li>
+<li>Ngày 17/12/2024, người dùng cài một ứng dụng họp trực tuyến vào thư mục AppData của mình.</li>
+<li>Ngày 19/12, lúc đang trong cuộc họp, người dùng tải một file <code>.exe</code> từ dịch vụ chia sẻ file ẩn danh. Edge gắn cờ nguy hiểm (<code>danger_type = 6</code>) cho file này.</li>
+<li><strong>File được chạy:</strong></li>
+<li>Khoảng 4 giờ 20 phút sau khi tải, file được chạy từ thư mục Downloads (theo UserAssist).</li>
+<li>Ngay sau đó, một script <code>.ps1</code> trong thư mục Temp tắt Script Block Logging và Module Logging của PowerShell.</li>
+<li><strong>Payload giấu trong Event Log:</strong></li>
+<li>Lúc 11:06:02 UTC, một sự kiện ID 31337 được ghi vào log "Key Management Service".</li>
+<li>Phần RawData của sự kiện là shellcode reverse TCP, nén gzip rồi XOR, trỏ tới một máy chủ C2.</li>
+<li><strong>Lấy và xóa dữ liệu:</strong></li>
+<li>Từ 11:14:56 UTC, kẻ tấn công tải một file <code>.7z</code> về Temp và giải nén ra một chương trình lấy dữ liệu cùng một công cụ xóa file an toàn.</li>
+<li>Chương trình đó nén 6 file của người dùng vào một file zip, nhét zip vào bên trong một file PNG.</li>
+<li>Sau đó các file gốc bị xóa an toàn (ghi đè trước khi xóa).</li>
+</ul>
+<h2 id="buoc-1-ung-dung-hop-va-thoi-iem-cai">Bước 1: ứng dụng họp và thời điểm cài</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm ứng dụng họp và thời điểm cài đặt.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Mở dump bằng MemProcFS: <code>memprocfs.exe -device memory.raw -forensic 1 -mount M</code>.</li>
+<li>Khóa Uninstall nằm trong hive NTUSER.DAT của người dùng, vì ứng dụng cài theo từng user.</li>
+<li>MemProcFS cho mỗi khóa một file <code>(_Key_).txt</code> chứa thời điểm ghi cuối (LastWrite).</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-01-uninstall-reg.png" alt="Khóa Uninstall trong NTUSER.DAT"><figcaption>Khóa HKCU\...\Uninstall\&lt;tên ứng dụng&gt; trong hive của a1l4m: DisplayVersion 6.3.0 (52884), InstallLocation C:\Users\a1l4m\AppData\Roaming\&lt;...&gt;\bin. Tên ứng dụng và thời điểm LastWrite của khóa đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Ứng dụng cài vào AppData\Roaming, đúng kiểu cài không cần quyền admin.</li>
+<li>Hướng giải:<ul>
+<li>Tên ứng dụng: phần đầu của DisplayName.</li>
+<li>Thời điểm cài: LastWrite của khóa, lấy đến phút.</li>
+</ul>
+</li>
+</ul>
+<h2 id="buoc-2-tai-file-trong-cuoc-hop">Bước 2: tải file trong cuộc họp</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm URL và thời điểm tải file đáng ngờ.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Chép file <code>History</code> của Edge (trong <code>M:\forensic\files\ROOT\Users\a1l4m\AppData\Local\Microsoft\Edge\User Data\Default\</code>) ra đĩa.</li>
+<li>Đọc bảng <code>downloads</code> bằng Python <code>sqlite3</code>. Thời gian WebKit tính bằng micro giây từ 1601-01-01.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-03-edge-dl.png" alt="Bảng downloads của Edge"><figcaption>3 lần tải trong History. Dòng cuối bắt đầu lúc 06:45:05 UTC ngày 19/12, danger_type 6 (Edge đánh giá là nguy hiểm), lưu vào thư mục Downloads. URL, tên file và end_time đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Bình thường trên máy này, 2 lần tải trước đến từ python.org và bu.edu, danger_type là 4 và 0.</li>
+<li>Lần tải thứ 3 là bất thường:<ul>
+<li>File thực thi đến từ một dịch vụ upload ẩn danh.</li>
+<li>Thời điểm tải rơi vào khoảng người dùng đang trong cuộc họp (Bước 3).</li>
+</ul>
+</li>
+<li>Bảng <code>downloads_url_chains</code> có thêm cùng URL với tham số <code>?download=1</code>.</li>
+<li>Hướng giải:<ul>
+<li>URL: cột <code>tab_url</code> (bỏ tham số <code>?download=1</code>).</li>
+<li>Thời điểm tải: <code>end_time</code>, lúc file được ghi xong.</li>
+</ul>
+</li>
+</ul>
+<h2 id="buoc-3-thoi-iem-vao-va-roi-cuoc-hop">Bước 3: thời điểm vào và rời cuộc họp</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định khung giờ của cuộc họp.</li>
+<li><strong>Cách làm:</strong> lọc <code>M:\forensic\csv\timeline_ntfs.csv</code> của MemProcFS theo tên file của ứng dụng họp, file tải về và các công cụ xuất hiện sau đó.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-04-ntfs.png" alt="Timeline NTFS"><figcaption>Timeline NTFS ngày 19/12 (giờ và tên file đã làm mờ). Hai dòng đầu và dòng thứ 6 là một file .db trong thư mục data của ứng dụng họp: CRE lúc vào họp, MOD lúc dữ liệu họp được cập nhật lần cuối. Các dòng giữa là file .exe trong Downloads, kèm Zone.Identifier (dấu "tải từ Internet"). Phần cuối là 2 file .exe xuất hiện trong Temp, file prefetch của chúng và một file .png.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Ứng dụng tạo file database của cuộc họp khi người dùng vào họp, và cập nhật nó trong suốt cuộc họp.</li>
+<li>Timeline MFT chỉ giữ lần sửa cuối của file. Walkthrough chính thức đọc nhật ký NTFS và lấy sự kiện đóng file cuối cùng làm giờ rời họp, muộn hơn MOD trong ảnh khoảng 2 giây.</li>
+<li>File <code>.exe</code> được tạo ở Downloads trong lúc file database của cuộc họp vẫn đang được cập nhật.</li>
+<li>Mã cuộc họp nằm trong chính file database đó, nhưng file đã bị mã hóa. Walkthrough lấy khóa giải mã từ tiến trình LSASS bằng MemProcFS và mở file bằng DB Browser for SQLCipher. Tôi không làm lại phần này trên máy lab.</li>
+<li>Hướng giải: giờ vào họp là CRE của file database. Giờ rời họp là sự kiện cuối cùng trên file đó trong nhật ký NTFS.</li>
+</ul>
+<h2 id="buoc-4-chay-file-va-tat-ghi-log">Bước 4: chạy file và tắt ghi log</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm thời điểm file được chạy và file script dùng để tắt ghi log.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Giải mã tên giá trị UserAssist (ROT13) và đọc FILETIME ở offset 60 của dữ liệu.</li>
+<li>Đọc sự kiện 4104 (Script Block Logging) trong <code>Microsoft-Windows-PowerShell%4Operational.evtx</code>.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-02-userassist.png" alt="UserAssist"><figcaption>UserAssist của a1l4m sắp theo thời gian giảm dần. Dòng đầu là DumpIt.exe, công cụ dùng để lấy memory dump lúc 11:19:04. Dòng trong khung là file .exe chạy từ Downloads (thời điểm và tên file đã làm mờ). Ứng dụng họp chạy lần cuối lúc 05:49:34.</figcaption></figure>
+
+<figure><img src="../img/boomer-lazarus-group/bm-05-ps4104.png" alt="Sự kiện 4104"><figcaption>Sự kiện 4104 lúc 11:05:59 UTC, Path là một file .ps1 trong AppData\Local\Temp (tên đã làm mờ). Script tạo khóa ScriptBlockLogging và ModuleLogging trong HKLM\SOFTWARE\Policies, rồi đặt EnableScriptBlockLogging và EnableModuleLogging bằng 0.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Thời điểm chạy trong UserAssist khớp với các sự kiện tiếp theo: file prefetch của chương trình được tạo vài giây sau, và script tắt log chạy ngay sau đó.</li>
+<li>Sau sự kiện này, log chỉ còn 2 dòng 4104 rời rạc. Việc tắt ghi log đã có hiệu lực.</li>
+<li>Hướng giải: thời điểm chạy là dòng UserAssist của file trong Downloads. Tên file script là phần cuối của trường Path.</li>
+</ul>
+<h2 id="buoc-5-payload-giau-trong-event-log">Bước 5: payload giấu trong Event Log</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm IP và port của C2.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Trong <code>strings_out.txt</code> có chuỗi <code>KmsRequests</code>. Walkthrough cho thấy script dùng <code>Write-EventLog -LogName 'Key Management Service' -Source KmsRequests -EventID 31337 -RawData ...</code>.</li>
+<li>Đọc sự kiện đó từ file <code>Key Management Service.evtx</code> mà MemProcFS khôi phục, lấy trường Binary (RawData).</li>
+<li>Giải nén gzip, thử XOR 1 byte cho tới khi ra phần đầu quen thuộc của shellcode x64 (<code>fc 48 83 e4 f0</code>), rồi tìm cấu trúc <code>sockaddr_in</code> mà shellcode nạp vào R12.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-06-kms.png" alt="Giải mã payload trong Event Log"><figcaption>Sự kiện 31337 lúc 11:06:02 UTC, nội dung "System Update". RawData 449 byte bắt đầu bằng 1f 8b 08 (gzip), giải nén ra 460 byte. XOR với 0x5A cho ra shellcode có chuỗi ws2_32, kiểu reverse TCP. Lệnh mov r12 ở offset 0xe4 chứa họ địa chỉ 02 00, port và IPv4 (đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Event Log được dùng làm nơi cất payload. Nội dung nằm trong một log hệ thống ít ai đọc, và không có file nào trên đĩa.</li>
+<li>Hướng giải: 2 byte sau <code>02 00</code> là port (big-endian), 4 byte tiếp theo là IPv4.</li>
+</ul>
+<h2 id="buoc-6-may-chu-luu-tru-va-cong-cu-lay-du-lieu">Bước 6: máy chủ lưu trữ và công cụ lấy dữ liệu</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm C2 lưu trữ của chương trình tải về, URL của gói công cụ và các tên file liên quan.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Lọc <code>strings_out.txt</code> (đọc bằng UTF-16) theo một số từ khóa.</li>
+<li>Chép file .exe tải về mà MemProcFS khôi phục (75.264 byte, đúng kích thước tải về) và đọc byte của nó bằng Python. Không chạy file.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-08-strings-c2.png" alt="Chuỗi trong dump và trong file tải về"><figcaption>Phía trên là kết quả lọc strings: một IP nằm giữa các chuỗi "cmd.exe /c", "CONOUT$", ".tmp"; 2 chuỗi "%s\&lt;tên file&gt;"; một lệnh tải file .7z từ dịch vụ upload ẩn danh và lệnh 7z.exe x giải nén nó. Phía dưới: trong file .exe, IP nằm ở offset 0xdaa0, và có một lệnh mov ecx, &lt;hằng&gt; ở offset 0x6b13 làm tham số port (đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Cụm chuỗi quanh IP ("cmd.exe /c", "CONOUT$", "First:", "second:") là của một backdoor chạy lệnh qua socket. Hằng số trong <code>mov ecx</code> là port, vì nó được truyền vào <code>htons</code> trước khi gọi <code>connect</code>.</li>
+<li>2 chuỗi định dạng <code>%s\...</code> là tên file zip và tên file ảnh dùng để chứa zip.</li>
+<li>Hướng giải:<ul>
+<li>C2 lưu trữ: IP trong ảnh cộng port là giá trị thập phân của hằng <code>0x....</code> trong lệnh <code>mov ecx</code>.</li>
+<li>URL gói công cụ: chuỗi <code>http://...7z</code> trong lệnh tải.</li>
+<li>Tên zip và tên file chứa zip: 2 chuỗi <code>%s\...</code>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="buoc-7-file-bi-lay-va-bi-xoa">Bước 7: file bị lấy và bị xóa</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> liệt kê các file bị nén và tìm công cụ xóa.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Các file này đã bị xóa, nên MFT không còn. <code>$UsnJrnl:$J</code> khôi phục từ RAM chỉ chứa bản ghi tới 04:21 ngày 19/12.</li>
+<li><code>$LogFile</code> (nhật ký giao dịch NTFS) vẫn giữ tên file trong các bản ghi. Tôi quét tên file UTF-16 có đuôi .zip/.txt/.png/.7z/.exe trong 2 bản <code>$LogFile</code> mà MemProcFS khôi phục (64 MB và 4 MB), rồi bỏ các file emoji của Edge.</li>
+</ul>
+<figure><img src="../img/boomer-lazarus-group/bm-07-logfile.png" alt="Tên file trong $LogFile"><figcaption>Tên file người dùng còn trong $LogFile (cột 1 là số lần xuất hiện, cột 2 là độ dài tên): một file .png tên dài, một file .zip, một file .png khác, file .exe tải về, 5 file .txt (important, reminders, Meetings, research, tasks) và một công cụ .exe. Các tên là đáp án đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Thứ tự trong timeline (Bước 3): công cụ xóa được giải nén lúc 11:14:56, prefetch của nó được tạo cùng giây với file PNG chứa zip.</li>
+<li>5 file <code>.txt</code> và 1 file <code>.png</code> của người dùng chỉ còn tên trong <code>$LogFile</code>. Đây là dấu hiệu chúng đã bị nén vào zip rồi bị xóa.</li>
+<li>Walkthrough chính thức thấy thêm các lần đổi tên liên tiếp thành chuỗi chữ cái, kiểu đổi tên mà công cụ xóa an toàn này dùng trước khi xóa.</li>
+<li>Hướng giải:<ul>
+<li>Công cụ xóa: file <code>.exe</code> còn lại trong danh sách, có file prefetch trong <code>C:\Windows\Prefetch</code>.</li>
+<li>File tên dài nhất: dòng có độ dài lớn nhất trong 6 file của người dùng.</li>
+<li>Thời điểm chạy file dùng để lấy dữ liệu: walkthrough lấy thời điểm file chứa zip được tạo.</li>
+</ul>
+</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<table>
+<thead>
+<tr>
+<th>Thời điểm (UTC)</th>
+<th>Sự kiện</th>
+<th>Nguồn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>17/12/2024 (giờ là đáp án)</td>
+<td>Ứng dụng họp được cài vào AppData\Roaming</td>
+<td>Khóa Uninstall (NTUSER.DAT)</td>
+</tr>
+<tr>
+<td>19/12 05:49:34</td>
+<td>Ứng dụng họp được mở lần cuối</td>
+<td>UserAssist</td>
+</tr>
+<tr>
+<td>19/12 (đáp án)</td>
+<td>File database cuộc họp được tạo (vào họp)</td>
+<td>Timeline NTFS</td>
+</tr>
+<tr>
+<td>19/12 06:45:05</td>
+<td>Bắt đầu tải file .exe từ dịch vụ upload ẩn danh</td>
+<td>Edge History, NTFS</td>
+</tr>
+<tr>
+<td>19/12 (đáp án)</td>
+<td>File database cuộc họp được sửa lần cuối (rời họp)</td>
+<td>Timeline NTFS</td>
+</tr>
+<tr>
+<td>19/12 (đáp án)</td>
+<td>File .exe chạy từ Downloads</td>
+<td>UserAssist</td>
+</tr>
+<tr>
+<td>19/12 11:05:59</td>
+<td>Script .ps1 trong Temp tắt Script Block và Module Logging</td>
+<td>PowerShell 4104</td>
+</tr>
+<tr>
+<td>19/12 11:06:02</td>
+<td>Payload shellcode được ghi vào log Key Management Service (ID 31337)</td>
+<td>KMS evtx</td>
+</tr>
+<tr>
+<td>19/12 11:14:56</td>
+<td>Gói .7z được giải nén: chương trình lấy dữ liệu, công cụ xóa, thư viện zlib/minizip/libpng</td>
+<td>Timeline NTFS, strings</td>
+</tr>
+<tr>
+<td>19/12 (đáp án)</td>
+<td>File PNG chứa zip được tạo, công cụ xóa chạy</td>
+<td>Timeline NTFS, prefetch</td>
+</tr>
+<tr>
+<td>19/12 11:19:04</td>
+<td>DumpIt chạy để lấy memory dump</td>
+<td>UserAssist</td>
+</tr>
+</tbody>
+</table>
+</article>
+</main>
+
+</body>
+</html>

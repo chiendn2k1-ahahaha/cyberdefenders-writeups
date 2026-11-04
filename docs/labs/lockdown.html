@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Lockdown lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Lockdown writeup (walkthrough tiếng Việt): Dựng lại cuộc xâm nhập nhiều giai đoạn vào một máy chủ web IIS từ PCAP, memory dump và file mã độc, gồm dò quét, web shell, reverse shell, persistence và C2.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/lockdown.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Lockdown lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Lockdown writeup (walkthrough tiếng Việt): Dựng lại cuộc xâm nhập nhiều giai đoạn vào một máy chủ web IIS từ PCAP, memory dump và file mã độc, gồm dò quét, web shell, reverse shell, persistence và C2.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/lockdown.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Lockdown - CyberDefenders writeup", "description": "Dựng lại cuộc xâm nhập nhiều giai đoạn vào một máy chủ web IIS từ PCAP, memory dump và file mã độc, gồm dò quét, web shell, reverse shell, persistence và C2.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/lockdown.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Lockdown, writeup, walkthrough, Network Forensics, FLOSS/Strings, Wireshark, Threat Intel tools, MemProcFS, Volatility 3, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders Lockdown lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/lockdown/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-do-quet-http">Bước 1: dò quét HTTP</a></li><li><a href="#buoc-2-truy-cap-share-smb-va-ghi-file">Bước 2: truy cập share SMB và ghi file</a></li><li><a href="#buoc-3-web-shell-va-reverse-shell">Bước 3: web shell và reverse shell</a></li><li><a href="#buoc-4-phan-tich-memory-bang-volatility-3">Bước 4: phân tích memory bằng Volatility 3</a></li><li><a href="#buoc-5-persistence-qua-thu-muc-startup">Bước 5: persistence qua thư mục Startup</a></li><li><a href="#buoc-6-phan-tich-file-ma-oc">Bước 6: phân tích file mã độc</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="lockdown">Lockdown</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/lockdown/">Lockdown</a> trên CyberDefenders. Nhóm Network Forensics, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file lab gồm 3 phần:</li>
+<li><code>capture.pcapng</code>: bản ghi lưu lượng mạng của máy chủ web (khoảng 6.300 gói);</li>
+<li>memory dump (bản chụp RAM) của máy chủ;</li>
+<li>một file thực thi trích ra từ máy chủ.</li>
+<li><strong>Công cụ:</strong> <code>tshark</code> (bản dòng lệnh của Wireshark) để lọc PCAP, thư viện Python <code>pefile</code> để đọc PE header, Volatility 3 cho memory dump. File mã độc chỉ được đọc tĩnh, không chạy.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Giờ trong PCAP là UTC. Mốc chính ghi dạng <code>UTC (UTC+7)</code>.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý.</li>
+<li>Vùng làm mờ là giá trị trùng với đáp án của câu hỏi trong lab.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Máy chủ web IIS có IP <code>10.0.2.15</code>. Một máy khác trong cùng subnet dò quét HTTP vào máy chủ. Trường User-Agent cho biết công cụ quét.</li>
+<li>Kẻ tấn công kết nối SMB, liệt kê share qua <code>IPC$</code>, rồi vào một share dữ liệu ánh xạ tới thư mục web của IIS.</li>
+<li>Qua share đó, kẻ tấn công ghi một web shell ASPX (trang web cho phép chạy lệnh từ xa) lên máy chủ, rồi gọi nó qua HTTP.</li>
+<li>12 giây sau khi web shell được gọi, chính máy chủ mở kết nối TCP ra máy kẻ tấn công. Đây là reverse shell (kết nối ngược ra ngoài để nhận lệnh).</li>
+<li>File thực thi trích ra bị nén bằng một packer phổ biến (Bước 6). Trong memory, file này chạy từ thư mục Startup dùng chung, do tiến trình worker của IIS tạo ra (Bước 4-5).</li>
+<li><strong>Máy chủ web bị xâm nhập</strong>: có bằng chứng ghi và thực thi web shell, reverse shell, và file mã độc được đặt để tự chạy.</li>
+</ul>
+<h2 id="buoc-1-do-quet-http">Bước 1: dò quét HTTP</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm nguồn của hoạt động trinh sát.</li>
+<li><strong>Cách làm:</strong> lọc các request HTTP mà máy lạ gửi tới máy chủ, in kèm User-Agent.</li>
+</ul>
+<pre><code class="language-powershell">tshark -r capture.pcapng -t ud -Y &quot;http.request &amp;&amp; ip.src==&lt;IP&gt;&quot; -T fields `
+  -e frame.number -e _ws.col.Time -e ip.src -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent
+</code></pre>
+<figure><img src="../img/lockdown/lk-01-http-scan.png" alt="tshark: request HTTP dò quét và User-Agent"><figcaption>Lúc 05:44:44 UTC, một IP nội bộ (đã làm mờ) gửi liên tiếp PROPFIND, GET, OPTIONS, POST vào máy chủ 10.0.2.15 trong chưa tới một giây. Ảnh là 12 request đầu tiên có User-Agent chứa tên công cụ quét (phần tên công cụ đã làm mờ), gồm PROPFIND, GET, OPTIONS, POST và GET /robots.txt, /.git/HEAD.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Nhiều phương thức HTTP khác nhau, URI kiểm tra kiểu <code>/&lt;chuỗi&gt;1725947084</code> và <code>robots.txt</code> trong vòng một giây là kiểu dò quét tự động, không phải người dùng.</li>
+<li>Thống kê SYN cho thấy cùng IP này mở 44 kết nối tới cổng 445 và 29 tới cổng 80, cộng nhiều cổng lẻ khác. Đây là dấu hiệu quét cổng.</li>
+<li>Hướng giải: IP nguồn ở cột <code>src</code>, công cụ quét nằm trong User-Agent.</li>
+</ul>
+<h2 id="buoc-2-truy-cap-share-smb-va-ghi-file">Bước 2: truy cập share SMB và ghi file</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem kẻ tấn công vào máy chủ qua share nào và đưa file gì lên.</li>
+<li><strong>Cách làm:</strong> lọc gói SMB2 Tree Connect Request (yêu cầu kết nối tới một share), rồi lọc SMB2 Create (mở hoặc tạo file) để thấy tên file.</li>
+</ul>
+<pre><code class="language-powershell">tshark -r capture.pcapng -t ud -Y &quot;smb2.cmd==3 &amp;&amp; smb2.flags.response==0&quot; -T fields -e frame.number -e _ws.col.Time -e ip.src -e ip.dst -e smb2.tree
+tshark -r capture.pcapng -t ud -Y &quot;smb2.cmd==5 &amp;&amp; smb2.flags.response==0&quot; -T fields -e frame.number -e _ws.col.Time -e ip.src -e smb2.filename
+</code></pre>
+<figure><img src="../img/lockdown/lk-02-smb.png" alt="tshark: SMB Tree Connect và SMB Create"><figcaption>Kẻ tấn công kết nối IPC$ hai lần (05:47:11 và 05:47:33 UTC) rồi vào một share dữ liệu (đã làm mờ). Trên share này nó mở một file text lúc 05:47:44 và tạo một file .aspx lúc 05:48:52 UTC (tên đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li><code>IPC$</code> là share đặc biệt dùng cho giao tiếp giữa các tiến trình. Frame 2631 mở pipe <code>srvsvc</code>, tức là kẻ tấn công liệt kê danh sách share của máy chủ.</li>
+<li>Share dữ liệu ánh xạ tới thư mục mà IIS phục vụ (Bước 3 thấy cùng tên thư mục trong URL). Ai ghi được vào share này là đặt được file lên website.</li>
+<li>Hướng giải: tên share ở cột <code>share</code> của các gói Tree Connect, theo đúng thứ tự frame.</li>
+</ul>
+<h2 id="buoc-3-web-shell-va-reverse-shell">Bước 3: web shell và reverse shell</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định cách kẻ tấn công chạy lệnh trên máy chủ.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Lọc request HTTP có User-Agent của trình duyệt (khác User-Agent của công cụ quét ở Bước 1).</li>
+<li>Lọc gói SYN do chính máy chủ gửi tới máy kẻ tấn công, tức là kết nối đi ra.</li>
+</ul>
+<figure><img src="../img/lockdown/lk-03-webshell-revshell.png" alt="tshark: gọi web shell và kết nối đi ra từ máy chủ"><figcaption>Kẻ tấn công duyệt thư mục web (05:48:22 và 05:49:01 UTC) rồi gọi file .aspx vừa tải lên lúc 05:49:39 UTC. Lúc 05:49:51 UTC (frame 3585), máy chủ 10.0.2.15 tự mở kết nối TCP (gói SYN) tới máy kẻ tấn công. Cổng đích đã làm mờ. Dòng frame 1375 (05:44:29 UTC) là gói SYN ngược chiều, từ máy kẻ tấn công tới cùng cổng đó trên máy chủ, trong lúc quét.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Khi file <code>.aspx</code> được gọi, IIS biên dịch và chạy nó trong tiến trình worker. 12 giây sau thì có kết nối đi ra.</li>
+<li>Máy chủ web bình thường không tự mở kết nối tới cổng cao trên một máy trạm. Phiên này kéo dài khoảng 1.111 giây và mang khoảng 2,3 MB dữ liệu, nên đây là reverse shell, không phải một request lẻ.</li>
+<li>Hướng giải: tên web shell nằm trong URI của request HTTP. Cổng nằm ở cột <code>dstport</code> của gói SYN đi ra.</li>
+</ul>
+<h2 id="buoc-4-phan-tich-memory-bang-volatility-3">Bước 4: phân tích memory bằng Volatility 3</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy thông tin kernel và tìm tiến trình chạy web shell.</li>
+<li><strong>Cách làm:</strong> chạy plugin <code>windows.info</code> để đọc thông tin hệ điều hành, rồi <code>windows.pstree</code> để xem cây tiến trình.</li>
+</ul>
+<pre><code class="language-bash">vol -f memdump.mem windows.info
+vol -f memdump.mem windows.pstree | Select-String 'PPID|inetsrv|Startup'
+</code></pre>
+<figure><img src="../img/lockdown/lk-05-vol-info.png" alt="Volatility windows.info"><figcaption>Ảnh chụp cửa sổ PowerShell chạy windows.info trên memdump.mem. Kernel Base đã làm mờ. Major/Minor 15.17763 (Windows Server 2019, build 17763), NtProductType NtProductServer, SystemTime 2024-09-10 06:14:13 UTC.</figcaption></figure>
+
+<figure><img src="../img/lockdown/lk-06-vol-pstree.png" alt="Volatility windows.pstree lọc theo inetsrv và Startup"><figcaption>windows.pstree lọc theo inetsrv và Startup. Tiến trình worker của IIS trong System32\inetsrv (tên và PID đã làm mờ, chạy từ 05:44:45 đến 06:10:48 UTC) là cha của PID 900, tạo lúc 06:08:23 UTC từ thư mục ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp (tên file đã làm mờ). Dòng thứ ba: RegSvcs.exe PID 4200 (05:34:26 UTC) có command line là file update.exe trong thư mục Startup của user admin.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Memory được chụp lúc 06:14:13 UTC, khoảng 4 phút sau khi tiến trình worker của IIS kết thúc.</li>
+<li>Tiến trình worker của IIS sinh ra một file thực thi nằm trong thư mục Startup. Web server sinh tiến trình con như vậy là dấu hiệu điển hình của web shell.</li>
+<li><code>RegSvcs.exe</code> là tiện ích .NET hợp lệ, nhưng command line của nó trỏ tới một file <code>.exe</code> trong thư mục Startup của user <code>admin</code>. Tiến trình này bắt đầu từ 05:34:26 UTC, sớm hơn 10 phút so với tiến trình worker của IIS.</li>
+<li>Chưa đủ dữ liệu để kết luận <code>RegSvcs.exe</code> bị dùng để chạy mã khác. Cần dump vùng nhớ của PID 4200 (<code>windows.malware.malfind --pid 4200 --dump</code>) và lấy file <code>update.exe</code> để phân tích.</li>
+<li>Hướng giải: địa chỉ nền của kernel nằm ở dòng Kernel Base. Tên và PID tiến trình là các ô đã làm mờ ở dòng inetsrv.</li>
+</ul>
+<h2 id="buoc-5-persistence-qua-thu-muc-startup">Bước 5: persistence qua thư mục Startup</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm cơ chế giúp mã độc tự chạy lại.</li>
+<li><strong>Cách làm:</strong> đọc cột Path và Cmd của các dòng có <code>Startup</code> trong kết quả <code>windows.pstree</code> ở Bước 4.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Có 2 file thực thi chạy từ thư mục Startup:<ul>
+<li>một file trong thư mục Startup dùng chung (<code>C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\</code>), do tiến trình worker của IIS tạo ra;</li>
+<li><code>update.exe</code> trong thư mục Startup riêng của user <code>admin</code>, gắn với <code>RegSvcs.exe</code>.</li>
+</ul>
+</li>
+<li>File trong thư mục Startup dùng chung tự chạy mỗi khi bất kỳ người dùng nào đăng nhập.</li>
+<li>Tên file đặt giống một chương trình cập nhật để tránh bị chú ý.</li>
+<li>Hướng giải: đường dẫn đầy đủ của file <code>.exe</code> ở dòng PID 900.</li>
+</ul>
+<h2 id="buoc-6-phan-tich-file-ma-oc">Bước 6: phân tích file mã độc</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định packer, máy chủ C2 và họ mã độc.</li>
+<li><strong>Cách làm:</strong> đọc bảng section trong PE header bằng <code>pefile</code>, không chạy file.</li>
+</ul>
+<figure><img src="../img/lockdown/lk-04-pe-sections.png" alt="pefile: bảng section của file mã độc"><figcaption>Bảng section của file thực thi trong bộ dữ liệu. Section đầu có RawSize bằng 0 nhưng VirtualSize 0xBE000, section thứ hai có entropy 7,94. Tên hai section (đã làm mờ) là tên của packer.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Section rỗng trên đĩa nhưng lớn trong bộ nhớ là chỗ packer giải nén mã gốc vào lúc chạy. Entropy gần 8 cho thấy dữ liệu đã bị nén.</li>
+<li>Tên section có dạng <code>&lt;tên packer&gt;0</code>, <code>&lt;tên packer&gt;1</code>, đây là dấu hiệu của một packer nén file thực thi rất phổ biến.</li>
+<li>Sau khi gỡ lớp nén, chuỗi trong file chứa tên miền C2. Signature trên các nền tảng threat intel khớp với một họ RAT kiêm infostealer thương mại.</li>
+<li>Hướng giải: tên packer suy từ tên section. Tên miền C2 và họ mã độc xem trong chuỗi sau khi gỡ nén và nhãn phát hiện trên VirusTotal.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<ul>
+<li>10/09/2024 05:44:44 UTC (12:44:44 UTC+7): dò quét HTTP và cổng từ máy kẻ tấn công. Nguồn: PCAP.</li>
+<li>05:45:09 UTC (12:45:09 UTC+7): kẻ tấn công mở trang mặc định của IIS bằng trình duyệt Firefox trên Linux. Nguồn: PCAP.</li>
+<li>05:47:11 đến 05:47:33 UTC (12:47 UTC+7): kết nối <code>IPC$</code>, liệt kê share qua <code>srvsvc</code>, rồi vào share dữ liệu. Nguồn: PCAP.</li>
+<li>05:48:52 UTC (12:48:52 UTC+7): tạo file <code>.aspx</code> trên share dữ liệu. Nguồn: PCAP.</li>
+<li>05:49:39 UTC (12:49:39 UTC+7): gọi web shell qua HTTP. Nguồn: PCAP.</li>
+<li>05:49:51 UTC (12:49:51 UTC+7): máy chủ mở reverse shell ra máy kẻ tấn công, phiên kéo dài khoảng 18 phút. Nguồn: PCAP.</li>
+<li>10/09/2024 06:08:23 UTC (13:08:23 UTC+7): tiến trình worker của IIS sinh file thực thi chạy từ thư mục Startup dùng chung (PID 900). Nguồn: <code>windows.pstree</code> trên memory dump.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

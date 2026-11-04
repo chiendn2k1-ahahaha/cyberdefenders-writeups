@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>FakeGPT lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders FakeGPT writeup (walkthrough tiếng Việt): Đọc mã nguồn một extension Chrome giả mạo ChatGPT để tìm cách nó né môi trường phân tích, đánh cắp thông tin đăng nhập và gửi dữ liệu ra ngoài qua thẻ ảnh (img).">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/fakegpt.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="FakeGPT lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders FakeGPT writeup (walkthrough tiếng Việt): Đọc mã nguồn một extension Chrome giả mạo ChatGPT để tìm cách nó né môi trường phân tích, đánh cắp thông tin đăng nhập và gửi dữ liệu ra ngoài qua thẻ ảnh (img).">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/fakegpt.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "FakeGPT - CyberDefenders writeup", "description": "Đọc mã nguồn một extension Chrome giả mạo ChatGPT để tìm cách nó né môi trường phân tích, đánh cắp thông tin đăng nhập và gửi dữ liệu ra ngoài qua thẻ ảnh (img).", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/fakegpt.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, FakeGPT, writeup, walkthrough, Malware Analysis, ExtAnalysis, CRX Viewer", "about": {"@type": "Thing", "name": "CyberDefenders FakeGPT lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/fakegpt/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-quyen-trong-manifest">Bước 1: quyền trong manifest</a></li><li><a href="#buoc-2-kiem-tra-moi-truong-e-ne-phan-tich">Bước 2: kiểm tra môi trường để né phân tích</a></li><li><a href="#buoc-3-giai-ma-ten-mien-muc-tieu">Bước 3: giải mã tên miền mục tiêu</a></li><li><a href="#buoc-4-anh-cap-thong-tin-ang-nhap-va-ghi-phim">Bước 4: đánh cắp thông tin đăng nhập và ghi phím</a></li><li><a href="#buoc-5-ma-hoa-du-lieu-truoc-khi-gui">Bước 5: mã hóa dữ liệu trước khi gửi</a></li><li><a href="#buoc-6-gui-du-lieu-ra-ngoai-qua-the-img">Bước 6: gửi dữ liệu ra ngoài qua thẻ img</a></li></ul></nav>
+<article>
+<h1 id="fakegpt">FakeGPT</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/fakegpt/">FakeGPT</a> trên CyberDefenders. Nhóm Malware Analysis, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> gói mã nguồn của một extension Chrome, gồm <code>manifest.json</code>, các file JavaScript nạp ban đầu, xử lý chính, mã hóa, và một file giao diện HTML.</li>
+<li><strong>Công cụ:</strong> ExtAnalysis, CRX Viewer, hoặc chỉ cần <code>Get-Content</code>/trình soạn thảo văn bản để đọc mã. Không cần cài extension.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Bài không ghi giá trị đáp án. Chỗ nào cần tra cứu có dòng "Hướng giải" chỉ nơi tìm.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý, vùng làm mờ là giá trị trùng với đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Extension mạo danh thương hiệu ChatGPT của OpenAI.</li>
+<li>Extension xin quyền rất rộng: đọc và chặn mọi request web, đọc tab, lưu trữ, và truy cập dữ liệu phiên của trình duyệt.</li>
+<li>Extension tự tắt nếu thấy dấu hiệu đang chạy trong sandbox hoặc trình duyệt headless (trình duyệt chạy không có giao diện, hay dùng cho kiểm thử tự động).</li>
+<li>Trên một trang mạng xã hội cụ thể, extension bắt dữ liệu form đăng nhập và ghi lại từng phím người dùng gõ.</li>
+<li><strong>Dữ liệu đánh cắp được mã hóa rồi gửi ra ngoài qua một thẻ <code>&lt;img&gt;</code> tạo động, với dữ liệu nằm trong tham số URL.</strong></li>
+</ul>
+<h2 id="buoc-1-quyen-trong-manifest">Bước 1: quyền trong manifest</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem extension xin những quyền gì và quyền nào cho phép thao túng dữ liệu phiên.</li>
+<li><strong>Cách làm:</strong> mở <code>manifest.json</code>, đọc khóa <code>permissions</code>.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Manifest dùng phiên bản 2 và xin quyền trên mọi trang <code>http://*/*</code> và <code>https://*/*</code>, kèm quyền chặn và sửa request web.</li>
+<li>Một quyền trong danh sách cho phép đọc dữ liệu phiên đăng nhập trên mọi tên miền mà người dùng đã đăng nhập.</li>
+<li>Hướng giải: tên quyền nằm trong mảng <code>permissions</code> của manifest.</li>
+</ul>
+<h2 id="buoc-2-kiem-tra-moi-truong-e-ne-phan-tich">Bước 2: kiểm tra môi trường để né phân tích</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm điều kiện khiến extension tự tắt.</li>
+<li><strong>Cách làm:</strong> đọc file JavaScript nạp ban đầu (loader), tìm đoạn kiểm tra thuộc tính của đối tượng <code>navigator</code>.</li>
+</ul>
+<figure><img src="../img/fakegpt/fg-01-manifest-loader.png" alt="manifest.json và phần đầu loader.js"><figcaption>manifest.json khai báo tên ChatGPT, manifest phiên bản 2, quyền trên mọi URL http và https, quyền chặn request web và một quyền về dữ liệu phiên (đã làm mờ). Content script core/app.js chạy trên mọi trang (&lt;all_urls&gt;). Phần đầu loader.js có câu lệnh if kiểm tra môi trường, biểu thức đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Extension kiểm tra hai điều: số lượng plugin của trình duyệt, và chuỗi user agent có chứa dấu hiệu Chrome headless hay không. Môi trường phân tích tự động thường không có plugin nào.</li>
+<li>Khi điều kiện đúng, extension hiện thông báo phát hiện môi trường ảo và tự vô hiệu hóa.</li>
+<li>Hướng giải: biểu thức kiểm tra nằm trong câu lệnh <code>if</code> của file loader.</li>
+</ul>
+<h2 id="buoc-3-giai-ma-ten-mien-muc-tieu">Bước 3: giải mã tên miền mục tiêu</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết extension nhắm vào trang nào và tên trang được giấu bằng cách nào.</li>
+<li><strong>Cách làm:</strong> đọc file xử lý chính, tìm chuỗi bị mã hóa được so sánh với <code>window.location.hostname</code>, giải mã chuỗi đó.</li>
+</ul>
+<figure><img src="../img/fakegpt/fg-02-app.png" alt="Toàn bộ core/app.js"><figcaption>Toàn bộ app.js (manifest nạp file này với đường dẫn core/app.js). Ba khung đỏ: chuỗi mã hóa của tên trang mục tiêu, khóa mã hóa viết cứng trong hàm encryptPayload, và URL nhận dữ liệu trong hàm sendToServer. Tên hàm giải mã, tên sự kiện, thuật toán, khóa và tên miền đã làm mờ. Các bước 3 đến 6 bên dưới đều đọc trên file này.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tên trang mục tiêu không viết trực tiếp mà được mã hóa, rồi giải mã lúc chạy bằng hàm có sẵn của trình duyệt. Cách này giúp tránh bị dò bằng tìm chuỗi đơn giản.</li>
+<li>Chỉ khi hostname khớp, extension mới gắn các hàm theo dõi.</li>
+<li>Hướng giải: kiểu mã hóa suy ra từ hàm giải mã được gọi. Tên trang có được sau khi giải mã chuỗi.</li>
+</ul>
+<h2 id="buoc-4-anh-cap-thong-tin-ang-nhap-va-ghi-phim">Bước 4: đánh cắp thông tin đăng nhập và ghi phím</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định các sự kiện DOM mà extension bắt, và hàm nhận thông tin đăng nhập.</li>
+<li><strong>Cách làm:</strong> trong file xử lý chính, tìm các lệnh <code>addEventListener</code>.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Một listener gắn vào sự kiện gửi form, lấy các trường tên đăng nhập, email và mật khẩu.</li>
+<li>Một listener khác gắn vào sự kiện bàn phím, đọc giá trị từng phím (<code>event.key</code>). Đây là chức năng keylogger.</li>
+<li>Thông tin đăng nhập lấy từ form được truyền vào một hàm riêng để gửi ra ngoài.</li>
+<li>Hướng giải: tên sự kiện là tham số đầu của <code>addEventListener</code>. Tên hàm (kèm tham số) là lời gọi ngay sau khi đọc các trường form.</li>
+</ul>
+<h2 id="buoc-5-ma-hoa-du-lieu-truoc-khi-gui">Bước 5: mã hóa dữ liệu trước khi gửi</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm thuật toán và khóa dùng để mã hóa dữ liệu.</li>
+<li><strong>Cách làm:</strong> đọc file mã hóa và đoạn gọi nó trong file xử lý chính.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Extension dùng thư viện CryptoJS với một thuật toán mã hóa đối xứng, khóa viết cứng trong mã, và IV (giá trị khởi tạo) ngẫu nhiên 16 byte.</li>
+<li>Khóa viết cứng nghĩa là ai có mã nguồn cũng giải mã được dữ liệu bị gửi đi.</li>
+<li>Hướng giải: tên thuật toán là hàm CryptoJS được gọi. Khóa là chuỗi hằng truyền vào hàm đó.</li>
+</ul>
+<h2 id="buoc-6-gui-du-lieu-ra-ngoai-qua-the-img">Bước 6: gửi dữ liệu ra ngoài qua thẻ img</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định cách gửi dữ liệu và tên miền nhận.</li>
+<li><strong>Cách làm:</strong> tìm đoạn tạo đối tượng <code>new Image()</code> và gán thuộc tính <code>src</code>.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Extension tạo một ảnh trong bộ nhớ, gán <code>src</code> là URL của máy chủ kẻ tấn công, kèm dữ liệu đã mã hóa trong tham số <code>data</code>.</li>
+<li>Request tải ảnh dạng GET không bị chặn bởi CORS (cơ chế trình duyệt hạn chế request giữa các tên miền) và dễ lẫn vào lưu lượng duyệt web bình thường.</li>
+<li>Gói mã nguồn không cho biết extension đã được cài trên bao nhiêu máy, và dữ liệu đã thực sự bị gửi đi hay chưa. Muốn biết cần thư mục profile Chrome của người dùng và log proxy hoặc DNS.</li>
+<li>Hướng giải: tên miền nhận dữ liệu nằm trong URL gán cho <code>src</code>.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

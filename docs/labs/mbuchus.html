@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>MBuchus lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders MBuchus writeup (walkthrough tiếng Việt): Dựng lại chiến dịch malvertising nhiều giai đoạn bằng OSINT, VirusTotal và crt.sh, từ trang web giả tới loader và hạ tầng của kẻ tấn công.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/mbuchus.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="MBuchus lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders MBuchus writeup (walkthrough tiếng Việt): Dựng lại chiến dịch malvertising nhiều giai đoạn bằng OSINT, VirusTotal và crt.sh, từ trang web giả tới loader và hạ tầng của kẻ tấn công.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/mbuchus.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "MBuchus - CyberDefenders writeup", "description": "Dựng lại chiến dịch malvertising nhiều giai đoạn bằng OSINT, VirusTotal và crt.sh, từ trang web giả tới loader và hạ tầng của kẻ tấn công.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/mbuchus.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, MBuchus, writeup, walkthrough, Threat Intel, AlienVault OTX, VirusTotal, ViewDNSInfo, crt.sh, OSINT, IPLookUp", "about": {"@type": "Thing", "name": "CyberDefenders MBuchus lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/mbuchus/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-xac-inh-cach-du-nan-nhan">Bước 1: xác định cách dụ nạn nhân</a></li><li><a href="#buoc-2-tim-file-nan-nhan-tai-ve">Bước 2: tìm file nạn nhân tải về</a></li><li><a href="#buoc-3-xac-inh-ho-ma-oc-va-chuc-nang">Bước 3: xác định họ mã độc và chức năng</a></li><li><a href="#buoc-4-cong-cu-hop-le-bi-lam-dung-trong-temp">Bước 4: công cụ hợp lệ bị lạm dụng trong Temp</a></li><li><a href="#buoc-5-chung-chi-tls-cua-ten-mien">Bước 5: chứng chỉ TLS của tên miền</a></li><li><a href="#buoc-6-ngay-ang-ky-va-nha-ang-ky-ten-mien">Bước 6: ngày đăng ký và nhà đăng ký tên miền</a></li><li><a href="#buoc-7-nha-cung-cap-ha-tang-va-asn">Bước 7: nhà cung cấp hạ tầng và ASN</a></li><li><a href="#buoc-8-ten-mien-co-chu-e-thien-van">Bước 8: tên miền có chủ đề thiên văn</a></li></ul></nav>
+<article>
+<h1 id="mbuchus">MBuchus</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/mbuchus/">MBuchus</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Medium, đã retired.</li>
+<li><strong>Dữ liệu:</strong> kịch bản của lab và tên miền <code>treasurybanks.org</code> (tên miền này có sẵn trong kịch bản, không phải đáp án). Không có file log hay mẫu mã độc để tải về. Toàn bộ bài làm dựa trên nguồn công khai.</li>
+<li><strong>Công cụ:</strong> VirusTotal, crt.sh, ViewDNSInfo, ipinfo.io, ARIN WHOIS, AlienVault OTX, Malpedia và các báo cáo threat intel công khai.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Bài không ghi giá trị đáp án. Chỗ nào cần tra cứu có dòng "Hướng giải" chỉ nơi tìm.</li>
+<li>Ảnh chụp từ các nguồn công khai. <span class="red">Khung đỏ</span> là chỗ cần chú ý, vùng làm mờ là giá trị trùng với đáp án hoặc để lộ đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Tháng 3/2024, nhân viên một công ty tư vấn đầu tư tìm công cụ "khôi phục tài chính" trên mạng. Sau đó máy chậm và hiện pop-up lạ. Log mạng nội bộ có nhiều kết nối tới <code>treasurybanks.org</code>.</li>
+<li>Nạn nhân bị dẫn tới trang web giả bằng quảng cáo độc hại (malvertising, tức chèn mã độc hoặc link độc vào quảng cáo trực tuyến).</li>
+<li>Trang "lấy lại tiền" cho tải một file ZIP. Trong ZIP là một file JavaScript, chạy bằng trình thông dịch script của Windows khi nạn nhân bấm đúp.</li>
+<li>Script chép một công cụ dòng lệnh hợp lệ của Windows vào thư mục Temp dưới tên ngẫu nhiên, rồi dùng nó tải payload giai đoạn sau.</li>
+<li><strong>Payload thuộc một họ mã độc dạng Malware-as-a-Service</strong>, được bán cho nhiều nhóm tấn công khác nhau.</li>
+<li>Hạ tầng tên miền dùng chứng chỉ TLS hợp lệ, có nhiều tên miền phụ trong cùng chứng chỉ. Lịch sử IP cho thấy tên miền từng đổi hạ tầng.</li>
+</ul>
+<h2 id="buoc-1-xac-inh-cach-du-nan-nhan">Bước 1: xác định cách dụ nạn nhân</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết nạn nhân đến trang giả bằng cách nào.</li>
+<li><strong>Cách làm:</strong> đọc kịch bản và mục tiêu của lab, đối chiếu với báo cáo công khai về chiến dịch.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Nạn nhân tìm kiếm công cụ tài chính rồi gặp quảng cáo dẫn tới trang giả. Đây là malvertising: quảng cáo đi qua mạng quảng cáo hợp lệ hoặc vị trí quảng cáo bị chiếm, rồi chuyển hướng người dùng tới trang độc hại.</li>
+</ul>
+<h2 id="buoc-2-tim-file-nan-nhan-tai-ve">Bước 2: tìm file nạn nhân tải về</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định file ZIP mà trang "khôi phục tiền" bắt nạn nhân tải.</li>
+<li><strong>Cách làm:</strong> dùng báo cáo của Palo Alto Networks Unit 42 về chiến dịch này. Unit 42 đăng danh sách IOC (dấu hiệu nhận biết xâm nhập) dạng file text trong repo GitHub <code>Unit42-timely-threat-intel</code>, file ngày 26/03/2024.</li>
+</ul>
+<figure><img src="../img/mbuchus/mb-01-unit42-chain.png" alt="File IOC của Unit 42: chuỗi lây nhiễm và danh sách chặn"><figcaption>Phần đầu file IOC của Unit 42 (bản raw trên GitHub). Lần lây nhiễm mẫu chạy lúc 01:40 UTC ngày 26/03/2024. Chuỗi lây nhiễm đi từ quảng cáo Google độc hại tới trang giả treasurybanks[.]org, file ZIP, file .js chạy bằng wscript.exe, file .msi, rồi hai họ mã độc (tên đã làm mờ). Danh sách chặn có tên miền gốc của lab trong khung đỏ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>File IOC liệt kê file ZIP tải từ trang giả và file JavaScript bên trong ZIP, kèm SHA-256 và kích thước.</li>
+<li>Hướng giải: tên file ZIP nằm trong danh sách IOC của Unit 42 nêu trên.</li>
+</ul>
+<h2 id="buoc-3-xac-inh-ho-ma-oc-va-chuc-nang">Bước 3: xác định họ mã độc và chức năng</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết payload trong ZIP thuộc họ nào và dùng để làm gì.</li>
+<li><strong>Cách làm:</strong> lấy tên họ mã độc từ báo cáo Unit 42, rồi tra trang của họ đó trên Malpedia.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Họ mã độc này được bán dạng dịch vụ (MaaS). Vì vậy payload đi kèm và mục đích của người thuê có thể khác nhau giữa các chiến dịch.</li>
+<li>Malpedia ghi nhận họ này từng được dùng nhắm vào trường đại học, trường trung học ở Mỹ và một công ty công nghệ cao ở Bỉ.</li>
+<li>Hướng giải: loại mã độc (theo chức năng) được ghi ở phần mô tả trên trang Malpedia của họ này.</li>
+<li>Hướng giải: tên họ mã độc có trong tiêu đề file IOC của Unit 42 và trên trang Malpedia tương ứng. Tên lab cũng là gợi ý.</li>
+</ul>
+<h2 id="buoc-4-cong-cu-hop-le-bi-lam-dung-trong-temp">Bước 4: công cụ hợp lệ bị lạm dụng trong Temp</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm công cụ dòng lệnh hợp lệ mà chuỗi lây nhiễm chép vào Temp.</li>
+<li><strong>Cách làm:</strong> đọc phần mô tả file trong danh sách IOC của Unit 42. Phần này có hai mục cần so sánh: file JavaScript trong ZIP và một file <code>.exe</code> tên ngẫu nhiên trong <code>C:\Users\&lt;user&gt;\AppData\Local\Temp</code>.</li>
+</ul>
+<pre><code class="language-text">- File name: &lt;tên file .js trong ZIP&gt;
+- File description: JavaScript file from zip archive, run by wscript.exe ...
+
+- File location: C:\Users\Admin\AppData\Local\Temp\&lt;tên ngẫu nhiên&gt;.exe
+- File description: Copy of C:\Windows\system32\&lt;công cụ dòng lệnh&gt;, not malicious.
+</code></pre>
+<figure><img src="../img/mbuchus/mb-02-unit42-artifacts.png" alt="File IOC của Unit 42: mục MALWARE AND ARTIFACTS"><figcaption>Mục MALWARE AND ARTIFACTS trong cùng file. Khung đỏ thứ nhất là tên file ZIP mà trang giả gửi cho nạn nhân. Khung đỏ thứ hai cho biết file .exe tên ngẫu nhiên trong Temp (601.544 byte) là bản sao của một công cụ trong System32, không độc hại. Tên file và tên công cụ đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>File trong Temp là bản sao của một công cụ có sẵn trong <code>System32</code>, được đổi tên ngẫu nhiên. Bản thân file không độc hại. Kẻ tấn công dùng nó để tải payload tiếp theo, giống cách dùng <code>wget</code>.</li>
+<li>Dùng binary đáng tin cậy giúp hoạt động tải file lẫn vào hoạt động bình thường.</li>
+<li>Hướng giải: tên công cụ gốc nằm ở dòng "File description" của file <code>.exe</code> trong Temp.</li>
+<li>Lab không có log endpoint. Chuỗi ZIP, JavaScript và file trong Temp lấy từ báo cáo Unit 42, chưa đủ dữ liệu để xác nhận trên máy của công ty trong kịch bản.</li>
+</ul>
+<h2 id="buoc-5-chung-chi-tls-cua-ten-mien">Bước 5: chứng chỉ TLS của tên miền</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy SHA-256 fingerprint của chứng chỉ TLS dùng cho <code>treasurybanks.org</code> và tên miền phụ, cùng tên CA (tổ chức cấp chứng chỉ).</li>
+<li><strong>Cách làm:</strong></li>
+<li>Tìm <code>treasurybanks.org</code> trên crt.sh (kho nhật ký Certificate Transparency, nơi lưu công khai mọi chứng chỉ đã cấp).</li>
+<li>Chọn bản ghi chứng chỉ "cha" có danh sách Subject Alternative Name (SAN, các tên miền phụ cùng dùng một chứng chỉ).</li>
+<li>Mở bản ghi đó, đọc trường SHA-256 và trường Issuer.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Các tên miền trong chiến dịch dùng chứng chỉ hợp lệ do một CA thương mại cấp. Điều này làm trang giả trông đáng tin hơn với nạn nhân.</li>
+<li>Danh sách SAN là điểm xoay (pivot) tốt: từ một chứng chỉ có thể tìm ra các tên miền khác của cùng nhóm.</li>
+<li>Hướng giải: fingerprint và tên CA nằm trên trang chi tiết của bản ghi crt.sh có danh sách SAN.</li>
+</ul>
+<h2 id="buoc-6-ngay-ang-ky-va-nha-ang-ky-ten-mien">Bước 6: ngày đăng ký và nhà đăng ký tên miền</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết tên miền được đăng ký khi nào và qua nhà đăng ký (registrar) nào.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Mở <code>treasurybanks.org</code> trên VirusTotal, xem mục Whois để lấy ngày đăng ký.</li>
+<li>Dùng ViewDNSInfo để xem lịch sử IP, rồi tra WHOIS (ví dụ <code>search.arin.net</code>) để xác nhận chủ sở hữu IP và registrar.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Ngày đăng ký cũ hơn thời điểm chiến dịch vài tháng. Tên miền được chuẩn bị trước khi dùng.</li>
+<li>Hướng giải: ngày đăng ký ở mục Whois trên VirusTotal. Registrar có trong bản ghi WHOIS.</li>
+</ul>
+<figure><img src="../img/mbuchus/mb-03-vt-cert-whois.png" alt="VirusTotal: chứng chỉ HTTPS và Whois của treasurybanks.org"><figcaption>Tab Details của treasurybanks.org trên VirusTotal. Phần Last HTTPS Certificate cho thấy Thumbprint và Issuer (đã làm mờ), chứng chỉ có hiệu lực từ 18/07/2024. Phần Whois Lookup có Create date (đã làm mờ). Tên miền hết hạn ngày 18/07/2025. VirusTotal hiển thị thumbprint SHA-1, nên fingerprint SHA-256 cần lấy từ crt.sh như Bước 5.</figcaption></figure>
+
+<h2 id="buoc-7-nha-cung-cap-ha-tang-va-asn">Bước 7: nhà cung cấp hạ tầng và ASN</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nhà cung cấp cloud đang host IP của site và ASN (số hiệu mạng tự trị, định danh nhà mạng sở hữu dải IP) của IP cũ trước đó.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Lấy IP từ dữ liệu phân giải của tên miền, tra trên <code>ipinfo.io</code> để biết nhà cung cấp.</li>
+<li>Dùng ViewDNSInfo (IP history) để tìm IP cũ hơn, rồi tra IP đó trên <code>ipinfo.io</code> để lấy ASN.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Tên miền từng đổi hạ tầng. IP cũ và ASN cũ giúp liên kết với các hoạt động trước đó của nhóm khi săn tìm theo lịch sử.</li>
+<li>Hướng giải: nhà cung cấp hiện tại và ASN cũ đọc trên <code>ipinfo.io</code> sau khi lấy IP từ ViewDNSInfo.</li>
+</ul>
+<h2 id="buoc-8-ten-mien-co-chu-e-thien-van">Bước 8: tên miền có chủ đề thiên văn</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm một tên miền khác của kẻ tấn công, tên gợi tới chủ đề thiên văn, trỏ tới trang đăng nhập thiết bị mạng thay vì trang lừa đảo.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Đọc bài phân tích dùng chứng chỉ TLS làm threat intel trên blog <code>embeeresearch.io</code>. Bài này nêu tên miền đó.</li>
+<li>Tra lịch sử DNS của tên miền, xem chủ sở hữu IP đầu tiên được ghi nhận năm 2011.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Tên miền này khác các tên miền lừa đảo còn lại về nội dung trả về, nhưng vẫn liên kết được qua chứng chỉ.</li>
+<li>Hướng giải: chủ sở hữu IP đầu tiên nằm ở bản ghi sớm nhất trong lịch sử IP của tên miền.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

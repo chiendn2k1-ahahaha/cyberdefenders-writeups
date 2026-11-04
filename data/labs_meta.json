@@ -1,0 +1,5597 @@
+[
+ {
+  "slug": "3cx-supply-chain",
+  "name": "3CX Supply Chain",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Reconstruct the 3CX supply chain attack by analyzing compromised MSI and DLL artifacts to identify TTPs and attribute the incident to a threat actor.",
+  "tactics": [
+   "Execution",
+   "Discovery"
+  ],
+  "tools": [
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "acoustic",
+  "name": "Acoustic",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 14,
+  "objective": "Analyze SIP and RTP protocols using Wireshark and BrimSecurity to identify malicious VoIP communication patterns and artifacts.",
+  "tactics": [
+   "Initial Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "Brim",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "africanfalls",
+  "name": "AfricanFalls",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Reconstruct a suspect's digital activities and intent by analyzing browser history, system artifacts, deleted files, and credentials from a disk image using various forensic tools.",
+  "tactics": [
+   "Collection"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Autopsy",
+   "rifiuti2",
+   "Browsing History View",
+   "WinPrefetchView",
+   "ShellBagsExplorer",
+   "mimikatz",
+   "Metdata Extractor",
+   "Online Hash Crack",
+   "NTLM Hash"
+  ]
+ },
+ {
+  "slug": "agenttesla",
+  "name": "AgentTesla",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Learn to analyze and dissect Agent Tesla malware by unpacking, identifying embedded scripts, tracing data exfiltration, detecting persistence mechanisms, and understanding anti-VM evasion techniques.",
+  "tactics": [
+   "Credential Access",
+   "Collection"
+  ],
+  "tools": [
+   "dnSpy",
+   "Detect It Easy",
+   "AutoIT Extractor",
+   "ProcMon",
+   "CFF Explorer"
+  ]
+ },
+ {
+  "slug": "akira-storm-1567",
+  "name": "Akira - Storm-1567",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Learn to investigate Akira ransomware using memory forensics to identify IOCs, analyze attacker behavior, reconstruct timelines, and uncover system compromise, defense evasion, and persistence methods.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Timeline Explorer",
+   "EvtxECmd",
+   "MemProcFS",
+   "Event Log Explorer",
+   "Volatility 3",
+   "R-Studio",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "amadey-apt-c-36",
+  "name": "Amadey - APT-C-36",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Reconstruct Amadey Trojan behavior by analyzing memory dumps with Volatility3 to identify malicious processes, C2 communications, payload delivery, and persistence mechanisms.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "androidbreach",
+  "name": "AndroidBreach",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Analyze an Android device dump and reverse engineer a malicious APK using ALEAPP and JADX-GUI to identify malware functionality, data exfiltration, and extract compromised credentials.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "ALEAPP",
+   "JADX",
+   "DB Browser for SQLite",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "andromeda-bot-unc4210",
+  "name": "Andromeda Bot - UNC4210",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Analyze memory images and event logs using MemProcFS, EvtxECmd, and Timeline Explorer to identify Andromeda bot IOCs, reconstruct its infection timeline, and attribute it to an APT group.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "MemProcFS",
+   "VirusTotal",
+   "Evtxcmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "apt35",
+  "name": "APT35",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Perform forensic analysis on Android devices to identify, analyze, and mitigate threats from malicious applications and cyber espionage groups like Magic Hound.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Collection",
+   "Command and Control"
+  ],
+  "tools": [
+   "JADX",
+   "APK Studio",
+   "DB Browser for SQLite"
+  ]
+ },
+ {
+  "slug": "asyncrat",
+  "name": "AsyncRAT",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "This lab aims to equip learners with practical skills in malware analysis by dissecting a multi-stage AsyncRAT infection. Participants will explore obfuscation techniques, payload extraction, persistence mechanisms, and steganographic methods used in real-world malware, enhancing their ability to detect, analyze, and respond to complex cyber threats.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "VsCode",
+   "CyberChef",
+   "NodeJS",
+   "dnSpy",
+   "HexEditor",
+   "Wayback Machine",
+   "JavaScript Deobuscator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "atmii",
+  "name": "ATMii",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Understand and analyze ATM-targeting malware using static analysis tools, identify malicious behaviors, and trace how malware exploits legitimate APIs like XFS to manipulate ATM hardware and perform unauthorized actions.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection",
+   "Impact"
+  ],
+  "tools": [
+   "x64dbg",
+   "IDA",
+   "Ghidra",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "awsraid",
+  "name": "AWSRaid",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Investigate AWS CloudTrail logs using Splunk to identify unauthorized access, analyze configuration changes, and detect persistence mechanisms.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access"
+  ],
+  "tools": [
+   "Splunk"
+  ]
+ },
+ {
+  "slug": "awswatcher",
+  "name": "AWSWatcher",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Analyze AWS GuardDuty, CloudTrail, S3, and CloudWatch logs to identify attacker actions, exploited misconfigurations, and reconstruct an AWS cloud security incident.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "CloudTrail",
+   "CloudWatch",
+   "S3",
+   "Lambda",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "azurehunt",
+  "name": "AzureHunt",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 11,
+  "objective": "Correlate Azure AD, Activity, and Blob Storage logs in Elastic Stack to reconstruct an attack timeline, identifying initial access, lateral movement, persistence, and data exfiltration.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Collection"
+  ],
+  "tools": [
+   "ELK"
+  ]
+ },
+ {
+  "slug": "azurepot",
+  "name": "AzurePot",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Understand real-world Linux compromise via CVE-2021-41773 by analyzing disk, memory, and system artifacts to identify attacker techniques, persistence methods, and IOCs.",
+  "tactics": [
+   "Execution",
+   "Defense Impairment",
+   "Command and Control"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Notepad++",
+   "grep",
+   "awk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "azurespray",
+  "name": "AzureSpray",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 18,
+  "objective": "Master the detection, investigation, and remediation of password spray attacks in Azure AD by analyzing sign-in logs with KQL queries, identifying attack patterns and compromised accounts, implementing Microsoft Sentinel analytics rules for automated detection, and applying security controls including Smart Lockout, Conditional Access policies, and incident response playbooks to protect against credential-based attacks.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery"
+  ],
+  "tools": [
+   "Microsoft Sentinel",
+   "Azure Monitor",
+   "KQL Query Editor",
+   "Azure AD Sign-in Logs",
+   "Identity Protection",
+   "Azure AD Workbooks",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "babble-loader",
+  "name": "Babble Loader",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 19,
+  "objective": "Synthesize static and dynamic analysis findings using x64dbg and IDA Pro to deconstruct a multi-stage loader's anti-analysis techniques and identify its .NET infostealer payload.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation",
+   "Discovery"
+  ],
+  "tools": [
+   "IDA",
+   "x64dbg",
+   "CFF Explorer",
+   "CyberChef",
+   "VirusTotal",
+   "API Monitor",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "bankingtroubles",
+  "name": "BankingTroubles",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 15,
+  "objective": "Evaluate a memory image using Volatility and forensic tools to reconstruct the attack chain initiated by a malicious PDF with JavaScript.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Defense Impairment",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "PDF-Tools",
+   "Malfind",
+   "libemu",
+   "Volatility",
+   "Strings",
+   "Foremost",
+   "Hexdump",
+   "Firebug",
+   "Objdump",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "beta-gamer",
+  "name": "Beta Gamer",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 15,
+  "objective": "Reconstruct an intrusion timeline by analyzing event logs, registry, file system, and network artifacts to identify attacker TTPs and data exfiltration.",
+  "tactics": [
+   "Resource Development",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "NTFS Log Tracker",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "EZ Tools",
+   "Sysmon",
+   "FTK Imager"
+  ]
+ },
+ {
+  "slug": "black-basta",
+  "name": "Black Basta",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 24,
+  "objective": "Correlate Sysmon, Windows event logs, and PowerShell history to reconstruct a multi-stage Black Basta ransomware attack, identifying initial access, persistence, C2, exfiltration, and impact.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "blackenergy",
+  "name": "BlackEnergy",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Develop practical skills in Windows memory forensics using Volatility by detecting malware indicators, analyzing suspicious processes, and identifying code injection and unauthorized DLLs in a compromised system.",
+  "tactics": [
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Volatility",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "blacksuit-apt-breach",
+  "name": "BlackSuit APT Breach",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 34,
+  "objective": "",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "DB Browser for SQLite",
+   "DCode",
+   "MFTECmd",
+   "Timeline Explorer",
+   "FTKImager",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "blacksuit-ransomware",
+  "name": "BlackSuit Ransomware",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 16,
+  "objective": "Reconstruct BlackSuit ransomware's attack lifecycle by analyzing PE artifacts, encrypted payloads, API calls, and network communication using Ghidra, x64dbg, and CFF Explorer.",
+  "tactics": [
+   "Execution",
+   "Defense Impairment",
+   "Discovery",
+   "Impact"
+  ],
+  "tools": [
+   "Ghidra",
+   "IDA",
+   "x64dbg",
+   "Python3",
+   "CFF Explorer",
+   "FLOSS/Strings",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "blindsentry",
+  "name": "BlindSentry",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "insane",
+  "questions": 22,
+  "objective": "",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Event Viewer",
+   "DB Browser for SQLite",
+   "Wireshark",
+   "Splunk",
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "bluesky-ransomware",
+  "name": "BlueSky Ransomware",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Reconstruct a BlueSky ransomware attack by analyzing network traffic, decoding PowerShell scripts, and examining persistence mechanisms to identify attacker tactics and IOCs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Wireshark",
+   "Network Miner",
+   "Windows Event Viewer",
+   "Event Log Explorer",
+   "VirusTotal",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "boomer-lazarus-group",
+  "name": "Boomer - Lazarus Group",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "insane",
+  "questions": 17,
+  "objective": "Correlate diverse forensic artifacts from memory, registry, browser, and NTFS logs using advanced tools like Mimikatz, Ghidra, and CyberChef to reconstruct a complex data breach and C2 infrastructure.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "MemProcFS",
+   "Registry Explorer",
+   "Eric Zimmerman Tools",
+   "CyberChef",
+   "HxD",
+   "HexEditor",
+   "mimikatz",
+   "DB Browser for SQLite",
+   "DB Browser for SQLCipher",
+   "Event Log Explorer",
+   "Wireshark",
+   "IDA",
+   "x64dbg",
+   "Strings",
+   "Ghidra",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "boss-of-the-soc-v1",
+  "name": "Boss Of The SOC v1",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 32,
+  "objective": "Reconstruct multi-stage attack scenarios by analyzing Splunk logs and integrating OSINT from VirusTotal, ThreatCrowd, and WHOXY to identify TTPs and IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "boss-of-the-soc-v2",
+  "name": "Boss Of The SOC v2",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 37,
+  "objective": "Apply Attack-Based Hunting methodology using Splunk to analyze and correlate diverse network and host logs, identifying multiple distinct cyberattack scenarios.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "boss-of-the-soc-v3",
+  "name": "Boss Of The SOC v3",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 58,
+  "objective": "Apply Splunk search queries to extract information and answer questions from provided log data.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "brabbit",
+  "name": "BRabbit",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Reconstruct a Bad Rabbit ransomware attack chain by analyzing phishing, persistence, and MBR modification using dynamic analysis and MITRE ATT&CK.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "malpedia",
+   "VirusTotal",
+   "ANY.RUN",
+   "Email Header Analyzer",
+   "MalwareURL"
+  ]
+ },
+ {
+  "slug": "brave",
+  "name": "Brave",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Investigate Windows memory images using Volatility3, PowerShell, and a hex editor to extract system artifacts, analyze processes, network connections, and reconstruct user activity.",
+  "tactics": [
+   "Execution",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "Volatility 3",
+   "CertUtil",
+   "HxD"
+  ]
+ },
+ {
+  "slug": "brutal-tank",
+  "name": "Brutal Tank",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 8,
+  "objective": "Reconstruct an ICS attack chain by analyzing network traffic with Arkime and Wireshark to identify PLC compromise, I/O manipulation, and classify techniques using MITRE ATT&CK for ICS.",
+  "tactics": [],
+  "tools": [
+   "Arkime",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "bumblebee-gold-cabin",
+  "name": "BumbleBee - GOLD CABIN",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 29,
+  "objective": "Correlate Windows event logs and Sysmon data across enterprise systems using ELK to reconstruct a multi-stage cyber attack from initial access to ransomware.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK",
+   "SIEM",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "byod-breach",
+  "name": "BYOD Breach",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 14,
+  "objective": "Correlate Android and Windows forensic artifacts, including logs and malware analysis, to reconstruct a multi-stage BYOD breach from initial access to persistence.",
+  "tactics": [
+   "Resource Development",
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "CyberChef",
+   "Windows Event Viewer",
+   "JADX",
+   "abx2xml",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "callmeonthechain-etherrat",
+  "name": "CallMeOnTheChain - EtherRAT",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 19,
+  "objective": "Decrypt traffic, decompile smart contracts, and uncover how attackers turned the blockchain into a C2 channel.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "uniq",
+   "tshark",
+   "sort",
+   "Wireshark",
+   "Etherscan.io"
+  ]
+ },
+ {
+  "slug": "clawhavoc",
+  "name": "ClawHavoc",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 48,
+  "objective": "",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "CyberChef",
+   "Sysmon",
+   "jq",
+   "UPX",
+   "Python",
+   "Detect It Easy",
+   "Splunk",
+   "PowerShell",
+   "x64dbg",
+   "IDA",
+   "Ghidra",
+   "Windows Event Viewer",
+   "Azure AD Sign-in Logs",
+   "CFF Explorer",
+   "AWS-CLI",
+   "HexEditor",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "clickfix-vodkastealer",
+  "name": "ClickFix - VodkaStealer",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 19,
+  "objective": "Analyze Splunk event logs to reconstruct a multi-stage attack chain, detailing initial access, privilege escalation, lateral movement, and data exfiltration.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "codefreeze",
+  "name": "CodeFreeze",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 21,
+  "objective": "Reconstruct the complete attack timeline by analyzing browser history, event logs, registry, and Git artifacts to identify initial access, persistence, and data exfiltration mechanisms.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "PECmd",
+   "Event Viewer",
+   "CyberChef",
+   "Registry Explorer",
+   "DB Browser for SQLlite",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "confluencerce",
+  "name": "ConfluenceRCE",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Investigate a real-world cyberattack, identify compromise indicators, trace attacker activities, and apply forensic and threat intelligence techniques.",
+  "tactics": [
+   "Initial Access",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "grep",
+   "uniq",
+   "sort",
+   "awk/sed"
+  ]
+ },
+ {
+  "slug": "containerbreak-rootkit-trail",
+  "name": "ContainerBreak - Rootkit Trail",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 12,
+  "objective": "",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "Linux Command Line Tools",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "corporatesecrets",
+  "name": "CorporateSecrets",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 35,
+  "objective": "Evaluate a Windows disk image by correlating registry, event log, browser, and MFT artifacts to reconstruct evidence of corporate secret exfiltration.",
+  "tactics": [
+   "Execution",
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Registry Explorer",
+   "RegRipper",
+   "HxD",
+   "DB Browser for SQLite",
+   "HindSight",
+   "Event Log Explorer",
+   "MFTDump",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "credsnare-angry-likho-apt",
+  "name": "CredSnare - Angry Likho APT",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 19,
+  "objective": "Correlate Splunk logs and filesystem artifacts from a workstation and domain controller to reconstruct an attack chain involving Kerberos delegation and credential theft.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "Event Log Explorer",
+   "DB Browser for SQLite",
+   "Autopsy",
+   "Registry Explorer",
+   "MFTECmd",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "cursorjack",
+  "name": "CursorJack",
+  "categories": [
+   "Endpoint Forensics",
+   "Cloud Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 19,
+  "objective": "A developer's workstation is the new perimeter — trace an MCP-based intrusion from the first malicious deeplink through to a multi-region cloud compromise and follow the money on-chain.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Impact"
+  ],
+  "tools": [
+   "Google Search",
+   "DB Browser for SQLite",
+   "Notepad++",
+   "TrailInspector",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "danabot",
+  "name": "DanaBot",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Analyze network traffic using Wireshark to identify DanaBot initial access, deobfuscate malicious JavaScript, and extract IOCs like IPs, file hashes, and execution processes.",
+  "tactics": [
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "VirusTotal",
+   "ANY.RUN",
+   "Network Miner"
+  ]
+ },
+ {
+  "slug": "darkcrystal",
+  "name": "DarkCrystal",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Reconstruct a multi-stage malware attack chain by analyzing Windows event logs with EvtxECmd and memory dumps with Volatility to identify LOLBins and C2 communications.",
+  "tactics": [
+   "Execution",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Volatility 3",
+   "MemProcFS",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "deepdive",
+  "name": "DeepDive",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 10,
+  "objective": "Analyze a memory dump with Volatility to uncover hidden Emotet malware, investigate its code injection, and reconstruct kernel-level evasion tactics like DKOM.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Volatility 2",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "detectlog4j",
+  "name": "DetectLog4j",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Synthesize forensic artifacts across registry, logs, and binaries to reconstruct a Log4Shell exploitation attack chain, identifying C2, persistence, and ransomware behavior.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Arsenal Image Mounter",
+   "Registry Explorer",
+   "RegRipper",
+   "Event Log Explorer",
+   "dnSpy",
+   "CyberChef",
+   "FakeNet",
+   "VirusTotal",
+   "IPLookUp",
+   "dissect",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "dumpme",
+  "name": "DumpMe",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Analyze memory dumps using Volatility 2 to identify Meterpreter malware and extract Indicators of Compromise.",
+  "tactics": [
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Volatility 2",
+   "sha1sum",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "ecombreach",
+  "name": "EcomBreach",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Develop skills in forensic analysis, attack chain reconstruction, and threat detection following a web server compromise using Linux forensic techniques.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Collection"
+  ],
+  "tools": [
+   "Linux Command Line Tools",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "elasticcase",
+  "name": "ElasticCase",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 24,
+  "objective": "Investigate a simulated multi-stage attack to identify compromise and attacker activity using Elastic SIEM.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "ELK",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "eli",
+  "name": "Eli",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 15,
+  "objective": "Learn to perform Chromebook forensic analysis using tools like DB Browser and Notepad++, focusing on user artifacts, browser data, downloads, and Google Takeout for digital investigations.",
+  "tactics": [
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "CyberChef",
+   "DCode",
+   "DB Browser for SQLite",
+   "Unfurl",
+   "CLEAPP",
+   "RLEAPP"
+  ]
+ },
+ {
+  "slug": "elpaco-team",
+  "name": "ELPACO-team",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 18,
+  "objective": "Correlate Sysmon, MFT, and application logs to reconstruct a ransomware attack timeline, identifying persistence, defense evasion, and data exfiltration TTPs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Defense Impairment",
+   "Credential Access",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Eric Zimmerman Tools",
+   "NTFS Log Tracker",
+   "Registry Explorer",
+   "Timeline Explorer",
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "emprisa-maldoc",
+  "name": "Emprisa Maldoc",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Reconstruct fragmented shellcode from a malicious RTF document and emulate its execution using `rtfdump.py` and `scdbg` to identify CVE-2017-11882 payload delivery.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Microsoft office IDE",
+   "rtfdump.py",
+   "Scdbg or Speakeasy",
+   "Debugger",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "escaperoom",
+  "name": "EscapeRoom",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 17,
+  "objective": "Reconstruct a multi-stage attack by analyzing network traffic, cracking credentials, and reverse engineering malware using Wireshark, John the Ripper, and IDA Pro to identify persistence and C2 commands.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "NetworkMiner",
+   "Brim",
+   "UPX",
+   "IDA",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "exfiltrated",
+  "name": "Exfiltrated",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Reconstruct a Linux intrusion by analyzing forensic images, system logs, and custom scripts to identify brute-force, privilege escalation, persistence, and exfiltrated data.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Forensic Imaging (mount)",
+   "Wayback Machine",
+   "CyberChef",
+   "Python"
+  ]
+ },
+ {
+  "slug": "fakegpt",
+  "name": "FakeGPT",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "easy",
+  "questions": 10,
+  "objective": "Analyze a malicious Chrome extension's code and behavior to identify data theft mechanisms, covert exfiltration via `<img>` tags, and anti-analysis techniques.",
+  "tactics": [
+   "Credential Access",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "ExtAnalysis",
+   "CRX Viewer"
+  ]
+ },
+ {
+  "slug": "falconeye",
+  "name": "FalconEye",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Learn to use Splunk for detecting, analyzing, and investigating cybersecurity threats through log analysis, threat hunting, privilege escalation, lateral movement, and advanced attack techniques.",
+  "tactics": [
+   "Reconnaissance",
+   "Execution",
+   "Credential Access",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "famous-chollima",
+  "name": "Famous Chollima",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 20,
+  "objective": "Synthesize forensic artifacts and Python source code from a disk image to reconstruct a credential theft attack, identifying persistence methods and C2 communications.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "Event Log Explorer",
+   "FTK Imager",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-1",
+  "name": "Flareon 1",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 7,
+  "objective": "Determine hidden flags and program logic by reverse engineering unknown binaries using static and dynamic analysis tools.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-2",
+  "name": "Flareon 2",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 11,
+  "objective": "Reverse engineer multi-stage malicious binaries using IDA Pro and debuggers to uncover hidden functionality and extract embedded flags.",
+  "tactics": [
+   "Credential Access",
+   "Discovery"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "UPX",
+   "Mobisec",
+   "apktool",
+   "De4dot",
+   "zsteg",
+   "exe2aut",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-3",
+  "name": "Flareon 3",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 10,
+  "objective": "Analyze and reverse engineer complex malicious challenges using static and dynamic analysis tools to uncover hidden functionality and extract IOCs.",
+  "tactics": [
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-4",
+  "name": "Flareon 4",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 12,
+  "objective": "Integrate diverse reverse engineering tools and techniques to synthesize solutions for advanced, multi-platform malware analysis challenges.",
+  "tactics": [
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "UPX",
+   "Mobisec",
+   "apktool",
+   "De4dot",
+   "zsteg",
+   "exe2aut",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-5",
+  "name": "Flareon 5",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 12,
+  "objective": "Synthesize advanced reverse engineering techniques to analyze complex malicious binaries and extract hidden flags using IDA Pro, debuggers, and specialized tools.",
+  "tactics": [
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "UPX",
+   "Mobisec",
+   "apktool",
+   "De4dot",
+   "zsteg",
+   "exe2aut",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-6",
+  "name": "Flareon 6",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 12,
+  "objective": "Reverse engineer diverse, obfuscated malware samples using static and dynamic analysis tools to identify functionality and extract embedded artifacts.",
+  "tactics": [
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "UPX",
+   "Mobisec",
+   "apktool",
+   "De4dot",
+   "zsteg",
+   "exe2aut",
+   "Dynamic-analysis",
+   "android-tamer",
+   "010editor",
+   "FLARE VM",
+   "Android Emulator",
+   "dex2jaro",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "flareon-7",
+  "name": "Flareon 7",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 11,
+  "objective": "Synthesize advanced static and dynamic analysis techniques using IDA Pro and debuggers to solve complex reverse engineering challenges.",
+  "tactics": [
+   "Execution"
+  ],
+  "tools": [
+   "IDA Pro",
+   "x64dbg",
+   "OllyDbg",
+   "FlareVM",
+   "WinDbg",
+   "CFF Explorer",
+   "Hex Workshop",
+   "ilspy",
+   "UPX",
+   "Mobisec",
+   "apktool",
+   "De4dot",
+   "zsteg",
+   "exe2aut",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "fog-ransomware-fluttering-scorpius",
+  "name": "Fog Ransomware - Fluttering Scorpius",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Reconstruct the Fog ransomware attack chain by analyzing browser, registry, event logs, and MFT artifacts to identify initial access, persistence, BYOVD privilege escalation, and IOCs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Eric Zimmerman Tools",
+   "DB Browser for SQLite",
+   "Registry Explorer",
+   "NTFS Log Tracker",
+   "Timeline Explorer",
+   "EvtxECmd"
+  ]
+ },
+ {
+  "slug": "fork-bomb-teampcp",
+  "name": "Fork Bomb - TeamPCP",
+  "categories": [
+   "Endpoint Forensics",
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 18,
+  "objective": "Investigate a real-world supply chain attack from first alert to threat actor attribution — and find out how a single Python package nearly handed over the keys to an entire cloud environment.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "CyberChef",
+   "Notepad++",
+   "Sysmon",
+   "Google Search"
+  ]
+ },
+ {
+  "slug": "formbook",
+  "name": "Formbook",
+  "categories": [
+   "Endpoint Forensics",
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 28,
+  "objective": "Trace the attack chain from phishing delivery through obfuscated JavaScript, PowerShell loaders, and final payload execution.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Command and Control"
+  ],
+  "tools": [
+   "PowerShell",
+   "Notepad++",
+   "Event Log Explorer",
+   "CyberChef",
+   "DB Browser for SQLite",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "gatebreak",
+  "name": "GateBreak",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 18,
+  "objective": "Reconstruct a macOS attack timeline by correlating Unified Logs, FSEvents, and browser artifacts using macMRU.py and unifiedlog_iterator to identify initial access, Gatekeeper bypass, and persistence.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Collection",
+   "Command and Control"
+  ],
+  "tools": [
+   "FSEParser",
+   "Spotlight-Parser",
+   "ios_apt",
+   "unifiedlog_iterator",
+   "plist Editor",
+   "CSViewer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "getpdf",
+  "name": "GetPDF",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Reconstruct a multi-stage PDF malware attack by analyzing network traffic, dissecting PDF objects, deobfuscating JavaScript, and emulating shellcode to identify payloads and exploited CVEs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "de4js",
+   "pdfid",
+   "pdfparser",
+   "peepdf",
+   "PDFStreamDumper",
+   "Wireshark",
+   "tshark",
+   "scdbg",
+   "NetworkMiner"
+  ]
+ },
+ {
+  "slug": "ghostconnect-ta583",
+  "name": "GhostConnect - TA583",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "easy",
+  "questions": 19,
+  "objective": "Hunt Sysmon process trees, Chrome browsing artifacts, and Mark-of-the-Web streams to rebuild a the full kill chain from phishing delivery through AD enumeration to HTTPS exfiltration.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "VirusTotal",
+   "Splunk"
+  ]
+ },
+ {
+  "slug": "ghostdetect",
+  "name": "GhostDetect",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 9,
+  "objective": "Investigate a multi-stage phishing attack by analyzing LNK files, de-obfuscating scripts, identifying C2, decrypting payloads, and attributing the TTPs to the UAC-0057 APT group.",
+  "tactics": [],
+  "tools": [
+   "CyberChef",
+   "Wireshark",
+   "Strings",
+   "VS Code",
+   "LECmd",
+   "ProcMon"
+  ]
+ },
+ {
+  "slug": "gitthegate",
+  "name": "GitTheGate",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 28,
+  "objective": "Investigate network attack artifacts by analyzing logs in Kibana to identify compromised systems and incident timelines.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "ELK",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "goldenspray",
+  "name": "GoldenSpray",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Reconstruct a multi-stage intrusion timeline by analyzing Windows and Sysmon event logs within Elastic SIEM to identify key attack tactics, techniques, and procedures.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK"
+  ]
+ },
+ {
+  "slug": "googlecloudhunt",
+  "name": "GoogleCloudHunt",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Learn cloud forensics by analyzing Google Cloud logs with JQ to identify compromised accounts, data exfiltration, and attacker persistence methods in a simulated breach scenario.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "jq",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "grabthephisher",
+  "name": "GrabThePhisher",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 10,
+  "objective": "Analyze a cryptocurrency phishing kit to identify exfiltration methods, extract critical IOCs, and gather threat actor intelligence using local logs and Telegram APIs.",
+  "tactics": [
+   "Initial Access",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Text Editor"
+  ]
+ },
+ {
+  "slug": "hacked",
+  "name": "Hacked",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 19,
+  "objective": "Reconstruct initial access, system modifications, and persistence on a compromised Linux server by analyzing disk images and cracking passwords.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Command and Control"
+  ],
+  "tools": [
+   "FTKImager",
+   "R-Studio",
+   "Guide: mounting challenge disk image on Linux",
+   "last command",
+   "unshadow",
+   "JohnTheRipper",
+   "RockYou",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "hafnium-apt",
+  "name": "Hafnium APT",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 27,
+  "objective": "Correlate Windows Defender, Sysmon, and Security logs in Elastic Stack to reconstruct HafinumAPT's initial access, persistence, and lateral movement TTPs.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access"
+  ],
+  "tools": [
+   "ELK",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "hammered",
+  "name": "Hammered",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 12,
+  "objective": "Analyze various Linux system logs using grep, awk, and sed to identify attacker TTPs, persistence, and reconstruct the attack timeline.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery"
+  ],
+  "tools": [
+   "Linux Command Line Tools",
+   "grep",
+   "Text Editor"
+  ]
+ },
+ {
+  "slug": "hawkeye",
+  "name": "HawkEye",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 24,
+  "objective": "Reconstruct a HawkEye Keylogger data exfiltration incident by analyzing network traffic with Wireshark and CyberChef, identifying IoCs and stolen credentials.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Wireshark",
+   "Brim",
+   "Apackets",
+   "MaxMind Geo IP",
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "hireme",
+  "name": "HireMe",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 17,
+  "objective": "Analyze a disk image to investigate multiple forensic cases by examining registry, event logs, and email artifacts using specified forensic tools.",
+  "tactics": [
+   "Execution",
+   "Credential Access",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Autopsy",
+   "Registry Explorer",
+   "LECmd",
+   "RegRipper",
+   "OST Viewer"
+  ]
+ },
+ {
+  "slug": "honeybot",
+  "name": "HoneyBOT",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 14,
+  "objective": "Reconstruct a network intrusion by analyzing PCAP traffic with Wireshark, identifying a CVE-2003-0533 exploit, extracting malware, and performing shellcode analysis with scdbg to uncover attacker techniques and IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "NetworkMiner",
+   "Wireshark",
+   "Libemu (sctest)",
+   "scdbg",
+   "IP LookUp",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "hunter",
+  "name": "Hunter",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 30,
+  "objective": "Evaluate forensic artifacts from a disk image to confirm unauthorized port scanning and assess user intent for installing illegal applications.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "AccessData_FTK_Imager",
+   "Registry Explorer/RECmd",
+   "Reg Ripper &quot;Windows&quot;",
+   "Reg Ripper &quot;Linux&quot;",
+   "DCode",
+   "ShellBags Explorer",
+   "DB Browser for SQLlite",
+   "WinPrefetchView",
+   "JumpList Explorer",
+   "010 Editor",
+   "SysTools Outlook PST Viewer 4.5.0.0",
+   "Autopsy",
+   "HindSight",
+   "Arsenal Image Mounter",
+   "LinkParser v1.3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "icedid",
+  "name": "IcedID",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Investigate IcedID malware using VirusTotal and threat intelligence platforms to identify IOCs, associated threat actors, and execution mechanisms.",
+  "tactics": [],
+  "tools": [
+   "VirusTotal",
+   "malpedia",
+   "X",
+   "Tria.ge",
+   "ANY.RUN"
+  ]
+ },
+ {
+  "slug": "icedid-2-gold-cabin",
+  "name": "IcedID 2 - GOLD CABIN",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze memory artifacts and trace a ransomware attack's origin, execution, and persistence using forensic tools like Volatility 3 and MemProcFS.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "Volatility 3",
+   "MemProcFS",
+   "Event Log Explorer",
+   "EvtxECmd",
+   "Timeline Explorer"
+  ]
+ },
+ {
+  "slug": "ignoble-scorpius-apt",
+  "name": "Ignoble Scorpius APT",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "insane",
+  "questions": 43,
+  "objective": "Apply Attack-Based Hunting principles to Splunk logs, correlating Windows and Sysmon data to identify and reconstruct a multi-stage ransomware attack.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "ELK",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "imdsv1",
+  "name": "IMDSv1",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Analyze network traffic and AWS CloudTrail logs using Wireshark and JQ to reconstruct an IMDSv1 SSRF exploitation and subsequent data exfiltration attack.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control"
+  ],
+  "tools": [
+   "jq",
+   "Wireshark",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "injector",
+  "name": "Injector",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 18,
+  "objective": "Determine the web server compromise method and attacker actions by analyzing disk images, memory dumps, and registry artifacts using Autopsy, Volatility, and Registry Explorer.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery"
+  ],
+  "tools": [
+   "R-Studio",
+   "FTK Imager",
+   "Autopsy",
+   "Volatility",
+   "Registry Explorer",
+   "RegRpper"
+  ]
+ },
+ {
+  "slug": "insider",
+  "name": "Insider",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 11,
+  "objective": "Analyze Linux disk image artifacts, including logs and Bash history, using FTK Imager to investigate insider threat activities and reconstruct user actions.",
+  "tactics": [
+   "Execution",
+   "Credential Access"
+  ],
+  "tools": [
+   "FTK Imager"
+  ]
+ },
+ {
+  "slug": "intel101",
+  "name": "Intel101",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 4,
+  "objective": "Apply open-source intelligence (OSINT) techniques using Whois, Wayback Machine, and Google Lens to investigate digital footprints and extract specific information.",
+  "tactics": [
+   "Reconnaissance"
+  ],
+  "tools": [
+   "Google Lens",
+   "archive.org",
+   "Whois",
+   "Wayback Machine"
+  ]
+ },
+ {
+  "slug": "jailbroken",
+  "name": "Jailbroken",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 17,
+  "objective": "Analyze a jailbroken iOS device's system files, SQLite databases, and application data using forensic tools to reconstruct user activity and identify installed applications.",
+  "tactics": [
+   "Credential Access"
+  ],
+  "tools": [
+   "iLEAPP",
+   "Autopsy",
+   "mac_apt",
+   "DB Browser for SQLite"
+  ]
+ },
+ {
+  "slug": "jetbrains",
+  "name": "JetBrains",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Analyze network traffic using Wireshark to identify web server exploitation, extract attacker IOCs and persistence mechanisms, and map attack techniques to MITRE ATT&CK.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "NetworkMiner",
+   "Brim"
+  ]
+ },
+ {
+  "slug": "job-trap-oilrig",
+  "name": "Job Trap - OilRig",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Analyze PowerShell and Sysmon logs to investigate macro-based malware, identify persistence via scheduled tasks, and extract C2 indicators and keylogger behavior using FTK Imager and olevba.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "olevba",
+   "CyberChef",
+   "Windows Event Viewer",
+   "DB Browser for SQLite"
+  ]
+ },
+ {
+  "slug": "kerberoasted",
+  "name": "Kerberoasted",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Detect, analyze, and respond to Kerberoasting attacks by investigating Kerberos logs, identifying compromised accounts, and uncovering attacker persistence methods.",
+  "tactics": [
+   "Credential Access",
+   "Discovery"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK"
+  ]
+ },
+ {
+  "slug": "kioskexpo7",
+  "name": "KioskExpo7",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 18,
+  "objective": "",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "DCode",
+   "EZ Tools",
+   "Text Editor",
+   "CyberChef",
+   "DB Browser for SQLite",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "krakenkeylogger",
+  "name": "KrakenKeylogger",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Analyze Windows 10 notification artifacts, installed applications, LNK files, and Applications logs to uncover malicious activity and enhance forensic investigation capabilities.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "DB Browser for SQLite",
+   "LECmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "l337-s4uc3",
+  "name": "l337 S4uc3",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 21,
+  "objective": "Analyze network traffic and memory dumps using Wireshark, Zui, and Volatility to investigate a targeted attack, identify Zeus malware, and reconstruct attacker actions.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "Volatility",
+   "Wireshark",
+   "NetworkMiner",
+   "Brim",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "latrodectus-lunarspider",
+  "name": "Latrodectus – LunarSpider",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 38,
+  "objective": "Correlate Splunk Sysmon logs and disk forensic artifacts across multiple hosts to reconstruct a multi-stage Latrodectus malware intrusion from initial access to data exfiltration.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "DB Browser for SQLite",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "lespion",
+  "name": "Lespion",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Investigate an insider threat by analyzing GitHub repositories for exposed credentials, using OSINT tools to correlate online accounts, and performing image analysis to identify locations.",
+  "tactics": [],
+  "tools": [
+   "Google Maps",
+   "Google Image search",
+   "Sherlock"
+  ]
+ },
+ {
+  "slug": "lfi-escalation",
+  "name": "LFI Escalation",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 20,
+  "objective": "",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery"
+  ],
+  "tools": [
+   "CyberChef",
+   "VirusTotal",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "EvtxECmd",
+   "Windows Event Viewer",
+   "AmcacheParser",
+   "Text Editor",
+   "PECmd",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "lgdroid",
+  "name": "LGDroid",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Analyze Android disk images using SQLite, Python, and log analysis to reconstruct user activity and extract key forensic artifacts.",
+  "tactics": [
+   "Defense Impairment",
+   "Credential Access"
+  ],
+  "tools": [
+   "DB Browser for SQLite",
+   "Epoch Converter",
+   "ssim-calculator"
+  ]
+ },
+ {
+  "slug": "lnktrap",
+  "name": "LNKTrap",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 20,
+  "objective": "Reconstruct a targeted cyber attack's timeline by analyzing Splunk event logs, process, and network data to identify initial access, persistence, privilege escalation, and C2.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "Splunk",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "lockbit",
+  "name": "LockBit",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Reconstruct a multi-system LockBit ransomware attack chain by correlating Windows event logs, registry artifacts, and PowerShell activity to identify TTPs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Lateral Movement",
+   "Impact"
+  ],
+  "tools": [
+   "KAPE",
+   "EZ Tools",
+   "Event Log Explorer",
+   "Event Viewer",
+   "CyberChef"
+  ]
+ },
+ {
+  "slug": "lockdown",
+  "name": "Lockdown",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 11,
+  "objective": "Reconstruct a multi-stage intrusion by analyzing network traffic, memory, and malware artifacts using Wireshark, Volatility, and VirusTotal, mapping findings to MITRE ATT&CK.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "FLOSS/Strings",
+   "Wireshark",
+   "Threat Intel tools",
+   "MemProcFS",
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "lte-fallen-wall",
+  "name": "LTE Fallen Wall",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 18,
+  "objective": "Reconstruct a Diameter signaling attack on an LTE core network using Kibana to identify 2FA bypass and unauthorized transactions.",
+  "tactics": [
+   "Initial Access",
+   "Credential Access",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "ELK"
+  ]
+ },
+ {
+  "slug": "lummastealer-angry-likho",
+  "name": "LummaStealer - Angry Likho",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Analyze multi-stage malware behavior, decode obfuscated scripts, trace execution flow, and identify evasion, persistence, and exfiltration tactics using forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Event Viewer",
+   "CyberChef",
+   "DB Browser for SQLite",
+   "VirusTotal",
+   "Wireshark",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "maclock",
+  "name": "MacLock",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Investigate macOS authentication artifacts, decrypt `kcpassword`, and extract secure notes from `login.keychain-db` using `Chainbreaker` to reconstruct user activity.",
+  "tactics": [],
+  "tools": [
+   "Sublime Text",
+   "Python3",
+   "Exiftool",
+   "Chainbreaker"
+  ]
+ },
+ {
+  "slug": "malacrypt",
+  "name": "MalaCrypt",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "Develop skills in basic and advanced malware analysis, including static, dynamic, and code analysis, to identify, understand, and investigate malicious binaries.",
+  "tactics": [
+   "Execution",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "floss",
+   "PEStudio",
+   "ProcMon",
+   "Cutter",
+   "CAPA",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "maldoc101",
+  "name": "MalDoc101",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Analyze obfuscated scripts to identify malicious infrastructure, specifically extracting the first FQDN used to download a trojan, enhancing skills in threat hunting and incident response.",
+  "tactics": [
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "REMnux Virtual Machine",
+   "Terminal/Command prompt w/ Python installed",
+   "Oledump",
+   "Text Editor",
+   "olevba"
+  ]
+ },
+ {
+  "slug": "malicious-pypi",
+  "name": "Malicious PyPi",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Perform forensic analysis on a compromised Windows system to identify malware, trace attacker activity, and understand persistence mechanisms.",
+  "tactics": [
+   "Execution",
+   "Defense Impairment",
+   "Command and Control"
+  ],
+  "tools": [
+   "EZ Tools",
+   "DB Browser for SQLite",
+   "Strings",
+   "Event Log Explorer"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-1",
+  "name": "Malware Traffic Analysis 1",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Analyze network traffic using Wireshark to identify an infected host, trace an exploit kit infection chain, and extract malicious URLs and file hashes.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-2",
+  "name": "Malware Traffic Analysis 2",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Reconstruct an exploit kit attack chain from network traffic, identifying the infected host, extracting malware, and determining the exploited CVE using Wireshark and forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-3",
+  "name": "Malware Traffic Analysis 3",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 12,
+  "objective": "Synthesize network, binary, and threat intelligence artifacts to reconstruct an exploit kit attack chain, identifying components, deobfuscating payloads, and analyzing binary protections.",
+  "tactics": [
+   "Initial Access",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark",
+   "GHex",
+   "pesec",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-4",
+  "name": "Malware Traffic Analysis 4",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Reconstruct a malware infection timeline by analyzing network traffic, identifying exploit kit activity, and extracting indicators of compromise using Wireshark and NetworkMiner.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Defense Impairment",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-5",
+  "name": "Malware Traffic Analysis 5",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 15,
+  "objective": "Investigate network traffic using Wireshark, NetworkMiner, and Suricata to identify the specific malicious email responsible for system compromise.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark",
+   "Hybrid-analysis",
+   "VirusTotal",
+   "JS Obfuscator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "malware-traffic-analysis-6",
+  "name": "Malware Traffic Analysis 6",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 14,
+  "objective": "Investigate email, document, and network traffic using VirusTotal, oledump, and Wireshark to identify ransomware delivery mechanisms and C2 communications.",
+  "tactics": [
+   "Initial Access",
+   "Execution"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark",
+   "VirusTotal",
+   "JS Obfuscator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "maranhao",
+  "name": "Maranhao",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 21,
+  "objective": "Investigate a trojanized game installer by analyzing browser history, logs, registry hives, and filesystem artifacts to map the full attack chain and extract IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Collection"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "DB Browser for SQLite",
+   "Registry Explorer",
+   "PECmd",
+   "EvtxECmd",
+   "FTK Imager",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "markshell-ta577",
+  "name": "MarkShell - TA577",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 26,
+  "objective": "Investigate a multi-stage phishing intrusion from initial access through domain compromise, persistence, and C2 deployment.",
+  "tactics": [
+   "Reconnaissance",
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "CyberChef",
+   "CobaltStrikeParser",
+   "IDA",
+   "Splunk",
+   "Detect It Easy",
+   "scdbg",
+   "PEStudio",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "maromafix-falldown-ransomhub",
+  "name": "Maromafix Falldown - RansomHub",
+  "categories": [
+   "Threat Hunting",
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 34,
+  "objective": "Reconstruct a multi-stage ransomware attack by correlating Windows event logs, disk artifacts, and malware analysis using Elastic, MFTECmd, RegRipper, and DNSpy.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Impact"
+  ],
+  "tools": [
+   "RegRipper",
+   "DB Browser for SQLite",
+   "CyberChef",
+   "dnSpy",
+   "ELK",
+   "Timeline Explorer",
+   "MFTECmd",
+   "Detect It Easy",
+   "defender-dump.py",
+   "CobaltStrikeParser",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "mbuchus",
+  "name": "MBuchus",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Utilize OSINT, VirusTotal, and crt.sh to analyze a multi-stage malvertising campaign, identifying initial access, malware payloads, and attacker infrastructure.",
+  "tactics": [
+   "Resource Development",
+   "Command and Control"
+  ],
+  "tools": [
+   "AlienVault OTX",
+   "VirusTotal",
+   "ViewDNSInfo",
+   "crt.sh",
+   "OSINT",
+   "IPLookUp"
+  ]
+ },
+ {
+  "slug": "meteorhit-indra",
+  "name": "MeteorHit - Indra",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Reconstruct a wiper malware attack by analyzing registry, event logs, and USN journal artifacts using Registry Explorer, Event Log Explorer, and VirusTotal.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Impact"
+  ],
+  "tools": [
+   "Registry Explorer",
+   "Event Log Explorer",
+   "NTFS Log Tracker",
+   "MFTECmd",
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "midnight-rdp",
+  "name": "Midnight RDP",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 20,
+  "objective": "Reconstruct a sophisticated intrusion's timeline by correlating Windows Event, Sysmon, and PowerShell logs in Splunk, identifying RDP-based initial access, persistence, privilege escalation, and C2.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "ELK",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "minerhunt",
+  "name": "MinerHunt",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 17,
+  "objective": "Correlate Windows Event Logs and Sysmon artifacts to reconstruct a SQL Server attack, identifying initial access, multiple persistence techniques, and the attacker's cryptomining objective.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Timeline Explorer",
+   "Evtxcmd",
+   "Threat Intel tools",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "mrgamer",
+  "name": "MrGamer",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Develop investigative skills by reconstructing user behavior, tracing digital footprints, and answering contextual questions based on evidence from a compromised system.",
+  "tactics": [
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "CyberChef",
+   "DCode",
+   "DB Browser for SQLite",
+   "Unfurl",
+   "Arsenal Image Mounter",
+   "Autopsy"
+  ]
+ },
+ {
+  "slug": "mrrobot",
+  "name": "MrRobot",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 24,
+  "objective": "Reconstruct a multi-stage attack chain using Volatility Framework to analyze memory dumps, identifying malware, persistence, credential theft, lateral movement, and C2 communications across compromised systems.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Volatility 2",
+   "Volatility 3",
+   "Rstudio",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "msi",
+  "name": "MSI",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze a malicious MSI installer by deconstructing its components, extracting embedded scripts, identifying C2 communication, and attributing the malware family.",
+  "tactics": [],
+  "tools": [
+   "Advanced Installer",
+   "ProcMon",
+   "Strings",
+   "VirusTotal",
+   "URLHaus",
+   "CyberChef",
+   "VS Code"
+  ]
+ },
+ {
+  "slug": "nerisbot",
+  "name": "NerisBot",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "easy",
+  "questions": 5,
+  "objective": "Reconstruct the attack timeline by correlating Suricata and Zeek logs in Splunk to identify malicious IPs, C2 domains, targeted hosts, and file hashes.",
+  "tactics": [
+   "Command and Control"
+  ],
+  "tools": [
+   "Splunk"
+  ]
+ },
+ {
+  "slug": "netsupport-rat-ta569",
+  "name": "NetSupport RAT - TA569",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Reconstruct a sophisticated attack timeline by analyzing Windows logs, network traffic, and disk artifacts to identify initial access, persistence, and data exfiltration using Splunk and forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "netx-support-ta569",
+  "name": "NetX-Support - TA569",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Analyze browser, filesystem, and event artifacts to reconstruct the attack chain, identify the malicious download source, extract second-stage and C2 indicators, and determine persistence, account creation, and lateral movement.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "Eric Zimmerman Tools",
+   "FTK Imager",
+   "Chainsaw",
+   "Registry Explorer",
+   "NTFS Log Tracker",
+   "Timeline Explorer"
+  ]
+ },
+ {
+  "slug": "nintendohunt",
+  "name": "NintendoHunt",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 6,
+  "objective": "Analyze a Windows memory dump using Volatility to identify malicious processes, extract hidden data, investigate registry artifacts, and uncover user activity and persistence mechanisms.",
+  "tactics": [
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Volatility 2",
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "nitrogen-blackcat-ransomware",
+  "name": "Nitrogen - Blackcat Ransomware",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 27,
+  "objective": "Reconstruct multi-stage ransomware attack by correlating Splunk telemetry, disk forensics, and registry artifacts to identify persistence mechanisms, credential dumping, and lateral movement.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "DB Browser for SQLite",
+   "Registry Explorer",
+   "MFTECmd",
+   "Splunk",
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "nukethebrowser",
+  "name": "NukeTheBrowser",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 14,
+  "objective": "Analyze network traffic, deobfuscate JavaScript, and examine shellcode to reconstruct a drive-by download attack chain, identifying malware, exploits, and attack methodology using Wireshark and forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "Wireshark",
+   "SpiderMonkey",
+   "VirusTotal",
+   "libemu",
+   "Network Minen",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "obfuscated",
+  "name": "Obfuscated",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 18,
+  "objective": "Deobfuscate multi-stage VBA and JavaScript malware from a Word document, extracting IOCs and reconstructing execution flow with Oledump, CyberChef, and WSH.",
+  "tactics": [
+   "Initial Access",
+   "Execution"
+  ],
+  "tools": [
+   "CmdWatcher",
+   "Oledump",
+   "sha256sum",
+   "olevba",
+   "dd",
+   "VS Code",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "oceanlotus",
+  "name": "OceanLotus",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 12,
+  "objective": "Analyze a memory dump using forensic techniques to identify artifacts from a spear-phishing attack and trace its origin.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Collection",
+   "Exfiltration"
+  ],
+  "tools": [
+   "PE-bear",
+   "MemProcFS",
+   "Strings",
+   "olevba",
+   "onlinegdb",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "opencti-101-apt29",
+  "name": "OpenCTI 101 - APT29",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 11,
+  "objective": "Identify threat actor TTPs and IOCs for APT29 by navigating and querying the OpenCTI threat intelligence platform.",
+  "tactics": [
+   "Initial Access",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "OpenCTI",
+   "Threat Intelligence Reports",
+   "OSINT"
+  ]
+ },
+ {
+  "slug": "openfire",
+  "name": "Openfire",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Reconstruct an Openfire server attack timeline by analyzing PCAP files with Wireshark to identify login attempts, plugin uploads, command execution, and the exploited CVE-2023-32315 vulnerability.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "Network Miner",
+   "Brim",
+   "Zui"
+  ]
+ },
+ {
+  "slug": "openwire",
+  "name": "OpenWire",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Investigate a Java deserialization vulnerability in Apache ActiveMQ that enables remote code execution through insecure class loading.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "Zui",
+   "Network Miner"
+  ]
+ },
+ {
+  "slug": "oski",
+  "name": "Oski",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze a sandbox report using Any.Run to identify Stealc malware behavior, extract configuration details, and map observed tactics to MITRE ATT&CK.",
+  "tactics": [],
+  "tools": [
+   "VirusTotal",
+   "ANY.RUN"
+  ]
+ },
+ {
+  "slug": "packetdetective",
+  "name": "PacketDetective",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 8,
+  "objective": "Analyze network traffic in PCAP files using Wireshark to extract IOCs and reconstruct attacker tactics like authentication and remote execution.",
+  "tactics": [
+   "Execution",
+   "Defense Impairment",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "packetmaze",
+  "name": "PacketMaze",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Analyze network traffic using Wireshark to identify suspicious activity, extract IOCs, and uncover authentication details, file transfers, and server information across multiple protocols.",
+  "tactics": [
+   "Initial Access"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "suricata.rules",
+   "NetworkMiner",
+   "Wireshark",
+   "MAC lookup"
+  ]
+ },
+ {
+  "slug": "paloaltorce-uta0218",
+  "name": "PaloAltoRCE - UTA0218",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 6,
+  "objective": "Reconstruct a Palo Alto RCE attack timeline by analyzing firewall logs in ELK, identifying initial access, reverse shell, persistence, and data exfiltration artifacts.",
+  "tactics": [],
+  "tools": [
+   "ELK"
+  ]
+ },
+ {
+  "slug": "patrick",
+  "name": "Patrick",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 15,
+  "objective": "Investigate iOS device artifacts using iLEAPP and SQLite Browser to identify anomalous user behavior and potential illicit activity.",
+  "tactics": [
+   "Credential Access"
+  ],
+  "tools": [
+   "CyberChef",
+   "iLEAPP",
+   "DCode",
+   "DB Browser for SQLite",
+   "Unfurl",
+   "ios_apt"
+  ]
+ },
+ {
+  "slug": "perfect-survey",
+  "name": "Perfect Survey",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 13,
+  "objective": "",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "phishstrike",
+  "name": "PhishStrike",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Analyze email headers and threat intelligence to identify phishing indicators, malware persistence, and C2 channels, extracting actionable IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution"
+  ],
+  "tools": [
+   "Email Header Analyzer",
+   "URLHaus",
+   "URLScan.io",
+   "VirusTotal",
+   "MalwareBazaar",
+   "VMRay"
+  ]
+ },
+ {
+  "slug": "phishy",
+  "name": "Phishy",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Reconstruct an end-to-end phishing attack chain by analyzing disk image, registry, application, and browser artifacts using various forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Autopsy",
+   "Registry Explorer",
+   "DB Browser for SQLite",
+   "browsinghistoryview",
+   "passwordfox",
+   "Whatsapp viewer",
+   "Oledump",
+   "VirusTotal",
+   "HybridAnalysis"
+  ]
+ },
+ {
+  "slug": "phobos",
+  "name": "Phobos",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 11,
+  "objective": "Analyze the Phobos ransomware executable to identify its core behavior, encryption methods, and extract actionable indicators of compromise (IOCs).",
+  "tactics": [],
+  "tools": [
+   "x32dbg",
+   "HxD",
+   "IDA",
+   "Ghidra",
+   "CFF Explorer",
+   "PEStudio",
+   "PEiD"
+  ]
+ },
+ {
+  "slug": "poisoned-pytorch",
+  "name": "Poisoned PyTorch",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 21,
+  "objective": "Investigate a software supply-chain compromise that escalates into a ransomware attack, with emphasis on identifying pre-encryption operations.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "CyberChef",
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "poisonedcredentials",
+  "name": "PoisonedCredentials",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 5,
+  "objective": "Analyze network traffic for LLMNR/NBT-NS poisoning attacks using Wireshark to identify the rogue machine, compromised accounts, and affected systems.",
+  "tactics": [
+   "Credential Access",
+   "Collection"
+  ],
+  "tools": [
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "propdf",
+  "name": "ProPDF",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 6,
+  "objective": "Reconstruct a malicious PDF attack chain by analyzing embedded JavaScript, extracting the PE payload, identifying Windows API calls, and uncovering the C2 server and downloaded file.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "PDFwalker",
+   "VsCode",
+   "HexEditor",
+   "CyberChef",
+   "Ghidra",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "proxylogon-hafnium",
+  "name": "ProxyLogon - HAFNIUM",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 10,
+  "objective": "Investigate SIEM logs using GrayLog to identify indicators of compromise associated with the ProxyLogon vulnerability (CVE-2021-26855).",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "GrayLog",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "proxyshell",
+  "name": "ProxyShell",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 10,
+  "objective": "Analyze network traffic to identify exploitation attempts targeting the ProxyShell vulnerability and extract relevant indicators of compromise.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence"
+  ],
+  "tools": [
+   "Wireshark",
+   "Network Miner",
+   "Brim",
+   "JohnTheRipper",
+   "Apackets.com"
+  ]
+ },
+ {
+  "slug": "psexec-hunt",
+  "name": "PsExec Hunt",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze SMB traffic in a PCAP file using Wireshark to identify PsExec lateral movement, compromised systems, user credentials, and administrative shares.",
+  "tactics": [
+   "Execution",
+   "Defense Impairment",
+   "Discovery",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "pwneddc-fin7",
+  "name": "PwnedDC - FIN7",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 12,
+  "objective": "Learn to investigate a domain controller compromise by analyzing logs, memory, and artifacts to uncover attacker tactics, persistence methods, and the full intrusion timeline.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Volatility 2",
+   "Volatility 3",
+   "Arsenal Image Mounter",
+   "IDA",
+   "Capa-Explorer",
+   "TurnedOnTimesView",
+   "FullEventLogView",
+   "MFTECmd",
+   "USB Forensic Tracker",
+   "WinDbg",
+   "Outlook Forensics Wizard",
+   "FakeNet",
+   "Oletools",
+   "Wireshark",
+   "scdbg",
+   "Resource Hacker",
+   "mimikatz",
+   "Event Log Explorer",
+   "Registry Explorer",
+   "String",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "qbot",
+  "name": "QBot",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Reconstruct the QBot malware infection timeline by analyzing memory dumps, identifying malicious processes, files, and network communications using Volatility3 and VirusTotal.",
+  "tactics": [
+   "Exfiltration"
+  ],
+  "tools": [
+   "Volatility 3"
+  ]
+ },
+ {
+  "slug": "qradar101",
+  "name": "Qradar101",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 24,
+  "objective": "Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "QRadar",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "raas-unfold-ransomhub",
+  "name": "RaaS Unfold - RansomHub",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 20,
+  "objective": "A ransomware empire built on the ashes of its predecessors — trace its origins, expose its operators, and unfold its playbook.",
+  "tactics": [
+   "Impact"
+  ],
+  "tools": [
+   "Google Search",
+   "VirusTotal"
+  ]
+ },
+ {
+  "slug": "raining-dinosaurs-storm-2603",
+  "name": "Raining Dinosaurs - Storm-2603",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 17,
+  "objective": "Hunt through Splunk logs to uncover how attackers exploited a DMZ server, pivoted to the internal network, and deployed ransomware after exfiltrating sensitive data.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Lateral Movement",
+   "Collection"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "ramnit",
+  "name": "Ramnit",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze a memory dump using Volatility to identify a malicious process, extract network IOCs, file hash, and compilation timestamp, correlating with external threat intelligence.",
+  "tactics": [],
+  "tools": [
+   "Volatility 3",
+   "VirusTotal"
+  ]
+ },
+ {
+  "slug": "ransomed",
+  "name": "Ransomed",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 11,
+  "objective": "Reconstruct advanced malware execution by performing dynamic analysis and memory forensics to diagnose process hollowing, dynamic API resolution, and string obfuscation.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "PE Tool",
+   "x32 debugger",
+   "PEStudio",
+   "scdbg",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "ransomhub",
+  "name": "RansomHub",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 20,
+  "objective": "Reconstruct RansomHub ransomware attack chain by correlating Splunk logs and disk artifacts to identify password spray, lateral movement, data exfiltration, and ransomware deployment tactics.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "rarcve",
+  "name": "RARCVE",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Analyze, decrypt, and trace a multi-stage malware infection, uncovering obfuscation techniques, payload delivery methods, and network communication indicators.",
+  "tactics": [],
+  "tools": [
+   "CyberChef",
+   "VsCode",
+   "scdbg"
+  ]
+ },
+ {
+  "slug": "rceminer",
+  "name": "RCEMiner",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Correlate network traffic, RCE exploits, and C2 communications using Wireshark to reconstruct a multi-stage web server compromise, cryptomining, and lateral movement.",
+  "tactics": [
+   "Execution",
+   "Discovery",
+   "Lateral Movement",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Wireshark",
+   "Brim"
+  ]
+ },
+ {
+  "slug": "re101",
+  "name": "RE101",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze diverse file types including binaries, obfuscated scripts, and corrupted archives using tools like Cutter, hex editors, and debuggers to extract hidden flags and reverse custom encryption.",
+  "tactics": [
+   "Execution"
+  ],
+  "tools": [
+   "IDA",
+   "Ghidra",
+   "Cutter",
+   "HxD",
+   "zipdetails",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "recruiter-hanoi-op",
+  "name": "Recruiter - Hanoi Op",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 22,
+  "objective": "When a \"candidate\" submits a resume that’s more than it seems, it’s up to you to hunt through the artifacts, reconstruct the infection chain, and stop a data breach in its tracks.",
+  "tactics": [
+   "Execution",
+   "Credential Access"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "PECmd",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "EvtxECmd",
+   "DB Browser for SQLite",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "red-stealer",
+  "name": "Red Stealer",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Analyze a suspicious executable using VirusTotal and MalwareBazaar to extract IOCs, identify C2 infrastructure, MITRE ATT&CK techniques, and privilege escalation mechanisms.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Collection",
+   "Impact"
+  ],
+  "tools": [
+   "Whois",
+   "VirusTotal",
+   "MalwareBazaar",
+   "ThreatFox",
+   "ANY.RUN",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "redishell-kinsing",
+  "name": "RediShell - Kinsing",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 23,
+  "objective": "The packet capture was killed mid-attack. Race against incomplete evidence to reconstruct how attackers breached Jenkins, pivoted through containers, and escaped to the host",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access"
+  ],
+  "tools": [
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "redline",
+  "name": "RedLine",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Employ Volatility to analyze a memory dump, identifying suspicious processes, network IOCs, memory protections, and attacker's command-and-control infrastructure.",
+  "tactics": [
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "Volatility",
+   "Strings",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "reporeaper-water-curse",
+  "name": "RepoReaper - Water Curse",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 14,
+  "objective": "Investigate a disk image to uncover a UAC bypass and process hollowing and trace the attack back to a compromised software repository.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Event Log Explorer",
+   "DB Browser for SQLite",
+   "FTK Imager",
+   "VirusTotal",
+   "Registry Explorer",
+   "NTFS Log Tracker",
+   "MFTECmd",
+   "Timeline Explorer",
+   "DCode",
+   "PECmd",
+   "EZ Tools",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "resourcepacks",
+  "name": "ResourcePacks",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Reconstruct an attack timeline by analyzing forensic artifacts to identify a UAC bypass, WMI persistence, and backdoor user creation techniques.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "Notepad++",
+   "PECmd",
+   "DB Browser for SQLite",
+   "Event Log Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "retailbreach",
+  "name": "RetailBreach",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Investigate network traffic with Wireshark to identify attacker TTPs, extract XSS payloads and session tokens, and determine exploited web application vulnerabilities.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "Wireshark",
+   "Network Miner",
+   "Brim"
+  ]
+ },
+ {
+  "slug": "reveal",
+  "name": "Reveal",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Reconstruct a multi-stage attack by analyzing Windows memory dumps using Volatility 3, identifying malicious processes, command lines, and correlating findings with threat intelligence.",
+  "tactics": [
+   "Discovery"
+  ],
+  "tools": [
+   "Volatility 3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "revengehotels-apt",
+  "name": "RevengeHotels APT",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 15,
+  "objective": "Reconstruct multi-stage APT attack chain by correlating email, browser, Sysmon logs, and registry artifacts to identify persistence mechanisms and data exfiltration techniques.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "CyberChef",
+   "dnSpy",
+   "DB Browser for SQLite",
+   "Windows Event Viewer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "revil-gold-southfield",
+  "name": "REvil - GOLD SOUTHFIELD",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Analyze Sysmon logs in Elastic SIEM to investigate REvil ransomware attack behaviors, decode recovery sabotage commands, and identify IOCs including the C2 onion domain.",
+  "tactics": [
+   "Execution",
+   "Privilege Escalation",
+   "Discovery"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK",
+   "OSINT",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "rhadamanthys",
+  "name": "Rhadamanthys",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 20,
+  "objective": "Hunt mail caches, MFT records, and Prefetch to unmask the initial dropper and rebuild the attack timeline.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Command and Control"
+  ],
+  "tools": [
+   "CyberChef",
+   "Eric Zimmerman Tools",
+   "Timeline Explorer",
+   "Event Log Explorer",
+   "VirusTotal",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "rhysida-vice-society",
+  "name": "Rhysida - Vice Society",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 22,
+  "objective": "Reconstruct the Rhysida ransomware attack chain, identifying initial access, persistence, C2, and impact using Splunk and CyberChef.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "ELK",
+   "CyberChef",
+   "Splunk",
+   "SIEM",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "rilide",
+  "name": "Rilide",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 13,
+  "objective": "Reconstruct Rilide browser extension attack mechanisms by deobfuscating JavaScript, analyzing Chrome extension artifacts, and leveraging OSINT to identify persistence, C2, and exfiltration IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control"
+  ],
+  "tools": [
+   "CyberChef",
+   "VsCode",
+   "Blockchain Explorer",
+   "Threat Intelligence Reports",
+   "VirusTotal",
+   "JavaScript Deobuscator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "roasttoroot",
+  "name": "RoastToRoot",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 20,
+  "objective": "Analyze network traffic to reconstruct a complete domain compromise attack chain, from AS-REP Roasting and Kerberoasting through privilege escalation, lateral movement, and data exfiltration using rclone.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Notepad++",
+   "7zip",
+   "JohnTheRipper",
+   "Wireshark",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "rotajakiro",
+  "name": "RotaJakiro",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 10,
+  "objective": "Reverse engineer and analyze RotaJakiro Linux malware using Ghidra, strace, and Wireshark to identify persistence, anti-analysis, and C2 mechanisms.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "Ghidra",
+   "IDA Pro",
+   "Python3",
+   "GDB",
+   "InetSim",
+   "Wireshark",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "s3credentialshunt",
+  "name": "S3CredentialsHunt",
+  "categories": [
+   "Cloud Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Analyze AWS CloudTrail logs with `jq` to reconstruct attacker TTPs, identify privilege escalation, and detect persistence mechanisms within a compromised cloud environment.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Collection"
+  ],
+  "tools": [
+   "jq",
+   "Linux Command Line Tools"
+  ]
+ },
+ {
+  "slug": "satisfaction",
+  "name": "Satisfaction",
+  "categories": [
+   "Malware Analysis",
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 18,
+  "objective": "A disgruntled customer, a compromised survey, and a trail of evidence hiding in plain sight — can you trace the attack from the first click to the final payload?",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access"
+  ],
+  "tools": [
+   "URLScan.io",
+   "Detect It Easy",
+   "CyberChef",
+   "PowerShell",
+   "Wireshark",
+   "Ghidra",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "seized",
+  "name": "Seized",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Using Volatility to investigate a Linux compromise, uncovering attacker techniques like persistence, rootkits, and network backdoors, while reinforcing skills in threat hunting and incident response.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "Volatility",
+   "CyberChef",
+   "grep",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "shadowroast",
+  "name": "ShadowRoast",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Investigate and analyze malicious activity in an Active Directory environment using log analysis and Splunk queries to identify initial access, persistence, lateral movement, and data exfiltration techniques.",
+  "tactics": [
+   "Defense Impairment",
+   "Credential Access"
+  ],
+  "tools": [
+   "Splunk",
+   "EZ Tools",
+   "Event Log Explorer",
+   "KAPE",
+   "Event Viewer",
+   "CyberChef"
+  ]
+ },
+ {
+  "slug": "sigma-101",
+  "name": "Sigma 101",
+  "categories": [
+   "Detection Engineering"
+  ],
+  "difficulty": "medium",
+  "questions": 3,
+  "objective": "Analyze suspicious logs to author custom Sigma rules that detect lateral movement techniques within a SIEM environment.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment"
+  ],
+  "tools": [
+   "Sigma",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "sigmapredator",
+  "name": "SigmaPredator",
+  "categories": [
+   "Detection Engineering"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Design and validate Sigma rules to detect event log clearing techniques across CLI, WMI, and PowerShell execution artifacts.",
+  "tactics": [
+   "Defense Impairment"
+  ],
+  "tools": [
+   "Sigma",
+   "Chainsaw",
+   "VsCode"
+  ]
+ },
+ {
+  "slug": "silent-breach",
+  "name": "Silent Breach",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze a forensic image to extract communication artifacts, identify malware behavior, and decrypt encrypted files using FTK Imager, string analysis, and PowerShell scripting.",
+  "tactics": [
+   "Execution"
+  ],
+  "tools": [
+   "FTK Imager",
+   "Text Editor",
+   "SQLite Viewer",
+   "Strings",
+   "CyberChef"
+  ]
+ },
+ {
+  "slug": "solardisruption",
+  "name": "SolarDisruption",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 12,
+  "objective": "Investigate PLC network traffic and system logs to identify insider manipulation attempts and determine the cause of the solar panel disruption at AetherCore Technologies.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Zui",
+   "Network Miner",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "spooler-apt28",
+  "name": "Spooler - APT28",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 15,
+  "objective": "Hunt browser downloads, MFT records, and Prefetch to unmask the initial dropper and rebuild the attack timeline.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "DB Browser for SQLite",
+   "VirusTotal",
+   "Registry Explorer",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "spotlight",
+  "name": "Spotlight",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 15,
+  "objective": "Investigate macOS disk images using Autopsy, mac_apt, and SQLite to identify and extract hidden data potentially concealed with steganography.",
+  "tactics": [
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "Autopsy",
+   "mac_apt",
+   "SQLite",
+   "steghide",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "spottedinthewild",
+  "name": "SpottedInTheWild",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 9,
+  "objective": "Reconstruct an attack timeline by analyzing disk images, event logs, and malicious scripts to identify initial access, persistence, and data exfiltration techniques.",
+  "tactics": [],
+  "tools": [
+   "Arsenal Image Mounter",
+   "SQLite Viewer",
+   "Eric Zimmerman Tools",
+   "NTFS Log Tracker",
+   "Registry Explorer",
+   "Event Log Explorer",
+   "Strings",
+   "CyberChef"
+  ]
+ },
+ {
+  "slug": "starktech-incident-apt41",
+  "name": "StarkTech Incident - APT41",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 21,
+  "objective": "Reconstruct a multi-stage attack timeline by analyzing Sysmon and Windows event logs in Splunk to identify attacker tactics from initial access to data exfiltration.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Splunk"
+  ]
+ },
+ {
+  "slug": "stealthy-ascent",
+  "name": "Stealthy Ascent",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 12,
+  "objective": "Reconstruct a Linux system's unauthorized access and ransomware incident by analyzing logs, browser, and email artifacts, decrypting payloads, and identifying persistence.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Built-in Linux tools and utilities",
+   "DB Browser for SQLite",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "stolen-time-hiddentear",
+  "name": "Stolen Time - HiddenTear",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 30,
+  "objective": "Synthesize and correlate diverse forensic artifacts from multiple systems to reconstruct the complete HiddenTear attack chain and attribute threat actor TTPs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement",
+   "Collection",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "VirusTotal",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "sysinternals",
+  "name": "Sysinternals",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Conduct endpoint forensic analysis to detect, analyze, and understand malware infections using disk images, registry artifacts, and threat intelligence.",
+  "tactics": [
+   "Execution",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Registry Explorer",
+   "Event Log Explorer",
+   "AppCompatCachParser",
+   "VirusTotal",
+   "Web Cache View",
+   "FTK Imager",
+   "Autopsy"
+  ]
+ },
+ {
+  "slug": "szechuan-sauce",
+  "name": "Szechuan Sauce",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 19,
+  "objective": "Reconstruct a data exfiltration incident by correlating memory, disk, network, and log artifacts using a suite of forensic tools.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Registry Explorer",
+   "Brim",
+   "Wireshark",
+   "FTK Imager",
+   "Volatility 3",
+   "Event Log Explorer",
+   "ClamAV",
+   "Impacket",
+   "rifiuti2",
+   "hashcat",
+   "VirusTotal",
+   "Hybrid-analysis",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "t1059-007",
+  "name": "T1059-007",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "hard",
+  "questions": 6,
+  "objective": "Analyze malware file system activity with ProcMon, identify scheduled task persistence using AutoRuns, and configure PowerShell logging for script execution.",
+  "tactics": [
+   "Execution"
+  ],
+  "tools": [
+   "Notepad++",
+   "CyberChef",
+   "ProcMon",
+   "AutoRuns",
+   "Process Hacker",
+   "diff",
+   "PowerShell transcripts"
+  ]
+ },
+ {
+  "slug": "t1110003",
+  "name": "T1110-003",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "easy",
+  "questions": 8,
+  "objective": "",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Lateral Movement"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "t1197",
+  "name": "T1197",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze Windows event logs in Splunk to identify T1197 BITS abuse, LOLBAS usage, attacker IP, and persistence mechanisms.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Splunk",
+   "ELK",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "t1547",
+  "name": "T1547",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Investigate fileless malware by analyzing registry artifacts, decrypting in-memory payloads, and identifying malware families using forensic tools and reverse engineering techniques.",
+  "tactics": [
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "Registry Explorer",
+   "dnSpy",
+   "CyberChef",
+   "JavaScript Deobuscator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "t1583002",
+  "name": "T1583.002",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 8,
+  "objective": "Analyze a malware campaign using MISP to identify communication patterns and extract key indicators of compromise (IOCs), including malware family and file hashes.",
+  "tactics": [
+   "Resource Development",
+   "Initial Access",
+   "Command and Control"
+  ],
+  "tools": [
+   "MISP"
+  ]
+ },
+ {
+  "slug": "t1584004",
+  "name": "T1584.004",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Apply MISP to manage security events, create attributes, and integrate threat intelligence from data feeds.",
+  "tactics": [
+   "Resource Development"
+  ],
+  "tools": [
+   "MISP"
+  ]
+ },
+ {
+  "slug": "t1595",
+  "name": "T1595",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 12,
+  "objective": "Analyze the PCAP file to identify malicious activity, using tools like Wireshark to detect threats, IP origins, and attacker techniques.",
+  "tactics": [
+   "Reconnaissance"
+  ],
+  "tools": [
+   "Wireshark",
+   "VirusTotal"
+  ]
+ },
+ {
+  "slug": "t1598002-dragonfly",
+  "name": "T1598.002 - Dragonfly",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 8,
+  "objective": "Analyze a spearphishing email to identify social engineering techniques and extract indicators of compromise from its headers and malicious attachment.",
+  "tactics": [
+   "Reconnaissance"
+  ],
+  "tools": [
+   "Oledump",
+   "Outlookspy",
+   "CyberChef",
+   "Python",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "tealer",
+  "name": "$tealer",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 26,
+  "objective": "Reverse engineer advanced stealer malware, identifying PE structure, dynamic API resolution, anti-analysis techniques, and RC4 string decryption to extract C2 IOCs using IDA Pro and CAPA.",
+  "tactics": [
+   "Execution",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "IDA",
+   "PEbear",
+   "PEiD",
+   "hashdb",
+   "CAPA",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "teamcity-exploit-apt29",
+  "name": "TeamCity Exploit - APT29",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "insane",
+  "questions": 43,
+  "objective": "Correlate Splunk logs and host forensic artifacts from triage images to reconstruct a multi-stage TeamCity compromise and identify attacker TTPs.",
+  "tactics": [
+   "Resource Development",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Notepad++",
+   "Event Log Explorer",
+   "Eric Zimmerman Tools",
+   "KAPE",
+   "NTFS Log Tracker",
+   "RegRipper",
+   "Sysinternals Suite",
+   "CyberChef",
+   "VsCode",
+   "7zip",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "teamspy",
+  "name": "TeamSpy",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 16,
+  "objective": "Reconstruct the attack timeline by analyzing memory dumps and suspicious document files using Volatility, OfficeMalScanner, and VirusTotal.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Volatilty 2.6",
+   "OSTviewer",
+   "OfficeMalScanner",
+   "VirusTotal",
+   "dotnetfiddle"
+  ]
+ },
+ {
+  "slug": "telestealer",
+  "name": "TeleStealer",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Analyze packed malware behavior, detect persistence mechanisms, and investigate data exfiltration through dynamic analysis, traffic interception, and reverse engineering techniques.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Detect It Easy",
+   "PEStudio",
+   "UPX",
+   "Wireshark",
+   "FakeNet",
+   "ProcMon",
+   "CAPA",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "the-crime",
+  "name": "The Crime",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Utilize ALEAPP to analyze Android device artifacts, reconstructing a victim's financial details, movements, and communication patterns.",
+  "tactics": [],
+  "tools": [
+   "ALEAPP",
+   "DB Browser for SQLite"
+  ]
+ },
+ {
+  "slug": "thetruth",
+  "name": "TheTruth",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Reconstruct an Android attack timeline using forensic artifacts to identify RatMilad malware, extract its C2, and attribute a fraudulent transaction.",
+  "tactics": [],
+  "tools": [
+   "Autopsy",
+   "JADX",
+   "Strings",
+   "DB Browser for SQLite"
+  ]
+ },
+ {
+  "slug": "toctou-oilrig",
+  "name": "TOCTOU - OilRig",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 14,
+  "objective": "Correlate memory, registry, and filesystem artifacts using Volatility 3, MemProcFS, and Timeline Explorer to reconstruct a multi-stage attack timeline and map attacker TTPs to MITRE ATT&CK.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation"
+  ],
+  "tools": [
+   "MemProcFS",
+   "Volatility 3",
+   "Strings",
+   "VirusTotal",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "tomcat-takeover",
+  "name": "Tomcat Takeover",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 8,
+  "objective": "Analyze network traffic using Wireshark's custom columns, filters, and statistics to identify suspicious web server administration access and potential compromise.",
+  "tactics": [
+   "Reconnaissance",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "NetworkMiner"
+  ]
+ },
+ {
+  "slug": "tomcracked",
+  "name": "TomCracked",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 21,
+  "objective": "Analyze a web server compromise by analyzing network traffic to trace a Java deserialization exploit and the subsequent deployment of a Cobalt Strike beacon.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Zui (Brim Security)",
+   "NetworkMiner",
+   "Wireshark",
+   "CobaltStrikeParser",
+   "Python3",
+   "PowerShell"
+  ]
+ },
+ {
+  "slug": "trickbot-wizard-spider",
+  "name": "Trickbot - WIZARD SPIDER",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "medium",
+  "questions": 6,
+  "objective": "Develop threat intelligence skills by analyzing malware behavior, identifying attack techniques, and uncovering command-and-control infrastructure.",
+  "tactics": [],
+  "tools": [
+   "VirusTotal"
+  ]
+ },
+ {
+  "slug": "trident",
+  "name": "Trident",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 9,
+  "objective": "Synthesize network, document, and malware forensics findings to reconstruct a multi-stage phishing attack, identifying exploit chains and C2 communication.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Execution",
+   "Command and Control"
+  ],
+  "tools": [
+   "Brim",
+   "suricatarunner",
+   "NetworkMiner",
+   "Wireshark",
+   "IDA",
+   "MAC address lookup",
+   "outlook",
+   "VirusTotal",
+   "scdbg",
+   "HxD",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "trigona-ransomware-water-ungaw",
+  "name": "Trigona Ransomware - Water Ungaw",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Learn to investigate ransomware attacks by analyzing logs, registry entries, and artifacts to trace attacker actions, tools used, and identify indicators of compromise.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Impact"
+  ],
+  "tools": [
+   "EZ Tools",
+   "Event Log Explorer",
+   "KAPE",
+   "Event Viewer",
+   "NTFS Log Tracker",
+   "CyberChef",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "tusk-infostealer",
+  "name": "Tusk Infostealer",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Analyze threat intelligence and malware configuration to identify TTPs, extract IOCs, and track cryptocurrency flow of the Tusk Infostealer campaign.",
+  "tactics": [],
+  "tools": [
+   "Kaspersky Threat Intelligence Portal",
+   "Threat Intelligence Reports"
+  ]
+ },
+ {
+  "slug": "ulysses",
+  "name": "Ulysses",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 11,
+  "objective": "Analyze Linux system artifacts, including memory dumps and logs, with Volatility and FTK Imager to reconstruct an attack and identify IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Volatility",
+   "010 Editor",
+   "Autopsy",
+   "FTK Imager",
+   "VsCode"
+  ]
+ },
+ {
+  "slug": "unpackme",
+  "name": "UnPackMe",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "insane",
+  "questions": 8,
+  "objective": "Analyze packed ShadowSteal malware using dynamic and static reverse engineering to extract the RC4 key, mutex, and self-deletion command.",
+  "tactics": [],
+  "tools": [
+   "IDA",
+   "Ghidra",
+   "x64dbg"
+  ]
+ },
+ {
+  "slug": "vaultbreak",
+  "name": "VaultBreak",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 10,
+  "objective": "Reconstruct a multi-stage attack by analyzing Sysmon, WMI, and Prefetch logs to identify initial infection, advanced persistence, and C2 communications.",
+  "tactics": [
+   "Reconnaissance",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control"
+  ],
+  "tools": [
+   "PECmd",
+   "Event Log Explorer",
+   "Event Viewer",
+   "CyberChef",
+   "Notepad++",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "volatility-traces",
+  "name": "Volatility Traces",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze a memory dump using Volatility to identify malicious processes, persistence mechanisms, defense evasion techniques, and map them to MITRE ATT&CK.",
+  "tactics": [],
+  "tools": [
+   "Volatility 3 (v2.7.0+ REQUIRED)"
+  ]
+ },
+ {
+  "slug": "voldemort-apt41",
+  "name": "Voldemort - APT41",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 12,
+  "objective": "Synthesize disparate forensic artifacts across email, network, and host logs to reconstruct a multi-stage phishing, malware, and C2 attack, attributing it to a known campaign.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Discovery",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Web Cache View",
+   "Strings",
+   "Splunk",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "web-investigation",
+  "name": "Web Investigation",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 9,
+  "objective": "Examine network traffic with Wireshark to investigate web server compromise, identify SQL injection, extract attacker credentials, and detect uploaded malware.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Command and Control"
+  ],
+  "tools": [
+   "Wireshark",
+   "Network Miner"
+  ]
+ },
+ {
+  "slug": "weblogic",
+  "name": "WebLogic",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Reconstruct a WebLogic server attack timeline by analyzing memory dumps MemProcFS output to identify initial access, persistence, C2, and data exfiltration IOCs.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "CobaltStrikeParser"
+  ]
+ },
+ {
+  "slug": "webstrike",
+  "name": "WebStrike",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Analyze network traffic using Wireshark to investigate a web server compromise, identify web shell deployment, reverse shell communication, and data exfiltration.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "wiredive",
+  "name": "WireDive",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 35,
+  "objective": "Analyze diverse network traffic using Wireshark to decrypt HTTPS, identify protocol misconfigurations, and extract critical network and system forensic artifacts.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Brim",
+   "Wireshark"
+  ]
+ },
+ {
+  "slug": "workfromhome",
+  "name": "WorkFromHome",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 15,
+  "objective": "Analyze forensic artifacts to trace an attacker's progression from initial social engineering and remote access to a \"Sticky Keys\" privilege escalation.",
+  "tactics": [
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Lateral Movement",
+   "Command and Control"
+  ],
+  "tools": [
+   "Eric Zimmerman Tools",
+   "Event Log Explorer",
+   "Event Viewer",
+   "DB Browser for SQLite",
+   "Notepad++",
+   "Registry Explorer"
+  ]
+ },
+ {
+  "slug": "xlm-macros",
+  "name": "XLM Macros",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 14,
+  "objective": "Analyze Excel 4.0 macros using XLMDeobfuscator and OLEDUMP to identify anti-analysis techniques and subsequent stage download attempts.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Discovery",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "REMnux VM",
+   "XLMDeobfuscator",
+   "OLEDUMP with PLUGIN_BIFF",
+   "Office IDE",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "xlmrat",
+  "name": "XLMRat",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze network traffic to identify malware delivery, deobfuscate scripts, and map attacker techniques using MITRE ATT&CK, focusing on stealthy execution and reflective code loading.",
+  "tactics": [
+   "Execution"
+  ],
+  "tools": [
+   "CyberChef",
+   "PowerShell",
+   "VirusTotal",
+   "Wireshark",
+   "Python3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "xmrig",
+  "name": "XMRig",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "medium",
+  "questions": 12,
+  "objective": "Reconstruct attacker methods on a Linux system by analyzing a disk image, recovering deleted files with Photorec, and correlating logs, command history, and configuration files.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Lateral Movement",
+   "Collection",
+   "Command and Control",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Linux Command Line Tools",
+   "TestDisk",
+   "Strings",
+   "PhotoRec",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "xworm",
+  "name": "XWorm",
+  "categories": [
+   "Malware Analysis"
+  ],
+  "difficulty": "medium",
+  "questions": 16,
+  "objective": "Analyze malware behavior to identify persistence methods, evasion techniques, and C2 infrastructure by extracting artifacts and configuration data from static and dynamic analysis.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Credential Access",
+   "Discovery",
+   "Collection"
+  ],
+  "tools": [
+   "Detect It Easy",
+   "CFF Explorer",
+   "PEStudio",
+   "dnSpy",
+   "ProcMon",
+   "RegShot",
+   "Python3",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "xxe-infiltration",
+  "name": "XXE Infiltration",
+  "categories": [
+   "Network Forensics"
+  ],
+  "difficulty": "easy",
+  "questions": 7,
+  "objective": "Analyze PCAP data using Wireshark to identify XXE vulnerabilities, extract compromised credentials, and detect web shell uploads for persistence.",
+  "tactics": [
+   "Reconnaissance",
+   "Initial Access",
+   "Persistence",
+   "Privilege Escalation",
+   "Credential Access",
+   "Discovery",
+   "Collection",
+   "Exfiltration"
+  ],
+  "tools": [
+   "Wireshark",
+   "Brim",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "xzbackdoor",
+  "name": "XZBackDoor",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 10,
+  "objective": "Investigate a Linux server compromise by analyzing the XZ backdoor, web shell, log data, and OSINT to uncover attacker TTPs and extract critical IOCs.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Command and Control"
+  ],
+  "tools": [
+   "Linux Command Line Tools",
+   "GitHub",
+   "MD5 Center",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "yara-trap",
+  "name": "YARA Trap",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 21,
+  "objective": "Investigate attacker behavior by analyzing Windows artifacts to identify persistence, privilege escalation, and lateral movement using MFTECmd, PECmd, BitsParser, and registry analysis tools.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Command and Control"
+  ],
+  "tools": [
+   "PECmd",
+   "BitsParser",
+   "CyberChef",
+   "CryptnetURLCacheParser",
+   "Notepad++",
+   "MFTECmd",
+   "Timeline Explorer",
+   "Registry Explorer",
+   "Event Log Explorer",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "yara-wizards",
+  "name": "Yara Wizards",
+  "categories": [
+   "Detection Engineering"
+  ],
+  "difficulty": "medium",
+  "questions": 7,
+  "objective": "Analyze malware behavior and develop YARA rules for proactive detection by identifying packing methods, entropy levels, and execution patterns.",
+  "tactics": [
+   "Execution",
+   "Persistence",
+   "Privilege Escalation",
+   "Defense Impairment",
+   "Discovery",
+   "Collection",
+   "Command and Control",
+   "Impact"
+  ],
+  "tools": [
+   "Detect It Easy",
+   "Yara",
+   "FLOSS/Strings",
+   "Notepad++",
+   "ProcMon",
+   "Process Explorer",
+   "Process Hacker",
+   "YaraValidator",
+   "Stealth"
+  ]
+ },
+ {
+  "slug": "yara101",
+  "name": "Yara101",
+  "categories": [
+   "Detection Engineering"
+  ],
+  "difficulty": "medium",
+  "questions": 8,
+  "objective": "Analyze malware samples, extract IOCs, and create effective YARA rules to detect and classify threats using static analysis techniques.",
+  "tactics": [],
+  "tools": [
+   "Stringsifter",
+   "Strings",
+   "ilspy",
+   "Yara"
+  ]
+ },
+ {
+  "slug": "yellow-rat",
+  "name": "Yellow RAT",
+  "categories": [
+   "Threat Intel"
+  ],
+  "difficulty": "easy",
+  "questions": 6,
+  "objective": "Analyze malware artifacts using threat intelligence platforms like VirusTotal to identify IOCs, C2 servers, and understand adversary tactics.",
+  "tactics": [
+   "Initial Access",
+   "Execution"
+  ],
+  "tools": [
+   "VirusTotal",
+   "Red Canary"
+  ]
+ },
+ {
+  "slug": "zerologon",
+  "name": "Zerologon",
+  "categories": [
+   "Endpoint Forensics"
+  ],
+  "difficulty": "hard",
+  "questions": 13,
+  "objective": "Reconstruct a multi-stage attack by analyzing Windows event logs, USN Journal, and registry artifacts to identify TTPs, C2, and persistence mechanisms.",
+  "tactics": [
+   "Lateral Movement"
+  ],
+  "tools": [
+   "EZ Tools",
+   "Event Log Explorer",
+   "KAPE",
+   "Event Viewer",
+   "NTFS Log Tracker",
+   "CyberChef"
+  ]
+ },
+ {
+  "slug": "zoom-incident-ignoble-scorpius-apt",
+  "name": "Zoom Incident - Ignoble Scorpius APT",
+  "categories": [
+   "Threat Hunting"
+  ],
+  "difficulty": "hard",
+  "questions": 33,
+  "objective": "Correlate Sysmon events and forensic artifacts across multiple hosts using Splunk to reconstruct a full ransomware kill chain, from initial compromise to domain-wide impact.",
+  "tactics": [
+   "Initial Access",
+   "Execution",
+   "Privilege Escalation",
+   "Credential Access",
+   "Lateral Movement",
+   "Command and Control",
+   "Exfiltration",
+   "Impact"
+  ],
+  "tools": [
+   "Splunk",
+   "VirusTotal",
+   "CyberChef",
+   "Stealth"
+  ]
+ }
+]

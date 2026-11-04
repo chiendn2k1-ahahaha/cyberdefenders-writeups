@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Zerologon lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Zerologon writeup (walkthrough tiếng Việt): Truy vết chuỗi tấn công từ một máy trạm phòng tài chính tới Domain Controller qua Sysmon, Security, System log và USN Journal.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/zerologon.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Zerologon lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Zerologon writeup (walkthrough tiếng Việt): Truy vết chuỗi tấn công từ một máy trạm phòng tài chính tới Domain Controller qua Sysmon, Security, System log và USN Journal.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/zerologon.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Zerologon - CyberDefenders writeup", "description": "Truy vết chuỗi tấn công từ một máy trạm phòng tài chính tới Domain Controller qua Sysmon, Security, System log và USN Journal.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/zerologon.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Zerologon, writeup, walkthrough, Endpoint Forensics, EZ Tools, Event Log Explorer, KAPE, Event Viewer, NTFS Log Tracker, CyberChef", "about": {"@type": "Thing", "name": "CyberDefenders Zerologon lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/zerologon/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#chuan-bi-truy-van">Chuẩn bị truy vấn</a></li><li><a href="#buoc-1-tim-tien-trinh-la-tren-fin-pc">Bước 1: tìm tiến trình lạ trên FIN-PC</a></li><li><a href="#buoc-2-xac-inh-may-chu-ieu-khien-c2">Bước 2: xác định máy chủ điều khiển (C2)</a></li><li><a href="#buoc-3-giai-ma-powershell-va-recon-active-directory">Bước 3: giải mã PowerShell và recon Active Directory</a></li><li><a href="#buoc-4-dau-hieu-khai-thac-zerologon-tren-dc01">Bước 4: dấu hiệu khai thác Zerologon trên DC01</a></li><li><a href="#buoc-5-tai-khoan-dlee-ieu-khien-dc01-qua-wmi">Bước 5: tài khoản dlee điều khiển DC01 qua WMI</a></li><li><a href="#buoc-6-lateral-movement-bang-service-qua-admin">Bước 6: lateral movement bằng service qua ADMIN$</a></li><li><a href="#buoc-7-truy-cap-lsass-va-leo-quyen">Bước 7: truy cập LSASS và leo quyền</a></li><li><a href="#buoc-8-phan-mem-ieu-khien-tu-xa-tren-fileserver">Bước 8: phần mềm điều khiển từ xa trên FileServer</a></li><li><a href="#buoc-9-script-gom-du-lieu-localdiskps1">Bước 9: script gom dữ liệu localdisk.ps1</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="zerologon">Zerologon</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/zerologon/">Zerologon</a> trên CyberDefenders. Nhóm Endpoint Forensics, độ khó Hard, đã retired.</li>
+<li><strong>Dữ liệu:</strong> bộ thu thập KAPE của 4 máy trong domain <code>elitesystems.local</code>: <code>DC01</code>, <code>FileServer</code>, <code>FIN-PC</code>, <code>IT-PC</code>.</li>
+<li>Event log: Sysmon Operational, Security, System.</li>
+<li>NTFS: <code>$Extend\$J</code> (USN Journal).</li>
+<li>Thư mục người dùng (<code>Users\...\AppData\Local\Temp</code>).</li>
+<li><strong>Công cụ trong VM của lab:</strong> PowerShell <code>Get-WinEvent</code> (lọc XPath ngay trên file EVTX) và <code>MFTECmd</code> (Zimmerman Tools) để đọc USN Journal.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Giờ trong log là UTC. Bài ghi dạng <code>UTC (UTC+7)</code>.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý.</li>
+<li>Vùng làm mờ là giá trị trùng với đáp án của câu hỏi trong lab.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li><code>FIN-PC</code> (user <code>esmith</code>) chạy file <code>easygoing.exe</code> trong thư mục Temp. File này kết nối ra một IP bên ngoài qua TCP/80 và sinh ra các tiến trình con thực hiện recon, PowerShell mã hóa Base64 và tải script từ một listener cục bộ.</li>
+<li>Trên <code>DC01</code>, mật khẩu tài khoản máy <code>DC01$</code> bị đổi bởi <code>ANONYMOUS LOGON</code> lúc 20:15:38 UTC (03:15:38 UTC+7 ngày 03/01/2024). Đây là dấu hiệu đặc trưng khi khai thác CVE-2020-1472 (Zerologon).</li>
+<li>Sau thời điểm đó, tài khoản domain <code>dlee</code> đăng nhập vào <code>DC01</code> từ chính IP mà <code>easygoing.exe</code> kết nối tới. Tài khoản này chạy lệnh qua WMI để tắt Microsoft Defender và mở RDP.</li>
+<li>Kẻ tấn công cài service tên ngẫu nhiên qua share <code>ADMIN$</code> trên cả 4 máy. Sau đó có các hành vi:</li>
+<li>truy cập bộ nhớ <code>lsass.exe</code>;</li>
+<li>leo quyền qua named pipe;</li>
+<li>dùng thông tin đăng nhập của tài khoản <code>FileShareService</code> để chạy lệnh từ xa;</li>
+<li>tạo scheduled task để duy trì truy cập (persistence);</li>
+<li>cài phần mềm điều khiển từ xa trên <code>FileServer</code>.</li>
+<li>Cuối chuỗi, script <code>localdisk.ps1</code> chạy trên cả 4 máy. Script nén từng thư mục người dùng thành file zip trong <code>C:\Data</code>.</li>
+<li><strong>Chưa đủ dữ liệu để kết luận</strong> dữ liệu đã bị đưa ra ngoài (exfiltration).</li>
+</ul>
+<h2 id="chuan-bi-truy-van">Chuẩn bị truy vấn</h2>
+<ul>
+<li>Mở PowerShell trong VM, trỏ biến <code>$A</code> tới thư mục artifact.</li>
+<li>Hai hàm dưới đây đọc trực tiếp file EVTX của từng máy và chuyển mỗi sự kiện thành object có tên trường (UtcTime, Image, CommandLine...).</li>
+<li>VM phân tích không cài Sysmon, nên trường <code>Message</code> bị trống. Phải lọc bằng XPath trên <code>EventData</code> thay vì tìm chữ trong Message.</li>
+</ul>
+<pre><code class="language-powershell">$A = &quot;$home\desktop\start here\artifacts&quot;
+function ev($h,$log,$xp,$max=20000){ Get-WinEvent -Path &quot;$A\$h\Windows\System32\winevt\logs\$log.evtx&quot; -FilterXPath $xp -MaxEvents $max -ea 0 }
+function sx($e){ $x=[xml]$e.ToXml(); $o=[ordered]@{UtcTime=$e.TimeCreated.ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss');Computer=$e.MachineName}
+  $x.Event.EventData.Data | ?{$_.Name} | %{ $o[$_.Name]=$_.'#text' }; [pscustomobject]$o }
+# sq &lt;máy&gt; &lt;loại sự kiện Sysmon&gt; &lt;tên trường&gt; &lt;giá trị&gt; [số bản ghi]
+function sq($h,$id,$f,$v,$n=5){ ev $h 'Microsoft-Windows-Sysmon%4Operational' &quot;*[System[EventID=$id]] and *[EventData[Data[@Name='$f']='$v']]&quot; $n | %{ sx $_ } }
+</code></pre>
+<ul>
+<li>Trong các lệnh bên dưới, tham số thứ hai của <code>sq</code> là loại sự kiện Sysmon: <code>1</code> là tạo tiến trình (process creation), <code>3</code> là kết nối mạng, <code>10</code> là truy cập tiến trình khác (process access), <code>11</code> là tạo file.</li>
+</ul>
+<h2 id="buoc-1-tim-tien-trinh-la-tren-fin-pc">Bước 1: tìm tiến trình lạ trên FIN-PC</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm tiến trình chạy từ thư mục người dùng, không phải từ <code>Program Files</code> hay <code>System32</code>.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Liệt kê sự kiện Sysmon tạo tiến trình trên cả 4 máy.</li>
+<li>Bỏ các tiến trình hệ thống quen thuộc (svchost, Defender, VMware Tools, Edge Update...).</li>
+<li>Gom theo tiến trình cha (ParentImage).</li>
+<li><strong>Kết quả:</strong> <code>C:\Users\esmith\AppData\Local\Temp\easygoing.exe</code> là tiến trình cha của nhiều lệnh cmd, PowerShell và một binary hệ thống.</li>
+</ul>
+<figure><img src="../img/zerologon/zl-01-easygoing-child.png" alt="Sysmon FIN-PC: tiến trình con của easygoing.exe"><figcaption>Sysmon Operational của FIN-PC, sự kiện tạo tiến trình. Hai tiến trình con của easygoing.exe: một chạy bằng tài khoản FIN-PC\Administrator (20:44:53 UTC), một là PowerShell có -EncodedCommand chạy bằng ELITESYSTEMS\esmith (20:09:37 UTC).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Một file thực thi trong <code>AppData\Local\Temp</code> sinh ra PowerShell với <code>-nop -exec bypass -EncodedCommand</code> là hành vi bất thường.</li>
+<li>Cùng một tiến trình cha chạy được bằng hai tài khoản khác nhau (<code>esmith</code> rồi <code>FIN-PC\Administrator</code>). Điều này cho thấy quyền đã thay đổi trong khoảng 20:09 đến 20:44 UTC.</li>
+</ul>
+<h2 id="buoc-2-xac-inh-may-chu-ieu-khien-c2">Bước 2: xác định máy chủ điều khiển (C2)</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem <code>easygoing.exe</code> kết nối đi đâu.</li>
+<li><strong>Cách làm:</strong> lọc sự kiện Sysmon kết nối mạng có <code>Image</code> đúng bằng đường dẫn của <code>easygoing.exe</code>.</li>
+</ul>
+<pre><code class="language-powershell">sq FIN-PC 3 Image C:\Users\esmith\AppData\Local\Temp\easygoing.exe 2 | fl UtcTime,User,Image,Protocol,SourceIp,DestinationIp,DestinationPort
+</code></pre>
+<figure><img src="../img/zerologon/zl-02-easygoing-c2.png" alt="Sysmon FIN-PC: kết nối mạng của easygoing.exe"><figcaption>Sysmon Operational của FIN-PC, sự kiện kết nối mạng. easygoing.exe (user esmith) kết nối TCP tới một IP public qua cổng 80 lúc 11:11:37 và 11:12:07 UTC.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Đích là một IP public, giao thức TCP, cổng 80. IP này xuất hiện lại ở Bước 5 (đăng nhập vào DC01), nên có thể coi là hạ tầng của kẻ tấn công.</li>
+<li>Giờ kết nối (11:11 UTC) sớm hơn giờ các tiến trình con (từ 19:44 UTC). Log có sẵn chưa giải thích được khoảng chênh này.</li>
+</ul>
+<h2 id="buoc-3-giai-ma-powershell-va-recon-active-directory">Bước 3: giải mã PowerShell và recon Active Directory</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> đọc nội dung các lệnh PowerShell mã hóa do <code>easygoing.exe</code> chạy.</li>
+<li><strong>Cách làm:</strong> lấy tham số cuối của CommandLine rồi giải mã Base64 theo UTF-16LE.</li>
+</ul>
+<pre><code class="language-powershell">sq FIN-PC 1 ParentImage C:\Users\esmith\AppData\Local\Temp\easygoing.exe 60 | ?{$_.CommandLine -match 'EncodedCommand'} | sort UtcTime |
+  %{ '{0}  {1}' -f $_.UtcTime, [Text.Encoding]::Unicode.GetString([Convert]::FromBase64String(($_.CommandLine -split ' ')[-1])) }
+</code></pre>
+<figure><img src="../img/zerologon/zl-10-decoded-powershell.png" alt="Nội dung PowerShell sau khi giải mã"><figcaption>Kết quả giải mã. Lệnh lúc 19:50:32 UTC (đã làm mờ) là lệnh truy vấn Active Directory và xuất ra CSV trong Temp. Lệnh lúc 20:09:37 UTC tải script từ http://127.0.0.1:25816/ rồi chạy Invoke-ShareFinder và ghi kết quả ra found_shares.txt.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Lệnh thứ nhất dùng module Active Directory để liệt kê toàn bộ computer object trong domain và xuất ra file CSV.</li>
+<li>Lệnh thứ hai tải script qua một listener trên <code>127.0.0.1</code> rồi gọi <code>Invoke-ShareFinder</code> (một hàm của PowerView) để dò share có quyền truy cập. Cách nạp script qua cổng cục bộ thường gặp ở các framework C2 có chức năng PowerShell import.</li>
+<li>Hướng giải: câu hỏi về lệnh recon nằm ở dòng đã làm mờ.</li>
+</ul>
+<h2 id="buoc-4-dau-hieu-khai-thac-zerologon-tren-dc01">Bước 4: dấu hiệu khai thác Zerologon trên DC01</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> kiểm tra tài khoản máy của Domain Controller có bị đổi mật khẩu bất thường không.</li>
+<li><strong>Cách làm:</strong> đọc Security log của <code>DC01</code>, lọc sự kiện thay đổi tài khoản máy (computer account changed).</li>
+</ul>
+<pre><code class="language-powershell">ev DC01 Security '*[System[EventID=4742]]' 20 | %{ sx $_ } | ft UtcTime,SubjectUserName,TargetUserName,PasswordLastSet,IpAddress -wrap
+</code></pre>
+<figure><img src="../img/zerologon/zl-07-dc01-zerologon-4742.png" alt="Security DC01: DC01$ bị đổi mật khẩu bởi ANONYMOUS LOGON"><figcaption>Security log của DC01. Lúc 20:15:38 UTC, tài khoản DC01$ được cập nhật mật khẩu (PasswordLastSet) với người thực hiện là ANONYMOUS LOGON. Hai bản ghi lúc 20:29:35 UTC do chính DC01$ thực hiện.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Bình thường, tài khoản máy tự đổi mật khẩu bằng chính nó (Subject là <code>DC01$</code>), như hai dòng lúc 20:29:35 UTC.</li>
+<li>Mật khẩu được đặt bởi <code>ANONYMOUS LOGON</code> khớp với kỹ thuật Zerologon: lợi dụng lỗi Netlogon (CVE-2020-1472) để đặt lại mật khẩu tài khoản máy của DC mà không cần xác thực.</li>
+<li>Cột <code>PasswordLastSet</code> hiển thị theo múi giờ của VM phân tích (12:15:38 PM, UTC-8), tương ứng 20:15:38 UTC.</li>
+<li><strong>Chưa đủ dữ liệu</strong> để xác định IP gửi yêu cầu Netlogon: trường IpAddress trống, và Sysmon của DC01 không có kết nối mạng nào của <code>lsass.exe</code> trong khoảng 20:13 đến 20:16 UTC.</li>
+</ul>
+<h2 id="buoc-5-tai-khoan-dlee-ieu-khien-dc01-qua-wmi">Bước 5: tài khoản dlee điều khiển DC01 qua WMI</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem ai chạy lệnh trên DC01 ngay sau khi mật khẩu <code>DC01$</code> bị đổi.</li>
+<li><strong>Cách làm:</strong> lọc tiến trình có cha là <code>WmiPrvSE.exe</code> trên DC01.</li>
+</ul>
+<pre><code class="language-powershell">sq DC01 1 ParentImage C:\Windows\System32\wbem\WmiPrvSE.exe 30 | sort UtcTime |
+  ft @{n='UtcTime';e={$_.UtcTime.Substring(11,8)}},User,@{n='Cmd';e={$_.CommandLine -replace ' 1&gt; .*',''}} -wrap
+</code></pre>
+<figure><img src="../img/zerologon/zl-04-dc01-wmi-commands.png" alt="Sysmon DC01: lệnh chạy qua WMI bằng tài khoản dlee"><figcaption>Sysmon Operational của DC01. Từ 20:22:26 đến 20:29:50 UTC, ELITESYSTEMS\dlee chạy các lệnh cmd.exe /Q /c qua WMI: whoami, thêm policy tắt Defender, đổi kiểu khởi động service WinDefend thành disabled, sửa registry Terminal Server (đã làm mờ) và mở firewall cho remoteadmin, remotedesktop.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Mẫu lệnh <code>cmd.exe /Q /c &lt;lệnh&gt; 1&gt; \\127.0.0.1\ADMIN$\__&lt;số&gt;</code> (phần sau <code>1&gt;</code> đã được cắt bớt khi hiển thị) giống cách công cụ wmiexec của Impacket ghi kết quả lệnh ra share <code>ADMIN$</code>.</li>
+<li>Thứ tự lệnh cho thấy kẻ tấn công tắt Microsoft Defender trước, sau đó bật RDP và mở firewall.</li>
+<li>Hướng giải: câu hỏi về lệnh bật RDP nằm ở dòng 20:29:34 đã làm mờ.</li>
+<li><strong>Kiểm tra thêm:</strong> <code>dlee</code> đăng nhập vào DC01 từ đâu? Lọc Security log của DC01, lấy các phiên đăng nhập thành công của <code>dlee</code> có IP nguồn, gom theo IP, kiểu đăng nhập và giao thức xác thực.</li>
+</ul>
+<pre><code class="language-powershell">ev DC01 Security &quot;*[System[EventID=4624]] and *[EventData[Data[@Name='TargetUserName']='dlee']]&quot; 300 | %{ sx $_ } |
+  ?{ $_.IpAddress -notin '-','::1','127.0.0.1' } | group IpAddress,LogonType,AuthenticationPackageName |
+  %{ $t = $_.Group.UtcTime | sort; [pscustomobject]@{ Count=$_.Count; Key=$_.Name; First=$t[0]; Last=$t[-1] } } | ft -auto
+</code></pre>
+<figure><img src="../img/zerologon/zl-11-dc01-dlee-logons.png" alt="Security DC01: đăng nhập của dlee"><figcaption>Security log của DC01. dlee có 56 lần đăng nhập qua mạng (LogonType 3, NTLM) từ 20:22:26 đến 22:02:28 UTC và 2 lần đăng nhập RDP (LogonType 10) lúc 20:30:57 UTC, tất cả từ cùng một IP (đã làm mờ). Đây là IP đích của easygoing.exe ở Bước 2.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Phiên đăng nhập mạng đầu tiên (20:22:26 UTC) trùng giây với lệnh WMI đầu tiên.</li>
+<li>Phiên RDP (20:30:57 UTC) diễn ra khoảng 1 phút sau khi RDP được bật (20:29:34 UTC).</li>
+<li>Kẻ tấn công dùng <code>dlee</code> từ IP bên ngoài, không phải từ một máy trong mạng.</li>
+<li><strong>Chưa đủ dữ liệu</strong> để biết kẻ tấn công lấy thông tin đăng nhập của <code>dlee</code> bằng cách nào.<ul>
+<li>Sysmon của DC01 chỉ ghi nhận Sysmon64.exe truy cập <code>lsass.exe</code> (Bước 7).</li>
+<li>Cần thêm: Security log của DC01 có bật audit "Directory Service Access" để thấy yêu cầu replication (DCSync), và packet capture DRSUAPI tại DC.</li>
+</ul>
+</li>
+</ul>
+<h2 id="buoc-6-lateral-movement-bang-service-qua-admin">Bước 6: lateral movement bằng service qua ADMIN$</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> kiểm tra service mới được cài trên các máy.</li>
+<li><strong>Cách làm:</strong> đọc System log của 4 máy, lọc sự kiện cài service mới (service installed).</li>
+</ul>
+<pre><code class="language-powershell">'DC01','FileServer','FIN-PC','IT-PC' | %{ $h=$_; ev $h System '*[System[EventID=7045]]' 9 | %{ sx $_ } |
+  select @{n='Host';e={$h}},UtcTime,ServiceName,ImagePath } | ft -wrap
+</code></pre>
+<figure><img src="../img/zerologon/zl-05-services.png" alt="System log: service tên ngẫu nhiên trên cả 4 máy"><figcaption>System log của 4 máy. Từ 20:53:52 đến 21:13:06 UTC, mỗi máy có một service tên 7 ký tự hex, ImagePath trỏ tới \\&lt;máy&gt;\ADMIN$\&lt;tên&gt;.exe. FileServer có thêm một service của phần mềm điều khiển từ xa lúc 21:18:51 UTC. Tên service trên FileServer đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Service tên ngẫu nhiên với file thực thi đặt thẳng trong <code>ADMIN$</code> (tức <code>C:\Windows</code>) là mẫu thực thi từ xa kiểu PsExec. Nhiều framework C2 dùng cách này để di chuyển ngang (lateral movement).</li>
+<li>Thứ tự xuất hiện: <code>FIN-PC</code> (20:53 UTC), <code>IT-PC</code> (21:07), <code>FileServer</code> (21:09), <code>DC01</code> (21:13).</li>
+</ul>
+<h2 id="buoc-7-truy-cap-lsass-va-leo-quyen">Bước 7: truy cập LSASS và leo quyền</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm tiến trình đọc bộ nhớ <code>lsass.exe</code>, nơi Windows giữ thông tin đăng nhập.</li>
+<li><strong>Cách làm:</strong> lọc sự kiện Sysmon truy cập tiến trình (process access) có đích là <code>lsass.exe</code>, bỏ các tiến trình bảo mật và hệ thống thường gặp.</li>
+</ul>
+<pre><code class="language-powershell">'FIN-PC','FileServer','DC01','IT-PC' | %{ sq $_ 10 TargetImage C:\Windows\system32\lsass.exe 400 |
+  ?{$_.SourceImage -notmatch 'MsMpEng|svchost|wmiprvse|csrss|wininit|vmtoolsd|services'} | select -first 2 } |
+  ft Computer,UtcTime,SourceImage,GrantedAccess -wrap
+</code></pre>
+<figure><img src="../img/zerologon/zl-06-lsass-access.png" alt="Sysmon: tiến trình truy cập lsass.exe"><figcaption>Sysmon của 4 máy. Ngoài Sysmon64.exe (hành vi bình thường của chính Sysmon), cùng một binary hệ thống (đã làm mờ) mở handle tới lsass.exe trên FIN-PC (20:53:28 và 21:12:44 UTC), FileServer (21:11:01) và IT-PC (21:10:54).</figcaption></figure>
+
+<figure><img src="../img/zerologon/zl-03-system-commands.png" alt="Sysmon FIN-PC: lệnh chạy dưới quyền SYSTEM"><figcaption>Sysmon của FIN-PC, các lệnh chạy dưới quyền NT AUTHORITY\SYSTEM: ghi dữ liệu vào một named pipe (21:12:44 UTC), WMIC tới 192.168.202.126 bằng tài khoản FileShareService kèm mật khẩu trong command line (21:28:43), và tạo scheduled task chạy PowerShell khi đăng nhập với quyền System (21:35:06). Các giá trị là đáp án đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tiến trình truy cập <code>lsass.exe</code> trên 3 máy trong vòng khoảng 20 phút. Thời điểm này trùng với lúc service lạ được cài (Bước 6).</li>
+<li>Lệnh <code>echo &lt;chuỗi&gt; &gt; \\.\pipe\&lt;số&gt;</code> dưới quyền SYSTEM là mẫu leo quyền bằng named pipe impersonation, thường gặp ở lệnh <code>getsystem</code> của các framework C2.</li>
+<li>Tài khoản <code>FileShareService</code> được dùng với mật khẩu ghi rõ trong command line. Đây là bằng chứng thông tin đăng nhập của tài khoản này đã bị lộ.</li>
+<li>Scheduled task chạy một script PowerShell trong <code>AppData\Local</code> của <code>esmith</code> với quyền System khi có người đăng nhập là cơ chế persistence.</li>
+<li><strong>Kiểm tra thêm trên USN Journal của FIN-PC:</strong> đọc <code>$Extend\$J</code> bằng MFTECmd, tìm bản ghi tạo file của các script liên quan.</li>
+</ul>
+<pre><code class="language-powershell">&amp; MFTECmd.exe -f &quot;$A\FIN-PC\$Extend\$J&quot; --csv c:\w --csvf finpc_j.csv
+import-csv c:\w\finpc_j.csv | ?{ $_.Name -in 'ChromeUpdate.ps1','localdisk.ps1' -and $_.UpdateReasons -eq 'FileCreate' }
+</code></pre>
+<figure><img src="../img/zerologon/zl-13-usn-scripts.png" alt="USN Journal FIN-PC: tạo ChromeUpdate.ps1 và localdisk.ps1"><figcaption>USN Journal của FIN-PC: ChromeUpdate.ps1 được tạo lúc 17:16:29 UTC, localdisk.ps1 được tạo lúc 21:59:08 UTC.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong> script persistence được tạo khoảng 4 giờ trước khi scheduled task trỏ tới nó (21:35:06 UTC).</li>
+</ul>
+<h2 id="buoc-8-phan-mem-ieu-khien-tu-xa-tren-fileserver">Bước 8: phần mềm điều khiển từ xa trên FileServer</h2>
+<ul>
+<li><strong>Cách làm:</strong> lấy sự kiện Sysmon tạo tiến trình trên FileServer, giữ các lệnh có CommandLine chứa <code>--set-password</code>. XPath không hỗ trợ tìm chuỗi con, nên bước lọc này làm bằng PowerShell sau khi đọc log.</li>
+</ul>
+<pre><code class="language-powershell">ev FileServer 'Microsoft-Windows-Sysmon%4Operational' '*[System[EventID=1]]' 5000 | %{ sx $_ } |
+  ?{ $_.CommandLine -match '--set-password' } | fl UtcTime,User,ParentImage,CommandLine
+</code></pre>
+<figure><img src="../img/zerologon/zl-08-fileserver-remote-tool.png" alt="Sysmon FileServer: đặt mật khẩu cho phần mềm điều khiển từ xa"><figcaption>Sysmon của FileServer lúc 21:21:42 UTC: dưới quyền SYSTEM, tiến trình cha (đã làm mờ) chạy cmd để đặt mật khẩu truy cập không cần người dùng xác nhận cho phần mềm điều khiển từ xa vừa cài ở Bước 6. Mật khẩu và tên phần mềm đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Phần mềm điều khiển từ xa được cài dạng service, kèm mật khẩu truy cập cố định. Kẻ tấn công vẫn vào lại được kể cả khi C2 bị chặn.</li>
+</ul>
+<h2 id="buoc-9-script-gom-du-lieu-localdiskps1">Bước 9: script gom dữ liệu localdisk.ps1</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định dữ liệu bị nhắm tới.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Tìm cùng một lệnh PowerShell mã hóa trên cả 4 máy, giải mã tham số Base64.</li>
+<li>Bản sao của script nằm trong <code>Users\Administrator\AppData\Local\Temp</code> của từng máy trong bộ thu thập.</li>
+</ul>
+<pre><code class="language-powershell">$ps = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
+'DC01','FileServer','FIN-PC','IT-PC' | %{ sq $_ 1 Image $ps 500 } | ?{ $_.CommandLine -match 'EncodedCommand' } |
+  select Computer,UtcTime,User,@{n='Decoded';e={[Text.Encoding]::Unicode.GetString([Convert]::FromBase64String(($_.CommandLine -split ' ')[-1]))}} |
+  ?{ $_.Decoded -match 'localdisk' } | sort UtcTime | ft -auto
+Get-Content &quot;$A\FIN-PC\Users\Administrator\AppData\Local\Temp\localdisk.ps1&quot;
+</code></pre>
+<figure><img src="../img/zerologon/zl-12-localdisk-all-hosts.png" alt="Sysmon 4 máy: chạy localdisk.ps1"><figcaption>Sysmon của 4 máy: cùng một lệnh PowerShell mã hóa chạy dưới quyền SYSTEM từ 21:57:28 đến 21:59:32 UTC. Nội dung giải mã là .\localdisk.ps1.</figcaption></figure>
+
+<figure><img src="../img/zerologon/zl-09-localdisk-script.png" alt="Nội dung localdisk.ps1"><figcaption>Nội dung localdisk.ps1 lấy từ thư mục Temp của Administrator trên FIN-PC. Script tạo C:\Data, liệt kê các thư mục con của một thư mục nguồn (đã làm mờ) và nén từng thư mục thành file zip bằng Compress-Archive.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Script gom và nén dữ liệu vào một chỗ (giai đoạn Collection), thường là bước chuẩn bị trước khi đưa dữ liệu ra ngoài.</li>
+<li><strong>Chưa đủ dữ liệu</strong> để kết luận các file zip đã bị chuyển ra ngoài. Sysmon không ghi nhận kết nối mạng nào gắn với các file trong <code>C:\Data</code>.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<ul>
+<li>02/01 11:11:37 UTC (18:11:37 UTC+7): <code>easygoing.exe</code> trên FIN-PC kết nối tới IP C2 qua TCP/80. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 17:16:29 UTC (03/01 00:16:29 UTC+7): file <code>ChromeUpdate.ps1</code> được tạo trên FIN-PC. Nguồn: USN Journal FIN-PC.</li>
+<li>02/01 19:50:32 UTC (03/01 02:50:32 UTC+7): PowerShell mã hóa recon Active Directory. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 20:09:37 UTC (03:09:37 UTC+7): tải script qua <code>127.0.0.1:25816</code>, chạy <code>Invoke-ShareFinder</code>. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 20:15:38 UTC (03:15:38 UTC+7): <code>ANONYMOUS LOGON</code> đặt lại mật khẩu <code>DC01$</code>. Nguồn: Security DC01.</li>
+<li>02/01 20:22:26 đến 20:29:50 UTC (03:22 đến 03:29 UTC+7): <code>dlee</code> chạy lệnh qua WMI trên DC01, tắt Defender, bật RDP. Nguồn: Sysmon DC01.</li>
+<li>02/01 20:44:53 UTC (03:44:53 UTC+7): <code>easygoing.exe</code> chạy bằng tài khoản <code>FIN-PC\Administrator</code>. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 20:53:52 đến 21:13:06 UTC (03:53 đến 04:13 UTC+7): service tên ngẫu nhiên qua <code>ADMIN$</code> trên FIN-PC, IT-PC, FileServer, DC01. Nguồn: System log.</li>
+<li>02/01 21:10:54 đến 21:12:44 UTC (04:10 đến 04:12 UTC+7): truy cập <code>lsass.exe</code> trên IT-PC, FileServer, FIN-PC. Nguồn: Sysmon.</li>
+<li>02/01 21:12:44 UTC (04:12:44 UTC+7): leo quyền qua named pipe trên FIN-PC. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 21:18:51 và 21:21:42 UTC (04:18 và 04:21 UTC+7): cài và đặt mật khẩu phần mềm điều khiển từ xa trên FileServer. Nguồn: System và Sysmon FileServer.</li>
+<li>02/01 21:28:43 UTC (04:28:43 UTC+7): WMIC từ FIN-PC tới FileServer bằng <code>FileShareService</code>. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 21:35:06 UTC (04:35:06 UTC+7): tạo scheduled task persistence trên FIN-PC. Nguồn: Sysmon FIN-PC.</li>
+<li>02/01 21:57 đến 21:59 UTC (04:57 đến 04:59 UTC+7): chạy <code>localdisk.ps1</code> trên cả 4 máy. Nguồn: Sysmon, USN Journal.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

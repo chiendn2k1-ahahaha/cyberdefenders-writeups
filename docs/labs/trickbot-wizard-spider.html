@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Trickbot - WIZARD SPIDER lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Trickbot - WIZARD SPIDER writeup (walkthrough tiếng Việt): Dùng báo cáo sandbox trên VirusTotal để phân tích một mẫu Trickbot: cách nó gọi WMI, tiến trình bị chèn mã, file thả vào ProgramData, khóa Run và hạ tầng C2 của file thứ cấp.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/trickbot-wizard-spider.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Trickbot - WIZARD SPIDER lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Trickbot - WIZARD SPIDER writeup (walkthrough tiếng Việt): Dùng báo cáo sandbox trên VirusTotal để phân tích một mẫu Trickbot: cách nó gọi WMI, tiến trình bị chèn mã, file thả vào ProgramData, khóa Run và hạ tầng C2 của file thứ cấp.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/trickbot-wizard-spider.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Trickbot - WIZARD SPIDER - CyberDefenders writeup", "description": "Dùng báo cáo sandbox trên VirusTotal để phân tích một mẫu Trickbot: cách nó gọi WMI, tiến trình bị chèn mã, file thả vào ProgramData, khóa Run và hạ tầng C2 của file thứ cấp.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/trickbot-wizard-spider.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Trickbot - WIZARD SPIDER, writeup, walkthrough, Threat Intel, VirusTotal", "about": {"@type": "Thing", "name": "CyberDefenders Trickbot - WIZARD SPIDER lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/trickbot-wizard-spider/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-cach-mau-ket-noi-wmi">Bước 1: cách mẫu kết nối WMI</a></li><li><a href="#buoc-2-ky-thuat-thuc-thi-ne-tranh">Bước 2: kỹ thuật thực thi né tránh</a></li><li><a href="#buoc-3-tien-trinh-bi-chen-ma">Bước 3: tiến trình bị chèn mã</a></li><li><a href="#buoc-4-file-tha-vao-programdata">Bước 4: file thả vào ProgramData</a></li><li><a href="#buoc-5-persistence-qua-registry">Bước 5: persistence qua registry</a></li><li><a href="#buoc-6-ha-tang-c2-cua-file-thu-cap">Bước 6: hạ tầng C2 của file thứ cấp</a></li></ul></nav>
+<article>
+<h1 id="trickbot-wizard-spider">Trickbot - WIZARD SPIDER</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/trickbot-wizard-spider/">Trickbot - WIZARD SPIDER</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Medium, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file <code>hash.txt</code> chứa SHA-256 <code>3BF0F489...4CB7C64D</code> của một mẫu Trickbot.</li>
+<li><strong>Công cụ:</strong> VirusTotal (tab Behavior gộp báo cáo của nhiều sandbox, tab Relations).</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp trang VirusTotal của mẫu và của file thứ cấp, chụp ngày 04/11/2026.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án (tên tiến trình, tên file, tên giá trị registry).</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Khi chạy, mẫu tách ra <code>trickbot.exe</code> và <code>trickbot_app.exe</code>.</li>
+<li>Mẫu chèn mã vào một tiến trình hợp lệ trong <code>C:\Windows</code> và vào 2 tiến trình <code>updater.exe</code> của Google.</li>
+<li>Mẫu ghi một file thực thi vào <code>C:\ProgramData</code> và tạo một giá trị trong <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code> có tên bắt đầu bằng <code>Windows</code>.</li>
+<li>File thứ cấp (SHA-256 <code>9b74d2e0...352bae73</code>) có quan hệ với 4 IP, 3 IP thuộc hệ tự trị (AS) ở Nga. Execution Parents xác nhận file này do chính mẫu Trickbot của lab tạo ra.</li>
+</ul>
+<h2 id="buoc-1-cach-mau-ket-noi-wmi">Bước 1: cách mẫu kết nối WMI</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định thành phần mẫu dùng để kết nối WMI (Windows Management Instrumentation, giao diện để truy vấn thông tin hệ thống).</li>
+<li><strong>Cách làm:</strong> mở tab Behavior, phần Capabilities do CAPA phân tích (mở rộng mục này để thấy đủ danh sách).</li>
+<li><strong>Nhận định:</strong></li>
+<li>CAPA ghi nhận khả năng "connect to WMI namespace via ..." kèm tên một COM component.</li>
+<li>Mẫu kết nối WMI trực tiếp qua COM, không gọi <code>wmic.exe</code> hay PowerShell. Vì vậy không sinh ra tiến trình dòng lệnh dễ bị chú ý.</li>
+<li>Hướng giải: tên component nằm ngay sau chữ "via" trong dòng CAPA đó.</li>
+</ul>
+<h2 id="buoc-2-ky-thuat-thuc-thi-ne-tranh">Bước 2: kỹ thuật thực thi né tránh</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> ánh xạ cách mẫu chạy mã sang MITRE ATT&amp;CK.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior, mở phần MITRE ATT&amp;CK Tactics and Techniques, tìm technique có tên Process Injection.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Mẫu chèn mã vào tiến trình khác (process injection). Mã chạy trong bộ nhớ của một tiến trình hợp lệ nên khó bị công cụ bảo vệ endpoint phát hiện.</li>
+<li>Hướng giải: ID technique là mã <code>T....</code> đứng cạnh tên Process Injection.</li>
+</ul>
+<h2 id="buoc-3-tien-trinh-bi-chen-ma">Bước 3: tiến trình bị chèn mã</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm tên tiến trình bị chèn mã.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior, xem mục Shell Commands và Processes Injected.</li>
+</ul>
+<figure><img src="../img/trickbot-wizard-spider/tb-03-vt-injected.png" alt="VirusTotal Behavior: Shell Commands và Processes Injected"><figcaption>Shell Commands: mẫu chạy "%SAMPLEPATH%\trickbot.exe" và "%SAMPLEPATH%\trickbot_app.exe". Processes Injected: 2 tiến trình updater.exe của Google, một tiến trình trong C:\Windows (tên đã làm mờ) và WMIADAP.EXE.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tiến trình đích nằm thẳng trong <code>C:\Windows</code>, là tiến trình giao diện người dùng luôn chạy dưới quyền user. Mã độc chạy trong đó thừa hưởng quyền của user và lẫn vào hoạt động bình thường.</li>
+<li>Hướng giải: tên tiến trình là dòng đã làm mờ trong Processes Injected.</li>
+</ul>
+<h2 id="buoc-4-file-tha-vao-programdata">Bước 4: file thả vào ProgramData</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm file thực thi mẫu ghi vào <code>C:\ProgramData</code>.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior, xem mục Files Written.</li>
+</ul>
+<figure><img src="../img/trickbot-wizard-spider/tb-04-vt-files-written.png" alt="VirusTotal Behavior: Files Written"><figcaption>Files Written: 2 đường dẫn trong C:\ProgramData. Một là thư mục, một là file .exe cùng tên với thư mục đó (đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tên file giả dạng một tiện ích quản lý thời gian của Windows. File này là payload thứ cấp.</li>
+<li><code>C:\ProgramData</code> ghi được mà không cần quyền quản trị, và ít người dùng mở ra xem.</li>
+<li>Hướng giải: tên file là dòng thứ hai trong Files Written.</li>
+</ul>
+<h2 id="buoc-5-persistence-qua-registry">Bước 5: persistence qua registry</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm khóa registry giúp mã độc tự chạy lại sau khi khởi động lại hoặc đăng nhập.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior, xem mục Registry Keys Set.</li>
+</ul>
+<figure><img src="../img/trickbot-wizard-spider/tb-05-vt-registry-run.png" alt="VirusTotal Behavior: Registry Keys Set"><figcaption>Registry Keys Set: dòng cuối là giá trị HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run\Windows ... (phần cuối tên đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Khi mở rộng dòng này, dữ liệu của giá trị là đường dẫn file trong <code>C:\ProgramData</code> ở Bước 4.</li>
+<li>Persistence nằm dưới <code>HKEY_CURRENT_USER</code>, chạy mỗi khi user đăng nhập và không cần quyền quản trị.</li>
+<li>Hướng giải: đường dẫn khóa đầy đủ là dòng đã khoanh đỏ, gồm cả tên giá trị.</li>
+</ul>
+<h2 id="buoc-6-ha-tang-c2-cua-file-thu-cap">Bước 6: hạ tầng C2 của file thứ cấp</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm nơi file thứ cấp liên lạc.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Trong tab Relations của mẫu gốc, mục Dropped Files, lấy SHA-256 của file <code>.exe</code> ở Bước 4. VirusTotal ghi nhận 4 bản khác nhau của file này.</li>
+<li>Tra từng SHA-256, xem tab Relations và Behavior.</li>
+</ul>
+<figure><img src="../img/trickbot-wizard-spider/tb-06-vt-dropped-relations.png" alt="VirusTotal Relations của file thứ cấp"><figcaption>Tab Relations của file thứ cấp 9b74d2e0...352bae73 (53/70 engine phát hiện, tên file đã làm mờ). Contacted IP addresses: 178.21.11.90 và 37.140.199.65 (AS 197695, RU), 185.146.157.143 (AS 29182, RU), 20.99.133.109 (AS 8075, US). Execution Parents: chính mẫu Trickbot 3bf0f489... của lab.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Bản file thứ cấp này chỉ có quan hệ với IP, không có tên miền. 3 IP thuộc AS ở Nga có engine phát hiện độc hại. IP còn lại thuộc AS 8075 của Microsoft.</li>
+<li>Mẫu gốc và file thứ cấp phải tra riêng, vì phần mạng của C2 nằm ở báo cáo của file thứ cấp.</li>
+<li>Hướng giải: tên miền C2 nằm trong DNS Resolutions của một trong các bản file thứ cấp khác (mục Dropped Files của mẫu gốc liệt kê đủ SHA-256).</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Red Stealer lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Red Stealer writeup (walkthrough tiếng Việt): Dựng hồ sơ một mẫu infostealer từ VirusTotal, MalwareBazaar và ThreatFox để lấy IOC, hạ tầng C2, kỹ thuật MITRE ATT&amp;CK và cơ chế leo quyền.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/red-stealer.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Red Stealer lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Red Stealer writeup (walkthrough tiếng Việt): Dựng hồ sơ một mẫu infostealer từ VirusTotal, MalwareBazaar và ThreatFox để lấy IOC, hạ tầng C2, kỹ thuật MITRE ATT&amp;CK và cơ chế leo quyền.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/red-stealer.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Red Stealer - CyberDefenders writeup", "description": "Dựng hồ sơ một mẫu infostealer từ VirusTotal, MalwareBazaar và ThreatFox để lấy IOC, hạ tầng C2, kỹ thuật MITRE ATT&CK và cơ chế leo quyền.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/red-stealer.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Red Stealer, writeup, walkthrough, Threat Intel, Whois, VirusTotal, MalwareBazaar, ThreatFox, ANY.RUN, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders Red Stealer lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/red-stealer/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-nhan-dien-mau-tren-virustotal">Bước 1: nhận diện mẫu trên VirusTotal</a></li><li><a href="#buoc-2-hanh-vi-thu-thap-du-lieu">Bước 2: hành vi thu thập dữ liệu</a></li><li><a href="#buoc-3-kiem-tra-ket-noi-mang-va-c2">Bước 3: kiểm tra kết nối mạng và C2</a></li><li><a href="#buoc-4-luat-yara-va-ten-goi-khac-cua-ho-ma-oc">Bước 4: luật YARA và tên gọi khác của họ mã độc</a></li><li><a href="#buoc-5-co-che-leo-quyen">Bước 5: cơ chế leo quyền</a></li></ul></nav>
+<article>
+<h1 id="red-stealer">Red Stealer</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/red-stealer/">Red Stealer</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> thông tin định danh của một file thực thi đáng ngờ. Không có ảnh bộ nhớ hay log máy trạm, mọi kết luận đến từ dữ liệu của các nền tảng threat intel (thông tin tình báo mối đe dọa).</li>
+<li><strong>Công cụ:</strong> VirusTotal (kết quả quét, chi tiết file, tab Behavior), MalwareBazaar (kết quả sandbox, luật YARA), ThreatFox và Malpedia (tên gọi khác của họ mã độc).</li>
+<li><strong>Quy ước:</strong></li>
+<li>Giờ trên VirusTotal là UTC. Bài không ghi giờ cụ thể vì đó là đáp án của lab.</li>
+<li>Ảnh chụp từ VirusTotal. <span class="red">Khung đỏ</span> là chỗ cần chú ý, vùng làm mờ là giá trị trùng với đáp án hoặc để lộ đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Mẫu là một infostealer (mã độc chuyên lấy cắp dữ liệu đăng nhập và dữ liệu cá nhân). Microsoft Defender xếp mẫu vào nhóm Trojan.</li>
+<li>File được ngụy trang dưới tên của một tiện ích giải nén có sẵn trong Windows.</li>
+<li>Theo dữ liệu sandbox, mẫu thu thập dữ liệu trên máy: thông tin phần cứng, phần mềm đã cài, mật khẩu lưu trong trình duyệt, token Discord, phiên Telegram và ví tiền mã hóa.</li>
+<li>Trước khi gọi C2 (máy chủ điều khiển), mẫu phân giải DNS một tên miền phổ biến để kiểm tra máy có ra Internet được không.</li>
+<li><strong>Mẫu kết nối thẳng tới một IP public qua một cổng TCP cao</strong>, dùng giao thức WCF Net.TCP để gửi dữ liệu.</li>
+<li>Mẫu import một DLL hệ thống chứa các API điều chỉnh đặc quyền token, để xin quyền debug và đọc bộ nhớ tiến trình khác.</li>
+</ul>
+<h2 id="buoc-1-nhan-dien-mau-tren-virustotal">Bước 1: nhận diện mẫu trên VirusTotal</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết mẫu bị xếp loại gì, tên file gốc và lần đầu xuất hiện.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Tra mẫu trên VirusTotal, tab Detection. Xem nhãn của Microsoft.</li>
+<li>Mở tab Details. Xem phần tên file và mốc thời gian lần đầu được ghi nhận.</li>
+</ul>
+<figure><img src="../img/red-stealer/rs-01-vt-detection.png" alt="VirusTotal: bảng nhận diện của các hãng"><figcaption>Một phần bảng nhận diện trên VirusTotal (mẫu bị 61/71 hãng đánh dấu độc hại). Dòng Microsoft trong khung đỏ. Nhãn của Microsoft và các nhãn có tên họ hoặc nhóm mã độc đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Nhãn của Microsoft đặt mẫu vào nhóm Trojan kèm tên một họ infostealer.</li>
+<li>Tên file trùng với một stub giải nén của Windows. Đây là cách ngụy trang để file trông như công cụ hợp lệ.</li>
+<li>Hướng giải: nhóm phân loại nằm ở phần đầu nhãn của Microsoft. Tên file và mốc lần đầu xuất hiện nằm trong tab Details (mục Names và History).</li>
+</ul>
+<h2 id="buoc-2-hanh-vi-thu-thap-du-lieu">Bước 2: hành vi thu thập dữ liệu</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định kỹ thuật MITRE ATT&amp;CK mẫu dùng để lấy dữ liệu.</li>
+<li><strong>Cách làm:</strong> mở tab Behavior trên VirusTotal, xem phần ánh xạ MITRE ATT&amp;CK của các lần chạy sandbox.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Mẫu đọc dữ liệu có sẵn trên máy: cơ sở dữ liệu SQLite của trình duyệt (Chromium, Gecko), token Discord, file phiên Telegram, tiện ích ví tiền mã hóa.</li>
+<li>Hướng giải: mã kỹ thuật nằm trong nhóm Collection của bảng MITRE ATT&amp;CK, ứng với việc lấy dữ liệu từ chính hệ thống bị nhiễm.</li>
+</ul>
+<h2 id="buoc-3-kiem-tra-ket-noi-mang-va-c2">Bước 3: kiểm tra kết nối mạng và C2</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm tên miền mẫu phân giải trước khi gọi C2, và địa chỉ C2.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior, xem phần Network Communication (DNS Resolutions và IP Traffic).</li>
+</ul>
+<figure><img src="../img/red-stealer/rs-02-vt-network.png" alt="VirusTotal: DNS Resolutions và IP Traffic"><figcaption>Phần Network Communication trong tab Behavior, gộp từ nhiều sandbox. Các tên miền mạng xã hội và IP của chúng đã làm mờ. Dòng đầu của IP Traffic (khung đỏ, đã làm mờ) là kết nối TCP tới một IP public qua cổng cao, không kèm tên miền. Các dòng còn lại là lưu lượng của trình duyệt và dịch vụ Microsoft trong sandbox.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Có một truy vấn DNS tới một tên miền mạng xã hội lớn. Mục đích là kiểm tra máy có ra Internet được, và né các sandbox không có mạng.</li>
+<li>Sau đó mẫu mở kết nối TCP thẳng tới một IP public qua một cổng cao (trên 10000). Dữ liệu được gửi bằng WCF Net.TCP với định dạng binary XML.</li>
+<li>Hướng giải: tên miền nằm trong danh sách DNS Resolutions. IP và cổng C2 nằm trong IP Traffic, ghi theo dạng <code>&lt;IP&gt;:&lt;cổng&gt;</code>.</li>
+</ul>
+<h2 id="buoc-4-luat-yara-va-ten-goi-khac-cua-ho-ma-oc">Bước 4: luật YARA và tên gọi khác của họ mã độc</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm luật YARA phát hiện mẫu và tên khác mà các nguồn threat intel dùng cho họ mã độc này.</li>
+<li><strong>Cách làm:</strong></li>
+<li>Tra mẫu trên MalwareBazaar, xem phần YARA Signatures (tên luật và tác giả).</li>
+<li>Tra họ mã độc trên ThreatFox hoặc Malpedia, xem mục alias (tên gọi khác).</li>
+<li><strong>Nhận định:</strong></li>
+<li>Có một luật YARA công khai phát hiện đúng họ infostealer này. Có thể đưa luật vào công cụ quét endpoint.</li>
+<li>Hướng giải: tên luật YARA nằm ở trang mẫu trên MalwareBazaar. Tên gọi khác nằm ở trang họ mã độc trên Malpedia hoặc ThreatFox.</li>
+</ul>
+<h2 id="buoc-5-co-che-leo-quyen">Bước 5: cơ chế leo quyền</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định DLL mẫu dùng để xin thêm đặc quyền.</li>
+<li><strong>Cách làm:</strong> trên VirusTotal, tab Details, xem phần Imports của PE (danh sách DLL và API mẫu gọi).</li>
+<li><strong>Nhận định:</strong></li>
+<li>Mẫu gọi các API mở token tiến trình, tra giá trị đặc quyền và điều chỉnh đặc quyền. Bộ API này dùng để bật quyền debug, từ đó đọc được bộ nhớ của tiến trình khác.</li>
+<li>Hướng giải: tìm DLL hệ thống chứa nhóm API xử lý token và đặc quyền trong danh sách Imports.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

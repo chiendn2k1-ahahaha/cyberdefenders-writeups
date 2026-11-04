@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Oski lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Oski writeup (walkthrough tiếng Việt): Đọc báo cáo sandbox của một mẫu Stealc trên VirusTotal và Tria.ge để tìm thời điểm tạo, máy chủ C2, thư viện được tải, khóa giải mã chuỗi và hành vi tự xóa.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/oski.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Oski lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Oski writeup (walkthrough tiếng Việt): Đọc báo cáo sandbox của một mẫu Stealc trên VirusTotal và Tria.ge để tìm thời điểm tạo, máy chủ C2, thư viện được tải, khóa giải mã chuỗi và hành vi tự xóa.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/oski.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Oski - CyberDefenders writeup", "description": "Đọc báo cáo sandbox của một mẫu Stealc trên VirusTotal và Tria.ge để tìm thời điểm tạo, máy chủ C2, thư viện được tải, khóa giải mã chuỗi và hành vi tự xóa.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/oski.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Oski, writeup, walkthrough, Threat Intel, VirusTotal, ANY.RUN", "about": {"@type": "Thing", "name": "CyberDefenders Oski lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/oski/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-thong-tin-file-va-thoi-iem-tao">Bước 1: thông tin file và thời điểm tạo</a></li><li><a href="#buoc-2-may-chu-c2-va-thu-vien-uoc-tai">Bước 2: máy chủ C2 và thư viện được tải</a></li><li><a href="#buoc-3-khoa-giai-ma-chuoi">Bước 3: khóa giải mã chuỗi</a></li><li><a href="#buoc-4-ky-thuat-mitre-attck">Bước 4: kỹ thuật MITRE ATT&amp;amp;CK</a></li><li><a href="#buoc-5-don-dau-vet-va-tu-xoa">Bước 5: dọn dấu vết và tự xóa</a></li></ul></nav>
+<article>
+<h1 id="oski">Oski</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/oski/">Oski</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file <code>hash.txt</code> chứa MD5 <code>12c1842c3ccafe7408c23ebf292ee3d9</code>. Mẫu là một infostealer (mã độc đánh cắp thông tin) thuộc họ Stealc, dòng phát triển từ Oski.</li>
+<li><strong>Công cụ:</strong> VirusTotal (tab Details, Behavior), Recorded Future Triage (Tria.ge, sandbox có trích xuất cấu hình mã độc). Danh sách của lab còn có ANY.RUN.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp trang VirusTotal và Tria.ge của đúng mẫu này, chụp ngày 04/11/2026.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án của câu hỏi (thời điểm tạo, IP, URL C2, tên DLL, khóa RC4).</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>MD5 của lab ứng với file PE 32-bit <code>VPN.exe</code> (311,50 KB, SHA-256 <code>a040a0af...530a19bb</code>), biên dịch bằng Visual C++ 2010. VirusTotal ghi nhận 59/70 engine phát hiện.</li>
+<li>Trong sandbox, mẫu gửi HTTP POST tới một file <code>.php</code> có tên là chuỗi hex, đặt thẳng trên một IP public. Nó cũng tải một DLL từ cùng IP đó.</li>
+<li>Tria.ge trích được cấu hình: family <code>stealc</code>, địa chỉ C2, đường dẫn <code>.php</code> và khóa RC4 dùng để giải mã chuỗi.</li>
+<li>Cây tiến trình có <code>cmd.exe</code> sinh ra <code>timeout.exe</code>, khớp với tag <code>self-delete</code> của VirusTotal: mẫu chờ vài giây rồi tự xóa.</li>
+</ul>
+<h2 id="buoc-1-thong-tin-file-va-thoi-iem-tao">Bước 1: thông tin file và thời điểm tạo</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết mẫu là file gì và được biên dịch khi nào.</li>
+<li><strong>Cách làm:</strong> tra MD5 trên VirusTotal, mở tab Details, xem Basic properties và History.</li>
+</ul>
+<figure><img src="../img/oski/os-01-vt-overview.png" alt="VirusTotal Details của VPN.exe"><figcaption>VirusTotal Details: 59/70 engine phát hiện, tên VPN.exe.bin, các tag detect-debug-environment, checks-cpu-name, self-delete. File type Win32 EXE, DetectItEasy ghi nhận Microsoft Visual C/C++ 2008-2010. Creation Time trong mục History đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Creation Time trên VirusTotal lấy từ trường Compilation Timestamp trong PE header (hai giá trị trùng nhau ở mẫu này).</li>
+<li>Timestamp do trình biên dịch ghi, kẻ tấn công có thể sửa. Chỉ nên coi là dấu hiệu tham khảo.</li>
+<li>Mẫu được gửi lên VirusTotal lần đầu ngày 23/09/2023 (22:02:55 UTC), gần 1 năm sau timestamp biên dịch.</li>
+<li>Hướng giải: dòng Creation Time đã làm mờ, ghi theo định dạng <code>YYYY-MM-DD HH:MM</code>.</li>
+</ul>
+<h2 id="buoc-2-may-chu-c2-va-thu-vien-uoc-tai">Bước 2: máy chủ C2 và thư viện được tải</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nơi mẫu gửi dữ liệu và những gì nó tải về.</li>
+<li><strong>Cách làm:</strong> mở tab Behavior, xem mục Network Communication, phần HTTP Requests.</li>
+</ul>
+<figure><img src="../img/oski/os-02-vt-http.png" alt="VirusTotal Behavior: HTTP Requests"><figcaption>HTTP Requests trong tab Behavior. Hai request GET tải một file DLL trong thư mục /9e226a84ec50246d/ và một request POST tới một file .php, cùng trên một IP (IP, tên DLL và tên file .php đã làm mờ). IP Traffic có kết nối TCP tới IP đó qua cổng 80.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Request POST tới file <code>.php</code> có tên là chuỗi hex là cổng nhận dữ liệu bị đánh cắp.</li>
+<li>Mẫu kết nối thẳng tới IP qua HTTP cổng 80, không qua tên miền. Chặn theo DNS sẽ không có tác dụng.</li>
+<li>Mẫu không mang sẵn thư viện đọc database của trình duyệt. Nó tải DLL hợp lệ từ C2 về khi cần, nên file ban đầu nhỏ và ít bị phát hiện hơn.</li>
+<li>Hướng giải: URL C2 là URL đầy đủ của request POST. Thư viện đầu tiên được tải là tên file trong request GET đầu tiên.</li>
+</ul>
+<h2 id="buoc-3-khoa-giai-ma-chuoi">Bước 3: khóa giải mã chuỗi</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy khóa mẫu dùng để giải mã chuỗi Base64.</li>
+<li><strong>Cách làm:</strong> tìm SHA-256 trên Tria.ge, mở một báo cáo của mẫu (ví dụ <code>231012-akzmxsdb7s</code>), xem mục Malware Config.</li>
+</ul>
+<figure><img src="../img/oski/os-04-triage-config.png" alt="Tria.ge Malware Config"><figcaption>Báo cáo Tria.ge 231012-akzmxsdb7s: điểm 10/10, tag STEALC, STEALER. Malware Config: Family stealc, C2, url_path và rc4.plain (các giá trị đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>C2 và <code>url_path</code> trên Tria.ge khớp với IP và file <code>.php</code> thấy ở Bước 2. Hai nguồn độc lập cho cùng một kết quả.</li>
+<li>Chuỗi cấu hình được mã hóa RC4 (thuật toán mã hóa đối xứng) rồi Base64. Có khóa thì giải mã được toàn bộ chuỗi trong mẫu.</li>
+<li>Hướng giải: khóa là dãy chữ số ở dòng <code>rc4.plain</code>.</li>
+</ul>
+<h2 id="buoc-4-ky-thuat-mitre-attck">Bước 4: kỹ thuật MITRE ATT&amp;CK</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định kỹ thuật chính mẫu dùng để lấy mật khẩu.</li>
+<li><strong>Cách làm:</strong> mở bảng MITRE ATT&amp;CK trong báo cáo sandbox (Tria.ge hoặc ANY.RUN), xem các kỹ thuật thuộc tactic Credential Access.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Stealc lấy mật khẩu từ nơi lưu trữ của trình duyệt. Thư viện DLL tải ở Bước 2 dùng để đọc các database này.</li>
+<li>Lab hỏi technique chính, không phải sub-technique. ID của sub-technique có thêm phần <code>.xxx</code> phía sau.</li>
+<li>Hướng giải: ID technique cha của hành vi đọc mật khẩu trình duyệt trong bảng ATT&amp;CK.</li>
+</ul>
+<h2 id="buoc-5-don-dau-vet-va-tu-xoa">Bước 5: dọn dấu vết và tự xóa</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> hiểu mẫu làm gì sau khi gửi dữ liệu.</li>
+<li><strong>Cách làm:</strong> trong tab Behavior của VirusTotal, xem mục Processes Tree.</li>
+</ul>
+<figure><img src="../img/oski/os-03-vt-process-tree.png" alt="VirusTotal Behavior: Processes Tree"><figcaption>Processes Tree: mẫu chạy (%SAMPLEPATH%, bản sao C:\loqktcd\btwg.exe), sinh ra %WINDIR%\syswow64\cmd.exe, rồi cmd.exe sinh ra timeout.exe.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li><code>cmd.exe</code> gọi <code>timeout.exe</code> để chờ một khoảng ngắn, rồi xóa file thực thi khi tiến trình mẫu đã thoát. Đây là lý do VirusTotal gắn tag <code>self-delete</code>.</li>
+<li>VirusTotal chỉ hiện tên tiến trình, không hiện command line của <code>cmd.exe</code>.</li>
+<li>Hướng giải: thư mục bị xóa DLL và số giây chờ nằm trong command line của tiến trình <code>cmd.exe</code>. Xem trong báo cáo ANY.RUN hoặc tab Behavior của Tria.ge, nơi có ghi command line.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

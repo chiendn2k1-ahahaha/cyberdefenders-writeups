@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>DanaBot lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders DanaBot writeup (walkthrough tiếng Việt): Phân tích lưu lượng mạng để tìm đường xâm nhập ban đầu của DanaBot, từ file JavaScript giả hóa đơn tới DLL giai đoạn hai, và trích IOC.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/danabot.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="DanaBot lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders DanaBot writeup (walkthrough tiếng Việt): Phân tích lưu lượng mạng để tìm đường xâm nhập ban đầu của DanaBot, từ file JavaScript giả hóa đơn tới DLL giai đoạn hai, và trích IOC.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/danabot.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "DanaBot - CyberDefenders writeup", "description": "Phân tích lưu lượng mạng để tìm đường xâm nhập ban đầu của DanaBot, từ file JavaScript giả hóa đơn tới DLL giai đoạn hai, và trích IOC.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/danabot.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, DanaBot, writeup, walkthrough, Network Forensics, Wireshark, VirusTotal, ANY.RUN, Network Miner", "about": {"@type": "Thing", "name": "CyberDefenders DanaBot lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/danabot/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-cac-request-http-va-file-tai-ve">Bước 1: các request HTTP và file tải về</a></li><li><a href="#buoc-2-trich-file-va-tinh-hash">Bước 2: trích file và tính hash</a></li><li><a href="#buoc-3-tien-trinh-chay-script">Bước 3: tiến trình chạy script</a></li><li><a href="#buoc-4-payload-giai-oan-hai-va-ket-noi-sau-o">Bước 4: payload giai đoạn hai và kết nối sau đó</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="danabot">DanaBot</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/danabot/">DanaBot</a> trên CyberDefenders. Nhóm Network Forensics, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> một file pcap (bản ghi lưu lượng mạng, 15 MB) của máy trạm Windows <code>10.2.14.101</code>, ghi trong khoảng 24 phút ngày 14/02/2024.</li>
+<li><strong>Công cụ:</strong> <code>tshark</code> (bản dòng lệnh của Wireshark) để lọc và trích file từ HTTP, Python để tính hash. Không chạy file nào. VirusTotal hoặc ANY.RUN để tra hash và xem cây tiến trình.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Giờ trong pcap là UTC. Mốc chính ghi dạng <code>UTC (UTC+7)</code>.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý.</li>
+<li>Vùng làm mờ là giá trị trùng với đáp án của lab: IP, tên miền, URI, tên file, hash.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Máy trạm tải một file JavaScript bị làm rối mã (obfuscated) qua HTTP từ một tên miền dynamic DNS (dịch vụ DNS cho phép đổi IP liên tục). Máy chủ trả file về dạng tệp đính kèm, tên file giả hóa đơn tiếng Ý.</li>
+<li>Khoảng một phút sau, máy tải một file PE (file thực thi Windows) dạng thư viện, nặng gần 12 MB, từ một tên miền và IP khác.</li>
+<li>Sau đó máy mở các kết nối kéo dài hơn 18 phút tới hai IP bên ngoài qua cổng 443. Với một IP, máy trạm gửi đi gần 1 MB.</li>
+<li><strong>Payload giai đoạn hai được VirusTotal gán vào họ DanaBot</strong>, một trojan ngân hàng có khả năng đánh cắp thông tin đăng nhập.</li>
+</ul>
+<h2 id="buoc-1-cac-request-http-va-file-tai-ve">Bước 1: các request HTTP và file tải về</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nơi máy tải file độc hại.</li>
+<li><strong>Cách làm:</strong> lọc request HTTP, bỏ multicast SSDP, OCSP và kiểm tra kết nối mạng của Windows. Sau đó xem phản hồi từ hai máy chủ còn lại, gồm cả header <code>Content-Disposition</code>.</li>
+</ul>
+<pre><code class="language-powershell">tshark -r DanaBot.pcap -t ud -Y &quot;http.request &amp;&amp; ip.dst!=239.255.255.250&quot; -T fields -e frame.number -e _ws.col.Time -e ip.src -e ip.dst -e http.host -e http.request.uri
+tshark -r DanaBot.pcap -Y &quot;http.response &amp;&amp; (ip.src==&lt;IP 1&gt; || ip.src==&lt;IP 2&gt;)&quot; -T fields -e frame.number -e http.response.code -e http.content_type -e http.content_length_header -e http.response_for.uri -e http.response.line
+</code></pre>
+<figure><img src="../img/danabot/db-01-http.png" alt="tshark: hai request HTTP đáng chú ý và phản hồi"><figcaption>Chỉ còn hai request đáng chú ý. Lúc 16:25:54 UTC, máy tải một trang .php từ tên miền thứ nhất; phản hồi là application/octet-stream kèm Content-disposition: attachment, tên file đã làm mờ. Lúc 16:26:55 UTC, máy tải file .dll từ tên miền thứ hai, dài 11.922.432 byte.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>URI kết thúc bằng <code>.php</code> nhưng máy chủ trả về file đính kèm. Đây là cách giấu file độc sau một URL trông như trang web.</li>
+<li>Tên miền thứ nhất thuộc một dịch vụ dynamic DNS miễn phí. Kẻ tấn công hay dùng loại này để đổi IP mà không cần đổi tên miền.</li>
+<li>Hai file đến từ hai IP khác nhau. Chặn một IP không đủ để cắt chuỗi lây nhiễm.</li>
+<li>Hướng giải: IP nguồn phát tán file đầu nằm ở cột <code>dst</code> của frame 6. Tên file nằm sau <code>filename=</code> trong header của frame 11.</li>
+</ul>
+<h2 id="buoc-2-trich-file-va-tinh-hash">Bước 2: trích file và tính hash</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy file script và payload để tra cứu.</li>
+<li><strong>Cách làm:</strong> trích object HTTP bằng <code>tshark --export-objects</code>, đọc vài byte đầu và tính SHA-256 bằng Python.</li>
+</ul>
+<figure><img src="../img/danabot/db-02-objects.png" alt="Các object HTTP trích ra: kích thước, byte đầu, SHA-256"><figcaption>Object thứ nhất (5.558 byte) bắt đầu bằng function _0x..., kiểu tên hàm của công cụ làm rối JavaScript phổ biến. Object thứ hai bắt đầu bằng MZ, tức là file PE. Tên file và hash đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Nội dung file đầu là JavaScript bị làm rối, không phải trang PHP. Tên file giả dạng tài liệu đính kèm bằng tiếng Ý để người nhận mở ra.</li>
+<li>Hướng giải: SHA-256 của file script tính trên object thứ nhất. MD5 của payload tính trên object thứ hai.</li>
+</ul>
+<h2 id="buoc-3-tien-trinh-chay-script">Bước 3: tiến trình chạy script</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định tiến trình Windows chạy file script.</li>
+<li><strong>Cách làm:</strong> pcap không có thông tin tiến trình. Tra hash file script trên VirusTotal hoặc ANY.RUN, xem cây tiến trình trong báo cáo sandbox.</li>
+<li><strong>Nhận định:</strong></li>
+<li><code>explorer.exe</code> gọi trình thông dịch script có sẵn của Windows với tham số là file <code>.js</code>, tức người dùng bấm đúp vào file. Đây là cách lạm dụng binary có sẵn của hệ thống (LOLBin).</li>
+<li>Hướng giải: tên file thực thi nằm trong cây tiến trình của báo cáo sandbox, ngay dưới <code>explorer.exe</code>.</li>
+</ul>
+<h2 id="buoc-4-payload-giai-oan-hai-va-ket-noi-sau-o">Bước 4: payload giai đoạn hai và kết nối sau đó</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định loại payload và hoạt động mạng sau khi tải.</li>
+<li><strong>Cách làm:</strong> tra hash payload trên VirusTotal. Xem thống kê hội thoại theo IP trong pcap.</li>
+</ul>
+<figure><img src="../img/danabot/db-03-tcp.png" alt="tshark: thống kê hội thoại theo IP"><figcaption>Thống kê hội thoại theo IP (10 dòng đầu). Dòng đầu là lần tải payload khoảng 12 MB. Hai dòng trong khung đỏ bắt đầu ở giây 156,8 và 160,4 tính từ đầu capture (khoảng 16:28:30 và 16:28:34 UTC), kéo dài 1.116 và 1.303 giây. Với IP thứ nhất trong khung đỏ, máy trạm gửi đi 981.181 byte. IP đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Payload là thư viện Windows. VirusTotal gán vào họ DanaBot.</li>
+<li>Hai luồng này bắt đầu ngay khi việc tải payload sắp xong, đều qua cổng 443.</li>
+<li>Với IP thứ nhất, <code>conv,tcp</code> cho thấy 4 phiên TCP: phiên đầu dài 20 giây, máy trạm gửi đi khoảng 960 KB. Sau đó là 3 phiên ngắn, mỗi phiên khoảng 11 KB, cách nhau khoảng 6 phút. Nhịp đều đặn như vậy là kiểu beacon (kết nối định kỳ về máy chủ C2).</li>
+<li>Lượng gửi đi gần 1 MB là <strong>bất thường</strong> với một máy trạm vừa bị nhiễm: nguồn là pcap, máy <code>10.2.14.101</code>, lúc 16:28:30 UTC (23:28:30 UTC+7), so với các IP bên ngoài khác chỉ nhận vài chục KB từ máy này.</li>
+<li>Chưa đủ dữ liệu để kết luận đó là dữ liệu bị đánh cắp, vì lưu lượng qua cổng 443 không giải mã được và lab không có memory dump hay log endpoint.</li>
+<li>Hướng giải: loại file xem ở byte đầu (MZ) và tab Details trên VirusTotal. MD5 tính trên object thứ hai.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<ul>
+<li>14/02/2024 16:25:54 UTC (23:25:54 UTC+7): máy tải file JavaScript giả hóa đơn từ tên miền dynamic DNS. Nguồn: pcap, frame 6 và 11.</li>
+<li>16:26:55 UTC (23:26:55 UTC+7): máy tải file DLL gần 12 MB từ tên miền thứ hai. Nguồn: pcap, frame 250 và 9952.</li>
+<li>16:28:30 và 16:28:34 UTC (23:28 UTC+7): bắt đầu hai kết nối dài tới hai IP bên ngoài qua cổng 443. Nguồn: pcap.</li>
+<li>Khoảng 16:47 đến 16:50 UTC (23:47 đến 23:50 UTC+7): hai kết nối trên kết thúc. Nguồn: pcap.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

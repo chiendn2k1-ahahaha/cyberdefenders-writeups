@@ -1,0 +1,12 @@
+# never publish secrets or raw lab data
+*.env
+.env*
+*.key
+*.pem
+*token*
+*secret*
+raw/
+captures_raw/
+__pycache__/
+*.pyc
+src/_index.tmp.md

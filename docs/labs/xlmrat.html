@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>XLMRat lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders XLMRat writeup (walkthrough tiếng Việt): Lần theo chuỗi lây nhiễm XLMRat từ file pcap, giải rối script tải về, phân tích cách nạp .NET assembly trong bộ nhớ và process hollowing vào một tiện ích .NET hợp lệ.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/xlmrat.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="XLMRat lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders XLMRat writeup (walkthrough tiếng Việt): Lần theo chuỗi lây nhiễm XLMRat từ file pcap, giải rối script tải về, phân tích cách nạp .NET assembly trong bộ nhớ và process hollowing vào một tiện ích .NET hợp lệ.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/xlmrat.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "XLMRat - CyberDefenders writeup", "description": "Lần theo chuỗi lây nhiễm XLMRat từ file pcap, giải rối script tải về, phân tích cách nạp .NET assembly trong bộ nhớ và process hollowing vào một tiện ích .NET hợp lệ.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/xlmrat.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, XLMRat, writeup, walkthrough, Network Forensics, CyberChef, PowerShell, VirusTotal, Wireshark, Python3, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders XLMRat lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/xlmrat/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-cac-request-http-va-ket-noi-tcp">Bước 1: các request HTTP và kết nối TCP</a></li><li><a href="#buoc-2-giai-roi-script-tang-au">Bước 2: giải rối script tầng đầu</a></li><li><a href="#buoc-3-payload-tang-hai-va-nap-assembly-trong-bo-nho">Bước 3: payload tầng hai và nạp assembly trong bộ nhớ</a></li><li><a href="#buoc-4-persistence">Bước 4: persistence</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="xlmrat">XLMRat</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/xlmrat/">XLMRat</a> trên CyberDefenders. Nhóm Network Forensics, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> một file pcap (bản ghi lưu lượng mạng, khoảng 600 KB) của máy <code>10.1.9.101</code>. Hai file mà máy tải qua HTTP được trích ra bằng <code>tshark --export-objects</code>.</li>
+<li><strong>Công cụ:</strong> <code>tshark</code> (bản dòng lệnh của Wireshark), Python để ghép chuỗi bị làm rối và giải mã hex ngay trong bộ nhớ. Không chạy script hay file thực thi nào. VirusTotal dùng để tra hash và họ mã độc.</li>
+<li><strong>Quy ước:</strong></li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý.</li>
+<li>Vùng làm mờ là giá trị trùng với đáp án của lab: IP, cổng, tên file, giờ, tên lớp .NET, đường dẫn binary, tên task và chu kỳ lặp.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Máy gửi HTTP GET tới một IP public qua một cổng không chuẩn, tải về một file text. File này là VBScript ghép 88 mảnh chuỗi thành lệnh PowerShell ẩn cửa sổ.</li>
+<li>Lệnh PowerShell tải tiếp một file mang đuôi ảnh từ cùng IP. Thực chất đó là script PowerShell khoảng 430 KB, chứa hai file PE (file thực thi Windows) mã hóa dạng hex.</li>
+<li>Script nạp một PE (assembly .NET trợ giúp) trực tiếp trong bộ nhớ, rồi gọi hàm của nó với hai tham số: đường dẫn một tiện ích của .NET Framework và PE còn lại.</li>
+<li><strong>Assembly trợ giúp chứa bộ API của process hollowing</strong>, kỹ thuật tạo một tiến trình hợp lệ ở trạng thái tạm dừng, thay bộ nhớ của nó bằng mã độc, rồi cho chạy tiếp.</li>
+<li>Script ghi ba file cùng tên (<code>.ps1</code>, <code>.bat</code>, <code>.vbs</code>) vào <code>C:\Users\Public</code> và đăng ký scheduled task chạy file <code>.vbs</code> lặp lại. Khoảng hai phút sau lần tải đầu, máy mở kết nối TCP dài tới cùng IP qua một cổng khác. Đây là kênh C2.</li>
+</ul>
+<h2 id="buoc-1-cac-request-http-va-ket-noi-tcp">Bước 1: các request HTTP và kết nối TCP</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nơi máy tải mã độc và các kết nối sau đó.</li>
+<li><strong>Cách làm:</strong> lọc request HTTP, rồi xem thống kê hội thoại TCP.</li>
+</ul>
+<pre><code class="language-powershell">tshark -r XLMRat.pcap -t ud -Y &quot;http.request&quot; -T fields -e frame.number -e _ws.col.Time -e ip.src -e ip.dst -e tcp.dstport -e http.request.method -e http.request.uri
+tshark -r XLMRat.pcap -t ud -q -z conv,tcp
+</code></pre>
+<figure><img src="../img/xlmrat/xr-01-http-tcp.png" alt="tshark: hai request HTTP và ba hội thoại TCP"><figcaption>Pcap chỉ có hai request HTTP (frame 4 và 12), cách nhau khoảng 2 giây, cùng tới một IP public trên cùng một cổng (đã làm mờ). Thống kê TCP có ba hội thoại với IP này. Hội thoại trong khung đỏ đi qua cổng khác, kéo dài khoảng 625 giây với gần 1.200 gói.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Hai hội thoại ngắn trên cùng cổng là hai lần tải file. Hội thoại thứ hai mang khoảng 450 KB về máy.</li>
+<li>Hội thoại dài trên cổng khác, bắt đầu sau lần tải khoảng 2 phút, có lưu lượng hai chiều đều đặn. Đây là dấu hiệu kênh C2.</li>
+<li>Hướng giải: URL đầy đủ ghép từ IP, cổng và URI của frame 4. Cổng C2 nằm ở hội thoại trong khung đỏ. Nhà cung cấp hosting của IP xem ở mục AS owner trên VirusTotal.</li>
+</ul>
+<h2 id="buoc-2-giai-roi-script-tang-au">Bước 2: giải rối script tầng đầu</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> hiểu file text tải về làm gì.</li>
+<li><strong>Cách làm:</strong> trích object HTTP, đọc file như text. Ghép 88 mảnh chuỗi theo thứ tự bằng Python thay vì chạy VBScript.</li>
+</ul>
+<pre><code class="language-powershell">tshark -r XLMRat.pcap --export-objects &quot;http,.\obj&quot; -q
+</code></pre>
+<figure><img src="../img/xlmrat/xr-02-stage1.png" alt="VBScript tầng đầu và chuỗi PowerShell sau khi ghép"><figcaption>File tầng đầu là VBScript. Mười dòng cuối: vòng lặp For ghép 88 mảnh (chỉ số 0 đến 87, mỗi mảnh dài 2 hoặc 4 ký tự), rồi WScript.Shell chạy Cmd.exe /c PowerShell với -NOP, cửa sổ ẩn, bỏ qua execution policy và -NONI. Chuỗi sau khi ghép (do script read_xlm.py in ra, IP và tên file được script thay bằng #) là lệnh IEX(New-Object Net.WebClient).DownloadString. Chữ DOWNLOADSTRING bị tách: phần cuối viết là VAN rồi được .Replace thành ADSTRING để né phát hiện theo chuỗi.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li><code>IEX</code> chạy ngay nội dung tải về trong bộ nhớ, không ghi file ra đĩa.</li>
+<li>Các kỹ thuật làm rối ở đây đơn giản: cắt chuỗi, đổi hoa thường, thay <code>VAN</code> bằng <code>ADSTRING</code>. Chỉ cần ghép lại là đọc được.</li>
+<li>Hướng giải: tên file tầng hai nằm trong URL của lệnh <code>DownloadString</code>, cũng chính là URI của frame 12.</li>
+</ul>
+<h2 id="buoc-3-payload-tang-hai-va-nap-assembly-trong-bo-nho">Bước 3: payload tầng hai và nạp assembly trong bộ nhớ</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xem file mang đuôi ảnh chứa gì và chạy payload ra sao.</li>
+<li><strong>Cách làm:</strong> đọc file như text. Tách hai biến chứa chuỗi hex, giải mã trong Python để kiểm tra header và tính hash, không ghi file PE ra đĩa.</li>
+</ul>
+<figure><img src="../img/xlmrat/xr-03-stage2-loader.png" alt="Script tầng hai: hai PE dạng hex và đoạn nạp assembly"><figcaption>File "ảnh" là script PowerShell. Hai biến chứa PE mã hóa dạng hex, ngăn cách bằng dấu gạch dưới: 66.560 byte và 76.288 byte sau khi giải mã, cả hai bắt đầu bằng MZ. Script dùng [Reflection.Assembly]::Load để nạp PE thứ hai trong bộ nhớ, lấy hàm Execute của một lớp (tên đã làm mờ), rồi gọi hàm đó với đường dẫn một tiện ích .NET (đã làm mờ) và PE thứ nhất.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tên hàm <code>Load</code> và <code>Invoke</code> bị chèn ký tự <code>#</code> rồi xóa đi lúc chạy, cũng để né phát hiện theo chuỗi.</li>
+<li>Tìm chuỗi trong PE 76.288 byte thấy đủ <code>CreateProcessA</code>, <code>GetThreadContext</code>, <code>ZwUnmapViewOfSection</code>, <code>VirtualAllocEx</code>, <code>WriteProcessMemory</code>, <code>SetThreadContext</code>, <code>ResumeThread</code>. Đây là bộ API điển hình của process hollowing.</li>
+<li>Vậy PE 76.288 byte là loader, còn PE 66.560 byte là payload được bơm vào tiến trình của tiện ích .NET hợp lệ. Mã độc chạy dưới tên binary hợp lệ giúp né giám sát tiến trình đơn giản.</li>
+<li>Hướng giải: đường dẫn binary đích là chuỗi ghép từ <code>$NA</code> và <code>$AC</code> sau khi bỏ dấu <code>#</code>. Họ mã độc tra bằng SHA256 của PE 66.560 byte trên VirusTotal.</li>
+</ul>
+<h2 id="buoc-4-persistence">Bước 4: persistence</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định cách mã độc tự chạy lại.</li>
+<li><strong>Cách làm:</strong> tìm các lệnh ghi file và tạo scheduled task trong script tầng hai.</li>
+</ul>
+<figure><img src="../img/xlmrat/xr-04-persistence.png" alt="Script tầng hai: ghi 3 file và tạo scheduled task"><figcaption>Script ghi ba file cùng tên (đã làm mờ) với đuôi .ps1, .bat, .vbs vào C:\Users\Public, rồi tạo scheduled task qua COM object Schedule.Service. Task chạy file .vbs, lặp lại theo chu kỳ trong khung đỏ. Tên task và chu kỳ đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Chuỗi chạy lại là: task gọi <code>.vbs</code> ở chế độ ẩn, <code>.vbs</code> gọi <code>.bat</code>, <code>.bat</code> gọi <code>powershell.exe -ExecutionPolicy Bypass</code> chạy <code>.ps1</code>. File <code>.ps1</code> chứa lại toàn bộ đoạn nạp loader ở Bước 3.</li>
+<li>Tên task được đặt giống tác vụ cập nhật trình duyệt để tránh bị chú ý.</li>
+<li>Chưa đủ dữ liệu để xác nhận task đã được tạo thật trên máy, vì lab chỉ có pcap, không có event log Task Scheduler.</li>
+<li>Hướng giải: tên ba file, tên task và chu kỳ lặp nằm trong các dòng được làm mờ của ảnh.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<p>Giờ cụ thể không ghi vì là đáp án của lab. Thứ tự theo pcap và script:</p>
+<ul>
+<li>Máy tải file VBScript tầng đầu qua HTTP từ một IP public (frame 4). Nguồn: pcap.</li>
+<li>Khoảng 2 giây sau, PowerShell tải file tầng hai mang đuôi ảnh từ cùng IP (frame 12). Nguồn: pcap.</li>
+<li>Script giải mã hai PE dạng hex, nạp loader trong bộ nhớ và bơm payload vào tiện ích .NET. Nguồn: script tầng hai.</li>
+<li>Ba file persistence được ghi vào <code>C:\Users\Public</code> và scheduled task được đăng ký. Nguồn: script tầng hai.</li>
+<li>Khoảng 2 phút sau lần tải đầu, máy mở kết nối C2 tới cùng IP qua cổng khác, kéo dài khoảng 10 phút. Nguồn: pcap.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

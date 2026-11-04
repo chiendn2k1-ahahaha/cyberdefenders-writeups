@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>IcedID lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders IcedID writeup (walkthrough tiếng Việt): Dùng VirusTotal và Malpedia để lần theo chuỗi phát tán IcedID, từ file Excel chứa macro Excel 4.0 tới payload DLL đội lốt ảnh GIF và nhóm tấn công đứng sau.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/icedid.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="IcedID lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders IcedID writeup (walkthrough tiếng Việt): Dùng VirusTotal và Malpedia để lần theo chuỗi phát tán IcedID, từ file Excel chứa macro Excel 4.0 tới payload DLL đội lốt ảnh GIF và nhóm tấn công đứng sau.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/icedid.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "IcedID - CyberDefenders writeup", "description": "Dùng VirusTotal và Malpedia để lần theo chuỗi phát tán IcedID, từ file Excel chứa macro Excel 4.0 tới payload DLL đội lốt ảnh GIF và nhóm tấn công đứng sau.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/icedid.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, IcedID, writeup, walkthrough, Threat Intel, VirusTotal, malpedia, X, Tria.ge, ANY.RUN", "about": {"@type": "Thing", "name": "CyberDefenders IcedID lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/icedid/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-xac-inh-file-phat-tan-ban-au">Bước 1: xác định file phát tán ban đầu</a></li><li><a href="#buoc-2-macro-excel-40-ben-trong-file">Bước 2: macro Excel 4.0 bên trong file</a></li><li><a href="#buoc-3-ha-tang-ten-mien-phan-phoi-payload">Bước 3: hạ tầng tên miền phân phối payload</a></li><li><a href="#buoc-4-payload-buoc-hai-chay-duoi-dang-dll">Bước 4: payload bước hai chạy dưới dạng DLL</a></li><li><a href="#buoc-5-ho-ma-oc-va-nhom-tan-cong">Bước 5: họ mã độc và nhóm tấn công</a></li><li><a href="#dong-thoi-gian">Dòng thời gian</a></li></ul></nav>
+<article>
+<h1 id="icedid">IcedID</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/icedid/">IcedID</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file <code>hash.txt</code> chứa SHA-1 <code>191eda0c539d284b29efe556abb05cd75a9077a0</code>. Lab không cho log hay PCAP, chỉ yêu cầu tra cứu mẫu trên các nền tảng threat intel công khai.</li>
+<li><strong>Công cụ:</strong> VirusTotal (tab Details, Relations, Behavior), Malpedia, RDAP/WHOIS.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp trang VirusTotal và Malpedia của đúng mẫu này, chụp ngày 04/11/2026. Số engine phát hiện và ngày quét thay đổi theo thời gian.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án của câu hỏi (tên file, tên payload, tên nhóm).</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>SHA-1 của lab ứng với một file Excel dạng Office Open XML (SHA-256 <code>d8640513...a91116d</code>, 105,53 KB). File được gửi lên VirusTotal lần đầu lúc 01:39:08 UTC ngày 31/03/2021.</li>
+<li>File chứa một macro sheet Excel 4.0 (<code>xl/macrosheets/intlsheet1.xml</code>). Đây là phần bị nhiều engine phát hiện nhất trong các file bên trong.</li>
+<li>Khi chạy trong sandbox, file gọi tới 5 URL cùng dạng <code>https://&lt;tên miền&gt;/ds/&lt;tên file&gt;.gif</code> trên 5 tên miền khác nhau.</li>
+<li><code>EXCEL.EXE</code> sinh ra nhiều tiến trình <code>rundll32 ..\&lt;tên ngẫu nhiên&gt;.skd&lt;N&gt;,DllRegisterServer</code>. File tải về mang đuôi <code>.gif</code> nhưng được chạy như một DLL.</li>
+<li>Malpedia gắn IcedID với 2 nhóm tội phạm có động cơ tài chính.</li>
+</ul>
+<h2 id="buoc-1-xac-inh-file-phat-tan-ban-au">Bước 1: xác định file phát tán ban đầu</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết nạn nhân nhận được file gì.</li>
+<li><strong>Cách làm:</strong> tra SHA-1 trên VirusTotal, mở tab Details, xem mục History và Names (các tên file từng được gửi lên cho cùng mẫu).</li>
+</ul>
+<figure><img src="../img/icedid/ic-01-vt-names.png" alt="VirusTotal Details: History và Names"><figcaption>Tab Details trên VirusTotal. History: gửi lần đầu 2021-03-31 01:39:08 UTC. Names: ngoài các tên do người phân tích đặt (tên theo hash, sample_04.xlsx, 717.xlsx), có một tên dạng document-&lt;dãy số&gt; với đuôi macro của Excel (đã làm mờ).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Kiểu tên <code>document-&lt;dãy số&gt;</code> là kiểu tên thường thấy ở file đính kèm trong email lừa đảo.</li>
+<li>Các tên khác là tên do người phân tích hoặc sandbox đặt khi gửi mẫu lên, không phải tên nạn nhân nhận được.</li>
+<li>Hướng giải: tên file là dòng đã làm mờ trong mục Names.</li>
+</ul>
+<h2 id="buoc-2-macro-excel-40-ben-trong-file">Bước 2: macro Excel 4.0 bên trong file</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết file dùng loại macro nào.</li>
+<li><strong>Cách làm:</strong> mở tab Relations, xem mục Bundled Files (các file bên trong gói Office Open XML).</li>
+</ul>
+<figure><img src="../img/icedid/ic-03-vt-bundled-dropped.png" alt="VirusTotal Relations: Bundled Files và Dropped Files"><figcaption>Tab Relations. Bundled Files: xl/macrosheets/intlsheet1.xml bị 25/61 engine phát hiện, cao nhất trong các file bên trong. Dropped Files: sandbox ghi nhận 2 file Win32 DLL có tên ngẫu nhiên (55/71 và 59/71 engine phát hiện).</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Thư mục <code>xl/macrosheets/</code> chứa macro sheet Excel 4.0 (XLM), không phải macro VBA (VBA nằm trong <code>vbaProject.bin</code>).</li>
+<li>Macro XLM thường được dùng để né các công cụ chỉ quét macro VBA.</li>
+</ul>
+<h2 id="buoc-3-ha-tang-ten-mien-phan-phoi-payload">Bước 3: hạ tầng tên miền phân phối payload</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm các URL macro dùng để tải payload.</li>
+<li><strong>Cách làm:</strong> trong tab Relations, xem mục Contacted URLs và Contacted Domains.</li>
+</ul>
+<figure><img src="../img/icedid/ic-02-vt-contacted-urls.png" alt="VirusTotal Relations: Contacted URLs và Contacted Domains"><figcaption>Contacted URLs. 5 URL cùng đường dẫn /ds/&lt;tên file&gt;.gif (tên file đã làm mờ) trên 5 tên miền: columbia.aula-web.net, partsapp.com.br, metaflip.io, tajushariya.com, agenbolatermurah.com. Các URL còn lại (aws.amazon.com, x1.i.lencr.org...) là lưu lượng nền của sandbox.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Macro có 5 tên miền dự phòng chứa cùng một file. Nếu một tên miền bị chặn hoặc gỡ, macro vẫn tải được payload từ tên miền khác.</li>
+<li>Đuôi tên miền khác nhau (<code>.net</code>, <code>.com.br</code>, <code>.io</code>, <code>.com</code>).</li>
+<li>Cột Registrar trên VirusTotal để trống cho các tên miền này. Tra RDAP ngày 04/11/2026 cho thấy có tên miền đã được đăng ký lại vào năm 2026 (ví dụ <code>agenbolatermurah.com</code> đăng ký ngày 04/05/2026). Vì vậy WHOIS hiện tại không phản ánh nhà đăng ký năm 2021.</li>
+<li>Hướng giải: số tên miền là số host khác nhau trong 5 URL. Câu hỏi về nhà đăng ký cần dữ liệu WHOIS lịch sử (historical WHOIS) tại thời điểm chiến dịch.</li>
+</ul>
+<h2 id="buoc-4-payload-buoc-hai-chay-duoi-dang-dll">Bước 4: payload bước hai chạy dưới dạng DLL</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác nhận file <code>.gif</code> tải về là gì và được chạy ra sao.</li>
+<li><strong>Cách làm:</strong> mở tab Behavior, xem mục Processes Tree.</li>
+</ul>
+<figure><img src="../img/icedid/ic-04-vt-process-tree.png" alt="VirusTotal Behavior: Processes Tree"><figcaption>Processes Tree trong tab Behavior. EXCEL.EXE mở mẫu (%SAMPLEPATH%), sau đó sinh ra 5 tiến trình rundll32 ..\ksjvoefv.skd1/.skd3/.skd4,DllRegisterServer.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Excel trực tiếp sinh ra <code>rundll32</code>. Đây là hành vi bất thường của ứng dụng Office, và cũng là nội dung của Sigma rule "Suspicious Microsoft Office Child Process" mà VirusTotal ghi nhận khớp.</li>
+<li>File được gọi qua <code>rundll32 &lt;file&gt;,DllRegisterServer</code>, tức là được nạp như một DLL dù mang đuôi lạ. Mục Dropped Files (Bước 2) cũng ghi nhận file tên <code>ksjvoefv.skd3</code> là Win32 DLL.</li>
+<li>Đổi đuôi thành <code>.gif</code> khi tải và <code>.skd&lt;N&gt;</code> khi lưu giúp payload lọt qua bộ lọc chỉ dựa vào đuôi file.</li>
+<li>Hướng giải: tên file payload là phần cuối của 5 URL ở Bước 3. Tên hàm Windows API dùng để tải file không có trong dữ liệu công khai của VirusTotal. Cần đọc nội dung macro sheet đã giải mã, hoặc báo cáo sandbox có ghi lại API call.</li>
+</ul>
+<h2 id="buoc-5-ho-ma-oc-va-nhom-tan-cong">Bước 5: họ mã độc và nhóm tấn công</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> gắn mẫu với họ mã độc và nhóm đứng sau.</li>
+<li><strong>Cách làm:</strong> đối chiếu nhãn phát hiện trên VirusTotal với trang <code>win.icedid</code> trên Malpedia.</li>
+</ul>
+<figure><img src="../img/icedid/ic-05-malpedia-actor.png" alt="Malpedia: trang IcedID"><figcaption>Trang win.icedid trên Malpedia: tên khác BokBot, IceID. Dòng Actor(s) liệt kê 2 nhóm (đã làm mờ). Phần mô tả trích Proofpoint: IcedID xuất hiện từ năm 2017, ban đầu là banking malware, sau đó còn làm loader cho mã độc khác, kể cả ransomware.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>IcedID ban đầu là trojan ngân hàng (mã độc chuyên đánh cắp phiên đăng nhập ngân hàng), về sau được dùng làm loader cho ransomware.</li>
+<li>Hướng giải: tên nhóm nằm ở dòng Actor(s) trên Malpedia. Đối chiếu với báo cáo của hãng bảo mật về chiến dịch Excel 4.0 năm 2021 để chọn đúng nhóm.</li>
+</ul>
+<h2 id="dong-thoi-gian">Dòng thời gian</h2>
+<ul>
+<li>16/09/2006 00:00:00 UTC: giá trị Creation Time trong metadata của file Excel. Đây là giá trị mặc định của template, không phải ngày tạo mẫu thật.</li>
+<li>31/03/2021 01:39:08 UTC (08:39:08 UTC+7): mẫu được gửi lên VirusTotal lần đầu.</li>
+<li>Khi chạy trong sandbox, thứ tự hành vi như sau:</li>
+<li>Excel mở file và chạy macro Excel 4.0;</li>
+<li>macro tải <code>&lt;tên file&gt;.gif</code> từ một trong 5 tên miền;</li>
+<li>file được lưu với đuôi <code>.skd&lt;N&gt;</code> rồi chạy bằng <code>rundll32 ...,DllRegisterServer</code>.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

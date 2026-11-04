@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>Yellow RAT lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders Yellow RAT writeup (walkthrough tiếng Việt): Từ một hash mẫu, dùng VirusTotal và trang threat của Red Canary để gọi tên cụm mối đe dọa, lấy metadata của file và máy chủ C2.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/yellow-rat.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="Yellow RAT lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders Yellow RAT writeup (walkthrough tiếng Việt): Từ một hash mẫu, dùng VirusTotal và trang threat của Red Canary để gọi tên cụm mối đe dọa, lấy metadata của file và máy chủ C2.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/yellow-rat.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Yellow RAT - CyberDefenders writeup", "description": "Từ một hash mẫu, dùng VirusTotal và trang threat của Red Canary để gọi tên cụm mối đe dọa, lấy metadata của file và máy chủ C2.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/yellow-rat.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, Yellow RAT, writeup, walkthrough, Threat Intel, VirusTotal, Red Canary", "about": {"@type": "Thing", "name": "CyberDefenders Yellow RAT lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/yellow-rat/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-nhan-dien-ho-ma-oc">Bước 1: nhận diện họ mã độc</a></li><li><a href="#buoc-2-goi-ten-cum-moi-e-doa-theo-red-canary">Bước 2: gọi tên cụm mối đe dọa theo Red Canary</a></li><li><a href="#buoc-3-ten-file-va-cac-moc-thoi-gian">Bước 3: tên file và các mốc thời gian</a></li><li><a href="#buoc-4-may-chu-c2-va-file-tren-ia">Bước 4: máy chủ C2 và file trên đĩa</a></li></ul></nav>
+<article>
+<h1 id="yellow-rat">Yellow RAT</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/yellow-rat/">Yellow RAT</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> file <code>hash.txt</code> chứa SHA-256 <code>30E527E4...0D071C85</code>. Bối cảnh: máy trạm của công ty GlobalTech Industries có lưu lượng ra ngoài đáng ngờ và truy vấn tìm kiếm của người dùng bị chuyển hướng.</li>
+<li><strong>Công cụ:</strong> VirusTotal (tab Detection, Details, Behavior) và trang threat trong Threat Detection Report của Red Canary.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Ảnh là ảnh chụp trang VirusTotal và Red Canary, chụp ngày 04/11/2026. Giờ trên VirusTotal là UTC.</li>
+<li><span class="red">Khung đỏ</span> đánh dấu chỗ cần chú ý. Vùng làm mờ là đáp án (tên cụm, tên file, thời điểm, tên miền C2).</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Hash ứng với một DLL .NET (Win32 DLL, Mono/.Net assembly, 68,00 KB). VirusTotal ghi nhận 55/71 engine phát hiện, family labels <code>msil</code>, <code>fful</code>, <code>polazert</code>.</li>
+<li>Red Canary theo dõi hoạt động này dưới một tên cụm riêng. Đây là cụm dùng search engine poisoning (đẩy trang độc lên kết quả tìm kiếm) để dụ người dùng cài một RAT .NET có chức năng đánh cắp thông tin. Các nhà nghiên cứu khác gọi cụm này bằng 3 tên khác.</li>
+<li>Tên file gốc của mẫu có dạng GUID (chuỗi định danh 32 ký tự hex) với đuôi <code>.dll</code>.</li>
+<li>Trong sandbox, chuỗi URL HTTPS của một tên miền xuất hiện trong bộ nhớ của mẫu. Đây là máy chủ C2.</li>
+</ul>
+<h2 id="buoc-1-nhan-dien-ho-ma-oc">Bước 1: nhận diện họ mã độc</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết mẫu thuộc họ nào trước khi tìm báo cáo.</li>
+<li><strong>Cách làm:</strong> tra hash trên VirusTotal, xem tab Detection: Popular threat label, Family labels và nhãn của từng hãng.</li>
+</ul>
+<figure><img src="../img/yellow-rat/yr-02-vt-labels.png" alt="VirusTotal Detection: nhãn của các hãng"><figcaption>Tab Detection: 55/71 engine phát hiện. Popular threat label trojan.msil/fful, Family labels msil, fful, polazert. Alibaba ghi Trojan:MSIL/Polazert, ALYac ghi Trojan.MSIL.Polazer, ClamAV ghi Win.Trojan.Jupiter. Tên file của mẫu ở phần đầu trang đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Các nhãn <code>Polazert</code> và <code>Jupiter</code> là tên của cùng một họ RAT .NET.</li>
+<li>Tag <code>assembly</code> và <code>pedll</code> cho biết đây là DLL viết bằng .NET.</li>
+</ul>
+<h2 id="buoc-2-goi-ten-cum-moi-e-doa-theo-red-canary">Bước 2: gọi tên cụm mối đe dọa theo Red Canary</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết Red Canary gọi cụm hoạt động này là gì.</li>
+<li><strong>Cách làm:</strong> tìm tên họ mã độc ở Bước 1 trong Threat Detection Report của Red Canary, mở trang của cụm tương ứng, đọc mục Analysis.</li>
+</ul>
+<figure><img src="../img/yellow-rat/yr-04-redcanary.png" alt="Red Canary: mục Analysis của trang threat"><figcaption>Mục Analysis trên trang threat của Red Canary. Đoạn mở đầu mô tả một activity cluster dùng search engine poisoning để lừa người dùng cài một .NET RAT có khả năng đánh cắp thông tin, được Red Canary báo cáo lần đầu năm 2020. Tên cụm và 3 tên mà nhà nghiên cứu khác dùng đã làm mờ.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Một trong 3 tên khác trùng với nhãn Family labels trên VirusTotal ở Bước 1. Đây là cách nối mẫu với báo cáo của Red Canary.</li>
+<li>Hướng giải: tên cụm là tiêu đề trang và từ đầu tiên của đoạn Analysis.</li>
+</ul>
+<h2 id="buoc-3-ten-file-va-cac-moc-thoi-gian">Bước 3: tên file và các mốc thời gian</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy tên file gốc, thời điểm biên dịch và lần gửi đầu tiên.</li>
+<li><strong>Cách làm:</strong> mở tab Details, xem mục History, Names và File Version Information.</li>
+</ul>
+<figure><img src="../img/yellow-rat/yr-01-vt-history-names.png" alt="VirusTotal Details: History, Names, File Version Information"><figcaption>Tab Details. History: Creation Time và First Submission đã làm mờ, First Seen In The Wild 2021-01-12 20:48:12 UTC. Names: dòng đầu là tên dạng GUID với đuôi .dll (đã làm mờ). File Version Information: Original Name và Internal Name là cùng tên GUID đó.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Original Name trong thông tin phiên bản (File Version Information) trùng với tên đầu tiên trong mục Names. Đây là tên do người viết mã độc đặt lúc biên dịch.</li>
+<li>Thời điểm biên dịch sớm hơn lần gửi đầu khoảng 3 tuần. First Seen In The Wild còn muộn hơn cả First Submission.</li>
+<li>Hướng giải: Creation Time và First Submission đọc trực tiếp trong mục History, theo giờ UTC.</li>
+</ul>
+<h2 id="buoc-4-may-chu-c2-va-file-tren-ia">Bước 4: máy chủ C2 và file trên đĩa</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nơi mẫu kết nối tới và các file nó dùng.</li>
+<li><strong>Cách làm:</strong> mở tab Behavior, xem mục Memory Pattern Domains, Memory Pattern Urls và Files Opened.</li>
+</ul>
+<figure><img src="../img/yellow-rat/yr-03-vt-memory-c2.png" alt="VirusTotal Behavior: Memory Pattern và Files Opened"><figcaption>Tab Behavior. Memory Pattern Domains và Memory Pattern Urls có một tên miền và một URL https:// (đã làm mờ). Files Opened: mẫu chạy từ C:\Users\&lt;USER&gt;\Desktop\attachment.dll và mở file C:\Users\user\AppData\Local\Temp\6e6d5103f997d6a7894290594b484f7a.exe.dll.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>Tên miền và URL HTTPS nằm sẵn trong bộ nhớ của mẫu khi chạy. Đây là địa chỉ C2 mà RAT dùng để nhận lệnh.</li>
+<li>Mẫu ghi và mở file trong thư mục <code>%TEMP%</code> của người dùng, đúng hành vi đã được mô tả cho họ mã độc này.</li>
+<li>VirusTotal không hiện file <code>.dat</code> mà lab hỏi. Tên file <code>.dat</code> cần lấy từ báo cáo sandbox khác hoặc từ bài phân tích của Red Canary về cách mẫu lưu module đã mã hóa.</li>
+<li>Hướng giải: địa chỉ C2 là URL trong Memory Pattern Urls.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>

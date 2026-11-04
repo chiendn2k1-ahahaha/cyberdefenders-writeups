@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'sha256-K65AckC8Kni8xRtJL2GTaDpcWiXKw4p6QJiEl43/uPI='; img-src 'self' https://avatars.githubusercontent.com; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<style>html:not(.pv) body>*:not(noscript),html.dt body>*{display:none!important}html.dt body::before{content:"Đóng DevTools hoặc tải lại trang để xem nội dung.";display:block;padding:48px 16px;text-align:center;font:18px/1.5 system-ui,sans-serif}</style>
+<title>3CX Supply Chain lab - CyberDefenders writeup tiếng Việt | Chiendn2k1</title>
+<meta name="description" content="CyberDefenders 3CX Supply Chain writeup (walkthrough tiếng Việt): Dựng lại vụ tấn công chuỗi cung ứng 3CX năm 2023 qua file MSI và các DLL bị cài mã độc, xác định TTP và nhóm tấn công.">
+<meta name="author" content="Chiendn2k1">
+<link rel="canonical" href="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/3cx-supply-chain.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CyberDefenders writeups">
+<meta property="og:title" content="3CX Supply Chain lab - CyberDefenders writeup tiếng Việt | Chiendn2k1">
+<meta property="og:description" content="CyberDefenders 3CX Supply Chain writeup (walkthrough tiếng Việt): Dựng lại vụ tấn công chuỗi cung ứng 3CX năm 2023 qua file MSI và các DLL bị cài mã độc, xác định TTP và nhóm tấn công.">
+<meta property="og:url" content="https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/3cx-supply-chain.html">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "3CX Supply Chain - CyberDefenders writeup", "description": "Dựng lại vụ tấn công chuỗi cung ứng 3CX năm 2023 qua file MSI và các DLL bị cài mã độc, xác định TTP và nhóm tấn công.", "inLanguage": "vi", "url": "https://chiendn2k1-ahahaha.github.io/cyberdefenders-writeups/labs/3cx-supply-chain.html", "dateModified": "2026-11-04", "author": {"@type": "Person", "name": "Chiendn2k1", "url": "https://cyberdefenders.org/p/Chiendn2k1/"}, "keywords": "CyberDefenders, 3CX Supply Chain, writeup, walkthrough, Threat Intel, VirusTotal, Stealth", "about": {"@type": "Thing", "name": "CyberDefenders 3CX Supply Chain lab", "url": "https://cyberdefenders.org/blueteam-ctf-challenges/3cx-supply-chain/"}}</script>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css?v=c0502c0f">
+<script src="../protect.js?v=2d57047c"></script>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để hiển thị nội dung.</noscript>
+<header class="top"><a class="brand" href="../">CyberDefenders writeups</a>
+<nav class="me">
+<a href="https://www.linkedin.com/in/chiendn/" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+<a href="https://github.com/chiendn2k1-ahahaha" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a href="https://cyberdefenders.org/blueteam-ctf-challenges/leaderboard/" rel="noopener noreferrer" target="_blank">Bảng xếp hạng</a>
+<a class="ava" href="https://cyberdefenders.org/p/Chiendn2k1/" rel="noopener noreferrer" target="_blank" title="Chiendn2k1 trên CyberDefenders"><img src="https://avatars.githubusercontent.com/u/352285299?s=80" alt="Avatar Chiendn2k1" width="36" height="36"></a>
+</nav></header>
+<main class="page">
+<nav class="toc"><b>Mục lục</b><ul><li><a href="#tom-tat-ket-qua">Tóm tắt kết quả</a></li><li><a href="#buoc-1-phien-ban-bi-anh-huong">Bước 1: phiên bản bị ảnh hưởng</a></li><li><a href="#buoc-2-thoi-iem-tao-file-msi">Bước 2: thời điểm tạo file MSI</a></li><li><a href="#buoc-3-cac-dll-do-msi-tha-ra">Bước 3: các DLL do MSI thả ra</a></li><li><a href="#buoc-4-ky-thuat-nap-dll-va-loai-ma-oc">Bước 4: kỹ thuật nạp DLL và loại mã độc</a></li><li><a href="#buoc-5-ne-tranh-moi-truong-phan-tich">Bước 5: né tránh môi trường phân tích</a></li><li><a href="#buoc-6-thuat-toan-giai-ma-payload">Bước 6: thuật toán giải mã payload</a></li><li><a href="#buoc-7-nhom-tan-cong">Bước 7: nhóm tấn công</a></li></ul></nav>
+<article>
+<h1 id="3cx-supply-chain">3CX Supply Chain</h1>
+<ul>
+<li><strong>Lab:</strong> <a href="https://cyberdefenders.org/blueteam-ctf-challenges/3cx-supply-chain/">3CX Supply Chain</a> trên CyberDefenders. Nhóm Threat Intel, độ khó Easy, đã retired.</li>
+<li><strong>Dữ liệu:</strong> một file cài đặt MSI (khoảng 98 MB) của 3CX Desktop App bản Windows bị cài mã độc (trojanized).</li>
+<li><strong>Công cụ:</strong> 7-Zip để liệt kê file bên trong MSI (chỉ liệt kê, không giải nén hay chạy), VirusTotal, công cụ đọc metadata của file MSI (stream OLE summary), các báo cáo threat intel công khai về vụ 3CX.</li>
+<li><strong>Quy ước:</strong></li>
+<li>Bài không ghi giá trị đáp án. Chỗ nào cần tra cứu có dòng "Hướng giải" chỉ nơi tìm.</li>
+<li><span class="red">Khung đỏ</span> trên ảnh là chỗ cần chú ý, vùng làm mờ là giá trị trùng với đáp án hoặc để lộ đáp án.</li>
+</ul>
+<h2 id="tom-tat-ket-qua">Tóm tắt kết quả</h2>
+<ul>
+<li>Tháng 3/2023, giới nghiên cứu phát hiện kẻ tấn công xâm nhập môi trường build phần mềm của 3CX (nhà cung cấp giải pháp tổng đài) và chèn mã độc vào bộ cài hợp lệ của 3CX Desktop App, cả bản Windows lẫn macOS.</li>
+<li>Bộ cài Windows thả hai DLL: một DLL bị sửa để chứa mã nạp độc hại (vẫn mang chữ ký số hợp lệ của 3CX), và một DLL hợp lệ của Microsoft có phần dữ liệu mã hóa gắn thêm vào cuối file.</li>
+<li>Khi ứng dụng 3CX chạy, nó tự nạp DLL độc hại theo cơ chế DLL side-loading (ứng dụng hợp lệ nạp nhầm DLL độc nằm cùng thư mục).</li>
+<li>DLL độc hại kiểm tra môi trường ảo hóa và ngủ dài ngày để né sandbox, rồi đọc và giải mã payload gắn ở cuối DLL thứ hai.</li>
+<li><strong>Chiến dịch được các báo cáo công khai gán cho một nhóm tấn công do nhà nước Triều Tiên hậu thuẫn.</strong></li>
+</ul>
+<h2 id="buoc-1-phien-ban-bi-anh-huong">Bước 1: phiên bản bị ảnh hưởng</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> biết có bao nhiêu phiên bản 3CX Desktop App cho Windows bị gắn nhãn mã độc.</li>
+<li><strong>Cách làm:</strong> đối chiếu các thông báo của 3CX và báo cáo của Mandiant, CrowdStrike về vụ việc.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Các báo cáo liệt kê một số bản build Windows thuộc nhánh 18.12 bị cài mã độc. File MSI trong lab là một trong các bản đó.</li>
+<li>Hướng giải: số phiên bản có trong danh sách bản bị ảnh hưởng của các báo cáo nêu trên.</li>
+</ul>
+<h2 id="buoc-2-thoi-iem-tao-file-msi">Bước 2: thời điểm tạo file MSI</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> lấy thời điểm tạo file MSI theo UTC.</li>
+<li><strong>Cách làm:</strong> đọc stream OLE summary information của file MSI (file MSI là tài liệu dạng OLE Compound Document), lấy thuộc tính thời gian tạo (<code>create_time</code>).</li>
+<li><strong>Nhận định:</strong></li>
+<li>Thời điểm tạo cho biết bộ cài độc hại được đóng gói trước khi vụ việc bị công bố.</li>
+<li>Hướng giải: giá trị nằm ở thuộc tính thời gian tạo trong summary information của MSI. Ghi theo dạng ngày giờ UTC đến phút.</li>
+</ul>
+<h2 id="buoc-3-cac-dll-do-msi-tha-ra">Bước 3: các DLL do MSI thả ra</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định hai DLL độc hại trong bộ cài.</li>
+<li><strong>Cách làm:</strong> liệt kê file trong CAB của MSI, đối chiếu với các advisory về vụ 3CX.</li>
+</ul>
+<pre><code class="language-powershell">7z l &quot;3CXDesktopApp-&lt;phiên bản&gt;.msi&quot; | Select-String &quot;\.dll_&quot;
+</code></pre>
+<figure><img src="../img/3cx-supply-chain/c3-01-msi-dlls.png" alt="7-Zip: các DLL bên trong file MSI"><figcaption>MSI chứa 81 file, trong đó có 6 DLL (tên trong MSI có thêm hậu tố GUID). Hai DLL trong khung đỏ (tên đã làm mờ) là hai file mà các advisory về vụ 3CX nêu. Các DLL còn lại là thư viện đồ họa của Electron và Chromium. Cột ngày giờ đã làm mờ.</figcaption></figure>
+
+<figure><img src="../img/3cx-supply-chain/c3-02-vt-msi.png" alt="VirusTotal: kết quả nhận diện file MSI"><figcaption>File MSI trên VirusTotal: 37/58 hãng đánh dấu độc hại. Danh mục mối đe dọa gồm pua và dropper. Một số tag hành vi, nhãn phổ biến và nhãn họ (đã làm mờ) để lộ đáp án nên được che.</figcaption></figure>
+
+<ul>
+<li><strong>Nhận định:</strong></li>
+<li>DLL thứ nhất là thư viện mà ứng dụng 3CX nạp khi khởi động. Nó được ký bằng chứng chỉ hợp lệ của 3CX Ltd. nhưng bị chèn mã nạp độc hại ở điểm vào của DLL.</li>
+<li>DLL thứ hai là một thư viện DirectX hợp lệ của Microsoft, gắn thêm khoảng 285 KB dữ liệu mã hóa ở cuối file (overlay). Phần dữ liệu này bắt đầu sau một chuỗi đánh dấu cố định.</li>
+<li>Hướng giải: tên hai DLL có trong danh sách file của MSI. Thứ tự ghi theo chiều nạp: DLL bị ứng dụng nạp trước, DLL chứa payload sau.</li>
+</ul>
+<h2 id="buoc-4-ky-thuat-nap-dll-va-loai-ma-oc">Bước 4: kỹ thuật nạp DLL và loại mã độc</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> ánh xạ cách nạp DLL sang MITRE ATT&amp;CK và xác định loại mối đe dọa của hai DLL.</li>
+<li><strong>Cách làm:</strong> tra MITRE ATT&amp;CK cho hành vi DLL side-loading và DLL search order hijacking. Xem nhãn phân loại (threat category) của hai DLL trên VirusTotal.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Ứng dụng hợp lệ nạp DLL theo thứ tự tìm kiếm thư mục. Kẻ tấn công đặt DLL độc vào đúng chỗ đó. Hành vi này thuộc technique Hijack Execution Flow.</li>
+<li>Hai DLL được xếp loại là mã độc giả dạng phần mềm hợp lệ, có vai trò backdoor loader.</li>
+<li>Hướng giải: ID technique ở mức technique cha (không có sub-technique) trên trang MITRE ATT&amp;CK. Loại mối đe dọa là nhãn phân loại chung mà VirusTotal và các advisory gán cho hai DLL.</li>
+</ul>
+<h2 id="buoc-5-ne-tranh-moi-truong-phan-tich">Bước 5: né tránh môi trường phân tích</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định technique MITRE ATT&amp;CK cho việc né máy ảo và sandbox, và hypervisor bị nhắm tới.</li>
+<li><strong>Cách làm:</strong> đọc phần anti-analysis trong báo cáo phân tích DLL độc hại và tab Behavior trên VirusTotal.</li>
+<li><strong>Nhận định:</strong></li>
+<li>DLL độc hại ngủ 7 ngày trước khi hoạt động và kiểm tra dấu vết của một nền tảng ảo hóa. Hành vi này thuộc technique Virtualization/Sandbox Evasion.</li>
+<li>Hướng giải: ID technique trên trang MITRE ATT&amp;CK tương ứng. Tên hypervisor có trong phần kiểm tra artifact ảo hóa của báo cáo.</li>
+</ul>
+<h2 id="buoc-6-thuat-toan-giai-ma-payload">Bước 6: thuật toán giải mã payload</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> tìm thuật toán DLL độc hại dùng để giải mã phần overlay.</li>
+<li><strong>Cách làm:</strong> đọc phần mô tả cơ chế giải mã trong báo cáo phân tích DLL độc hại.</li>
+<li><strong>Nhận định:</strong></li>
+<li>DLL độc hại tìm chuỗi đánh dấu trong DLL thứ hai, đọc phần dữ liệu phía sau và giải mã bằng một thuật toán mã hóa dòng (stream cipher). Payload sau khi giải mã liên lạc với máy chủ C2 của kẻ tấn công.</li>
+<li>Hướng giải: tên thuật toán có trong phần giải mã overlay của báo cáo.</li>
+</ul>
+<h2 id="buoc-7-nhom-tan-cong">Bước 7: nhóm tấn công</h2>
+<ul>
+<li><strong>Mục tiêu:</strong> xác định nhóm đứng sau vụ tấn công.</li>
+<li><strong>Cách làm:</strong> đối chiếu phần attribution trong báo cáo của Mandiant và CrowdStrike.</li>
+<li><strong>Nhận định:</strong></li>
+<li>Các báo cáo gán chiến dịch cho một nhóm APT do nhà nước Triều Tiên hậu thuẫn. Các hãng theo dõi nhóm này dưới nhiều tên khác nhau.</li>
+<li>Hướng giải: dùng tên phổ biến nhất của nhóm, tên mà các báo cáo về 3CX nhắc tới nhiều nhất.</li>
+</ul>
+</article>
+</main>
+
+</body>
+</html>
